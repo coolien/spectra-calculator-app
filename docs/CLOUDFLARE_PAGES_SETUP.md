@@ -1,0 +1,98 @@
+# Cloudflare Pages Setup For Spectra Calculator
+
+Target URL:
+
+```text
+https://calculatorapp.spectramsia.com
+```
+
+Repository:
+
+```text
+spectramsia/Spectra-Calculator-App
+```
+
+## 1. Create Pages Project
+
+In Cloudflare dashboard:
+
+1. Go to Workers & Pages.
+2. Create application.
+3. Choose Pages.
+4. Connect to Git.
+5. Select `spectramsia/Spectra-Calculator-App`.
+
+## 2. Build Settings
+
+Framework preset:
+
+```text
+None
+```
+
+Root directory:
+
+```text
+app
+```
+
+Build command:
+
+```bash
+flutter build web --release --base-href / --dart-define=SUPABASE_URL=https://ncunuuitbiygluduysmh.supabase.co --dart-define=SUPABASE_PUBLISHABLE_KEY=$SUPABASE_PUBLISHABLE_KEY && dart run tools/copy_web_pwa_assets.dart
+```
+
+Build output directory:
+
+```text
+build/web
+```
+
+If Cloudflare's build image does not include Flutter, use a custom build image
+or deploy from GitHub Actions/Codemagic later. For the first launch, direct
+upload of `app/build/web` is also acceptable.
+
+## 3. Environment Variables
+
+Add this variable in Cloudflare Pages project settings:
+
+```text
+SUPABASE_PUBLISHABLE_KEY
+```
+
+Use the public publishable key from the Supabase project. Do not use the
+service role key.
+
+## 4. Custom Domain
+
+Add custom domain:
+
+```text
+calculatorapp.spectramsia.com
+```
+
+Cloudflare should create the DNS record automatically because the zone is under
+Cloudflare.
+
+## 5. Verify
+
+After deployment:
+
+- Open `https://calculatorapp.spectramsia.com`.
+- Confirm the page title/app bar shows `Spectra`.
+- Confirm `https://calculatorapp.spectramsia.com/manifest.json` returns the
+  Spectra manifest.
+- Confirm `https://calculatorapp.spectramsia.com/spectra_service_worker.js`
+  returns HTTP 200.
+- In Chrome DevTools > Application, confirm the active service worker is
+  `spectra_service_worker.js`.
+
+## 6. Supabase Auth URLs
+
+In Supabase Auth settings, add:
+
+```text
+https://calculatorapp.spectramsia.com
+```
+
+as a Site URL / allowed redirect URL before public testing.
