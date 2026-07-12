@@ -1,6 +1,6 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
-enum AppLanguage { english, bahasaMalaysia, chinese }
+enum AppLanguage { english, bahasaMalaysia, chinese, tamil }
 
 extension AppLanguageLabels on AppLanguage {
   String get label {
@@ -8,6 +8,7 @@ extension AppLanguageLabels on AppLanguage {
       AppLanguage.english => 'English',
       AppLanguage.bahasaMalaysia => 'Bahasa Malaysia',
       AppLanguage.chinese => 'Chinese',
+      AppLanguage.tamil => 'Tamil',
     };
   }
 
@@ -16,6 +17,7 @@ extension AppLanguageLabels on AppLanguage {
       AppLanguage.english => 'EN',
       AppLanguage.bahasaMalaysia => 'BM',
       AppLanguage.chinese => '中文',
+      AppLanguage.tamil => 'TA',
     };
   }
 
@@ -24,6 +26,7 @@ extension AppLanguageLabels on AppLanguage {
       AppLanguage.english => 'English first for v1.',
       AppLanguage.bahasaMalaysia => 'BM labels planned after v1.',
       AppLanguage.chinese => 'Chinese labels planned after v1.',
+      AppLanguage.tamil => 'Tamil labels planned after v1.',
     };
   }
 }

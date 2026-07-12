@@ -958,7 +958,7 @@ class AppNavigationDrawer extends StatelessWidget {
             ListTile(
               leading: const Icon(Icons.translate_outlined),
               title: const Text('Language'),
-              subtitle: const Text('English, BM, Chinese'),
+              subtitle: const Text('English, BM, Chinese, Tamil'),
               onTap: () {
                 Navigator.of(context).pop();
                 Navigator.of(context).push(
@@ -6173,7 +6173,7 @@ class _LanguageScreenState extends State<LanguageScreen> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'English is active for v1. BM and Chinese preferences are saved now so translated labels can be turned on cleanly later.',
+                  'English is active for v1. BM, Chinese, and Tamil preferences are saved now so translated labels can be turned on cleanly later.',
                   style: theme.textTheme.bodyLarge?.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,
                   ),
@@ -6200,7 +6200,7 @@ class _LanguageScreenState extends State<LanguageScreen> {
                   icon: Icons.language_outlined,
                   infoTitle: 'Why English first?',
                   infoMessage:
-                      'Loan, tax, legal, and privacy wording should be translated carefully. The selector is ready, but full BM and Chinese copies should be reviewed before release.',
+                      'Loan, tax, legal, and privacy wording should be translated carefully. The selector is ready, but full BM, Chinese, and Tamil copies should be reviewed before release.',
                   children: [
                     for (final language in AppLanguage.values)
                       Padding(
@@ -6738,7 +6738,7 @@ class SettingsScreen extends StatelessWidget {
             InputPlanTile(
               icon: Icons.translate_outlined,
               title: 'Language',
-              subtitle: 'English, BM, and Chinese preference.',
+              subtitle: 'English, BM, Chinese, and Tamil preference.',
               trailing: const Icon(Icons.chevron_right),
               onTap: () {
                 Navigator.of(context).push(
