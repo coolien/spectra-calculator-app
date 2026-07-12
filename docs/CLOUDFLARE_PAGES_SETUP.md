@@ -39,7 +39,7 @@ app
 Build command:
 
 ```bash
-flutter build web --release --base-href / --dart-define=SUPABASE_URL=https://gmluepisjslxowncdxba.supabase.co --dart-define=SUPABASE_PUBLISHABLE_KEY=$SUPABASE_PUBLISHABLE_KEY && dart run tools/copy_web_pwa_assets.dart
+git clone https://github.com/flutter/flutter.git -b stable --depth 1 /tmp/flutter && export PATH="/tmp/flutter/bin:$PATH" && flutter config --enable-web && flutter pub get && flutter build web --release --base-href / --dart-define=SUPABASE_URL=https://gmluepisjslxowncdxba.supabase.co --dart-define=SUPABASE_PUBLISHABLE_KEY=$SUPABASE_PUBLISHABLE_KEY && dart run tools/copy_web_pwa_assets.dart
 ```
 
 Build output directory:
@@ -48,9 +48,9 @@ Build output directory:
 build/web
 ```
 
-If Cloudflare's build image does not include Flutter, use a custom build image
-or deploy from GitHub Actions/Codemagic later. For the first launch, direct
-upload of `app/build/web` is also acceptable.
+This installs Flutter during the Cloudflare build because Pages does not
+normally include Flutter in the default build image. For faster builds later,
+move deployment to GitHub Actions/Codemagic or a cached custom pipeline.
 
 ## 3. Environment Variables
 
