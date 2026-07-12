@@ -3,7 +3,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 class SpectraSupabaseConfig {
   const SpectraSupabaseConfig._();
 
-  static const projectRef = 'ncunuuitbiygluduysmh';
+  static const projectRef = 'gmluepisjslxowncdxba';
   static const defaultUrl = 'https://$projectRef.supabase.co';
 
   static const url = String.fromEnvironment(

@@ -1,5 +1,5 @@
 -- Spectra Calculator Supabase schema
--- Run this in Supabase SQL Editor for project ncunuuitbiygluduysmh.
+-- Run this in Supabase SQL Editor for project gmluepisjslxowncdxba.
 
 create extension if not exists pgcrypto;
 

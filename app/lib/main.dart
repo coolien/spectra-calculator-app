@@ -6515,7 +6515,7 @@ class _SupabaseNotConfiguredPanel extends StatelessWidget {
         ),
         SizedBox(height: 12),
         SelectableText(
-          'flutter build web --release --base-href / --dart-define=SUPABASE_URL=https://ncunuuitbiygluduysmh.supabase.co --dart-define=SUPABASE_PUBLISHABLE_KEY=your-publishable-key',
+          'flutter build web --release --base-href / --dart-define=SUPABASE_URL=https://gmluepisjslxowncdxba.supabase.co --dart-define=SUPABASE_PUBLISHABLE_KEY=your-publishable-key',
         ),
       ],
     );

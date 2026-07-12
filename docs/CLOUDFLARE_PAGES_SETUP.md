@@ -9,7 +9,7 @@ https://calculatorapp.spectramsia.com
 Repository:
 
 ```text
-spectramsia/Spectra-Calculator-App
+coolien/spectra-calculator-app
 ```
 
 ## 1. Create Pages Project
@@ -20,7 +20,7 @@ In Cloudflare dashboard:
 2. Create application.
 3. Choose Pages.
 4. Connect to Git.
-5. Select `spectramsia/Spectra-Calculator-App`.
+5. Select `coolien/spectra-calculator-app`.
 
 ## 2. Build Settings
 
@@ -39,7 +39,7 @@ app
 Build command:
 
 ```bash
-flutter build web --release --base-href / --dart-define=SUPABASE_URL=https://ncunuuitbiygluduysmh.supabase.co --dart-define=SUPABASE_PUBLISHABLE_KEY=$SUPABASE_PUBLISHABLE_KEY && dart run tools/copy_web_pwa_assets.dart
+flutter build web --release --base-href / --dart-define=SUPABASE_URL=https://gmluepisjslxowncdxba.supabase.co --dart-define=SUPABASE_PUBLISHABLE_KEY=$SUPABASE_PUBLISHABLE_KEY && dart run tools/copy_web_pwa_assets.dart
 ```
 
 Build output directory:

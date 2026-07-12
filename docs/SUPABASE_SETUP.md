@@ -2,7 +2,7 @@
 
 Project:
 
-- Supabase project ref: `ncunuuitbiygluduysmh`
+- Supabase project ref: `gmluepisjslxowncdxba`
 - App domain target: `calculatorapp.spectramsia.com`
 
 ## 1. Create Database Tables
@@ -41,7 +41,7 @@ Local build:
 ```powershell
 cd "C:\Users\khoom\Desktop\Codex\Loan Calculator App\app"
 flutter build web --release --base-href / `
-  --dart-define=SUPABASE_URL=https://ncunuuitbiygluduysmh.supabase.co `
+  --dart-define=SUPABASE_URL=https://gmluepisjslxowncdxba.supabase.co `
   --dart-define=SUPABASE_PUBLISHABLE_KEY=your-publishable-key
 dart run tools/copy_web_pwa_assets.dart
 ```
@@ -49,7 +49,7 @@ dart run tools/copy_web_pwa_assets.dart
 Cloudflare Pages build command:
 
 ```bash
-flutter build web --release --base-href / --dart-define=SUPABASE_URL=https://ncunuuitbiygluduysmh.supabase.co --dart-define=SUPABASE_PUBLISHABLE_KEY=$SUPABASE_PUBLISHABLE_KEY && dart run tools/copy_web_pwa_assets.dart
+flutter build web --release --base-href / --dart-define=SUPABASE_URL=https://gmluepisjslxowncdxba.supabase.co --dart-define=SUPABASE_PUBLISHABLE_KEY=$SUPABASE_PUBLISHABLE_KEY && dart run tools/copy_web_pwa_assets.dart
 ```
 
 Cloudflare Pages environment variable:

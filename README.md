@@ -8,7 +8,7 @@ packaging kept available for a later Play Store release.
 
 - Flutter app: `app/`
 - PWA target domain: `calculatorapp.spectramsia.com`
-- Supabase project ref: `ncunuuitbiygluduysmh`
+- Supabase project ref: `gmluepisjslxowncdxba`
 - Brand guide: `docs/Spectra Brand Guideline.pdf`
 
 ## Local Development
@@ -36,7 +36,7 @@ With Supabase cloud sync enabled:
 ```powershell
 cd app
 flutter build web --release --base-href / `
-  --dart-define=SUPABASE_URL=https://ncunuuitbiygluduysmh.supabase.co `
+  --dart-define=SUPABASE_URL=https://gmluepisjslxowncdxba.supabase.co `
   --dart-define=SUPABASE_PUBLISHABLE_KEY=your-publishable-key
 dart run tools/copy_web_pwa_assets.dart
 ```
