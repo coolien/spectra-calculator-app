@@ -33,35 +33,36 @@ None
 Root directory:
 
 ```text
-app
+web
 ```
 
 Build command:
 
 ```bash
-git clone https://github.com/flutter/flutter.git -b stable --depth 1 /tmp/flutter && export PATH="/tmp/flutter/bin:$PATH" && flutter config --enable-web && flutter pub get && flutter build web --release --base-href / --dart-define=SUPABASE_URL=https://gmluepisjslxowncdxba.supabase.co --dart-define=SUPABASE_PUBLISHABLE_KEY=$SUPABASE_PUBLISHABLE_KEY && dart run tools/copy_web_pwa_assets.dart
+npm ci && npm run typecheck && npm run build
 ```
 
 Build output directory:
 
 ```text
-build/web
+out
 ```
 
-This installs Flutter during the Cloudflare build because Pages does not
-normally include Flutter in the default build image. For faster builds later,
-move deployment to GitHub Actions/Codemagic or a cached custom pipeline.
+The Next.js build is a static export. `npm run build` runs
+`scripts/prepare-pwa.mjs` first, which writes `sw.js` and
+`spectra_build.json` with the Cloudflare commit id so installed devices move to
+the newest app cache after deployment.
 
 ## 3. Environment Variables
 
-Add this variable in Cloudflare Pages project settings:
+Optional future cloud-sync variables:
 
 ```text
-SUPABASE_PUBLISHABLE_KEY
+NEXT_PUBLIC_SUPABASE_URL
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
 ```
 
-Use the public publishable key from the Supabase project. Do not use the
-service role key.
+Use only the public Supabase publishable key. Do not use the service role key.
 
 ## 4. Custom Domain
 
@@ -80,12 +81,12 @@ After deployment:
 
 - Open `https://calculatorapp.spectramsia.com`.
 - Confirm the page title/app bar shows `Spectra`.
-- Confirm `https://calculatorapp.spectramsia.com/manifest.json` returns the
+- Confirm `https://calculatorapp.spectramsia.com/manifest.webmanifest` returns the
   Spectra manifest.
-- Confirm `https://calculatorapp.spectramsia.com/spectra_service_worker.js`
+- Confirm `https://calculatorapp.spectramsia.com/sw.js`
   returns HTTP 200.
 - In Chrome DevTools > Application, confirm the active service worker is
-  `spectra_service_worker.js`.
+  `sw.js`.
 - Confirm `https://calculatorapp.spectramsia.com/spectra_build.json` returns
   the current build id. The custom service worker uses this generated build id
   in its cache name so devices move to the newest deployed bundle after refresh.

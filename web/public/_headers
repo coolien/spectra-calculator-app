@@ -1,0 +1,18 @@
+/
+  ! Cache-Control
+  Cache-Control: no-store, no-cache, must-revalidate, max-age=0
+
+/sw.js
+  ! Cache-Control
+  Cache-Control: no-store, no-cache, must-revalidate, max-age=0
+
+/spectra_build.json
+  ! Cache-Control
+  Cache-Control: no-store, no-cache, must-revalidate, max-age=0
+
+/manifest.webmanifest
+  ! Cache-Control
+  Cache-Control: no-store, no-cache, must-revalidate, max-age=0
+
+/_next/static/*
+  Cache-Control: public, max-age=31536000, immutable

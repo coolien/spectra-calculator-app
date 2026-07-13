@@ -1,12 +1,13 @@
 # Spectra Calculator App
 
-Spectra Calculator is a Malaysia-focused loan and personal finance planning app
-built with Flutter. It can run as a Progressive Web App first, with Android
-packaging kept available for a later Play Store release.
+Spectra Calculator is a Malaysia-focused finance planning Progressive Web App.
+The active web/PWA build is now Next.js, with the earlier Flutter app kept in
+`app/` as a reference while the product is PWA-first.
 
 ## App
 
-- Flutter app: `app/`
+- Next.js PWA: `web/`
+- Flutter reference app: `app/`
 - PWA target domain: `calculatorapp.spectramsia.com`
 - Supabase project ref: `gmluepisjslxowncdxba`
 - Brand guide: `docs/Spectra Brand Guideline.pdf`
@@ -14,34 +15,24 @@ packaging kept available for a later Play Store release.
 ## Local Development
 
 ```powershell
-cd app
-flutter pub get
-flutter analyze
-flutter test
-flutter run -d chrome
+cd web
+npm install
+npm run dev
 ```
 
 ## Production Web Build
 
-Without Supabase credentials, the app still builds and runs in local-only mode:
-
 ```powershell
-cd app
-flutter build web --release --base-href /
-dart run tools/copy_web_pwa_assets.dart
+cd web
+npm ci
+npm run typecheck
+npm run build
 ```
 
-With Supabase cloud sync enabled:
+Deploy `web/out` to Cloudflare Pages.
 
-```powershell
-cd app
-flutter build web --release --base-href / `
-  --dart-define=SUPABASE_URL=https://gmluepisjslxowncdxba.supabase.co `
-  --dart-define=SUPABASE_PUBLISHABLE_KEY=your-publishable-key
-dart run tools/copy_web_pwa_assets.dart
-```
-
-Deploy `app/build/web` to Cloudflare Pages.
+The Next build generates `public/sw.js` and `public/spectra_build.json` before
+export so installed PWAs move to the newest cache after each deployment.
 
 ## Supabase
 

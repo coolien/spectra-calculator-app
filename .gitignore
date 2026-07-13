@@ -1,3 +1,8 @@
 node_modules/
 tmp/
 ~$*
+web/.next/
+web/out/
+web/tsconfig.tsbuildinfo
+web/public/sw.js
+web/public/spectra_build.json

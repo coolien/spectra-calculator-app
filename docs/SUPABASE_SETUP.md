@@ -18,7 +18,7 @@ The policies keep each user inside their own rows with:
 auth.uid() = user_id
 ```
 
-The Flutter app must only use the public publishable key. Never put the service role
+The PWA must only use the public publishable key. Never put the service role
 key into the app, GitHub, or Cloudflare Pages client bundle.
 
 ## 2. Auth Settings
@@ -34,33 +34,30 @@ In Supabase Auth settings:
 
 Google OAuth can be added later after email/password sync is stable.
 
-## 3. Flutter Build Defines
+## 3. Next.js Environment Variables
 
-Local build:
+Cloudflare Pages project settings can use:
 
-```powershell
-cd "C:\Users\khoom\Desktop\Codex\Loan Calculator App\app"
-flutter build web --release --base-href / `
-  --dart-define=SUPABASE_URL=https://gmluepisjslxowncdxba.supabase.co `
-  --dart-define=SUPABASE_PUBLISHABLE_KEY=your-publishable-key
-dart run tools/copy_web_pwa_assets.dart
+```text
+NEXT_PUBLIC_SUPABASE_URL=https://gmluepisjslxowncdxba.supabase.co
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=your-publishable-key
 ```
 
 Cloudflare Pages build command:
 
 ```bash
-git clone https://github.com/flutter/flutter.git -b stable --depth 1 /tmp/flutter && export PATH="/tmp/flutter/bin:$PATH" && flutter config --enable-web && flutter pub get && flutter build web --release --base-href / --dart-define=SUPABASE_URL=https://gmluepisjslxowncdxba.supabase.co --dart-define=SUPABASE_PUBLISHABLE_KEY=$SUPABASE_PUBLISHABLE_KEY && dart run tools/copy_web_pwa_assets.dart
+npm ci && npm run typecheck && npm run build
 ```
-
-Cloudflare Pages environment variable:
-
-- `SUPABASE_PUBLISHABLE_KEY`: paste the Supabase project publishable public key.
 
 Output directory:
 
 ```text
-build/web
+out
 ```
+
+The first Next.js cutover keeps calculator data local in the browser. Supabase
+cloud sync should be reconnected in the Next app before asking users to rely on
+cross-device profile backup.
 
 ## 4. Data Model
 
