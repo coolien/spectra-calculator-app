@@ -1,17 +1,27 @@
+/
+  ! Cache-Control
+  Cache-Control: no-store, no-cache, must-revalidate, max-age=0
+
 /index.html
-  Cache-Control: no-cache, no-store, must-revalidate
+  ! Cache-Control
+  Cache-Control: no-store, no-cache, must-revalidate, max-age=0
 
 /flutter_bootstrap.js
-  Cache-Control: no-cache, no-store, must-revalidate
+  ! Cache-Control
+  Cache-Control: no-store, no-cache, must-revalidate, max-age=0
 
 /main.dart.js
-  Cache-Control: no-cache, must-revalidate
+  ! Cache-Control
+  Cache-Control: no-store, no-cache, must-revalidate, max-age=0
 
 /version.json
-  Cache-Control: no-cache, no-store, must-revalidate
+  ! Cache-Control
+  Cache-Control: no-store, no-cache, must-revalidate, max-age=0
 
 /spectra_build.json
-  Cache-Control: no-cache, no-store, must-revalidate
+  ! Cache-Control
+  Cache-Control: no-store, no-cache, must-revalidate, max-age=0
 
 /spectra_service_worker.js
-  Cache-Control: no-cache, no-store, must-revalidate
+  ! Cache-Control
+  Cache-Control: no-store, no-cache, must-revalidate, max-age=0
