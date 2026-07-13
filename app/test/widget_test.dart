@@ -155,6 +155,8 @@ void main() {
       240,
       scrollable: find.byType(Scrollable).first,
     );
+    await tester.drag(find.byType(Scrollable).first, const Offset(0, -120));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Assumptions and sources'));
     await tester.pumpAndSettle();
 

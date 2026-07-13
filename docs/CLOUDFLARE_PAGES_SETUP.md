@@ -86,6 +86,9 @@ After deployment:
   returns HTTP 200.
 - In Chrome DevTools > Application, confirm the active service worker is
   `spectra_service_worker.js`.
+- Confirm `https://calculatorapp.spectramsia.com/spectra_build.json` returns
+  the current build id. The custom service worker uses this generated build id
+  in its cache name so devices move to the newest deployed bundle after refresh.
 
 ## 6. Supabase Auth URLs
 

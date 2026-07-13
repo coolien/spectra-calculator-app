@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:loancalculator/src/app_build_info.dart';
 import 'package:loancalculator/src/app_preferences.dart';
 import 'package:loancalculator/src/calculators/consumer_loan_calculators.dart';
 import 'package:loancalculator/src/calculators/home_loan_calculator.dart';
@@ -6812,6 +6813,12 @@ class SettingsScreen extends StatelessWidget {
                   ),
                 );
               },
+            ),
+            const InputPlanTile(
+              icon: Icons.system_update_alt_outlined,
+              title: 'App version',
+              subtitle:
+                  'v${AppBuildInfo.releaseLabel}. PWA updates refresh automatically when a new build is available.',
             ),
             InputPlanTile(
               icon: Icons.fact_check_outlined,

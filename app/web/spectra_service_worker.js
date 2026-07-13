@@ -1,4 +1,5 @@
-const CACHE_NAME = "spectra-calculator-v1";
+const BUILD_ID = "__SPECTRA_BUILD_ID__";
+const CACHE_NAME = "__SPECTRA_CACHE_NAME__";
 
 const APP_SHELL = [
   "./",
@@ -9,6 +10,7 @@ const APP_SHELL = [
   "./flutter_bootstrap.js",
   "./main.dart.js",
   "./version.json",
+  "./spectra_build.json",
   "./icons/Icon-192.png",
   "./icons/Icon-512.png",
   "./icons/Icon-maskable-192.png",
@@ -39,6 +41,12 @@ self.addEventListener("activate", (event) => {
   );
 });
 
+self.addEventListener("message", (event) => {
+  if (event.data?.type === "SKIP_WAITING") {
+    self.skipWaiting();
+  }
+});
+
 self.addEventListener("fetch", (event) => {
   const { request } = event;
 
@@ -56,8 +64,24 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
+  if (isVersionedAppFile(requestUrl)) {
+    event.respondWith(networkFirst(request));
+    return;
+  }
+
   event.respondWith(cacheFirst(request));
 });
+
+function isVersionedAppFile(requestUrl) {
+  return (
+    requestUrl.pathname.endsWith("/index.html") ||
+    requestUrl.pathname.endsWith("/flutter_bootstrap.js") ||
+    requestUrl.pathname.endsWith("/main.dart.js") ||
+    requestUrl.pathname.endsWith("/version.json") ||
+    requestUrl.pathname.endsWith("/spectra_build.json") ||
+    requestUrl.pathname.endsWith("/spectra_service_worker.js")
+  );
+}
 
 async function networkFirst(request, fallbackUrl) {
   const cache = await caches.open(CACHE_NAME);
@@ -69,7 +93,15 @@ async function networkFirst(request, fallbackUrl) {
     return response;
   } catch (_) {
     const cached = await cache.match(request);
-    return cached || cache.match(fallbackUrl);
+    if (cached) {
+      return cached;
+    }
+
+    if (fallbackUrl) {
+      return cache.match(fallbackUrl);
+    }
+
+    throw _;
   }
 }
 
