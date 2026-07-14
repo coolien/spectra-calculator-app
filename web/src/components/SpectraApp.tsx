@@ -82,6 +82,14 @@ function SpectraExperience() {
     setDetail(screen);
   }
 
+  function toggleProfile() {
+    if (detail === 'profile') {
+      changeTab('home');
+      return;
+    }
+    setDetail('profile');
+  }
+
   function updateCalculatorField(key: CalculatorKey, field: string, value: string) {
     setForms((current) => ({ ...current, [key]: { ...current[key], [field]: value } }));
   }
@@ -130,7 +138,7 @@ function SpectraExperience() {
 
   return (
     <main className="spectra-app">
-      <TopBar hasBack={detail !== null} onBack={() => setDetail(null)} onProfile={() => setDetail('profile')} />
+      <TopBar isProfileOpen={detail === 'profile'} onProfileToggle={toggleProfile} />
       <div className="app-content">{renderScreen()}</div>
       <TabBar active={tab} onChange={changeTab} />
     </main>
