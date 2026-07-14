@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Spectra Calculator',
+  title: 'Spectra',
   description: "Spectra's Malaysia-focused finance planning calculator.",
   manifest: '/manifest.webmanifest',
   icons: {
@@ -12,8 +12,8 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: '#35C79A',
-  colorScheme: 'light',
+  themeColor: '#146356',
+  colorScheme: 'light dark',
   width: 'device-width',
   initialScale: 1,
 };
