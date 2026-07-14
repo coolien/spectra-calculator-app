@@ -6,9 +6,10 @@ import type { Language } from '@/lib/i18n';
 import { languageName } from '@/lib/i18n';
 import { RingLogo } from '@/components/ui/RingLogo';
 
-export function SettingsScreen({ language, hasProfile, onOpen }: {
+export function SettingsScreen({ language, hasProfile, accountStatus, onOpen }: {
   language: Language;
   hasProfile: boolean;
+  accountStatus: string;
   onOpen: (screen: 'profile' | 'account' | 'language' | 'legal' | 'remove-ads' | 'app-icon') => void;
 }) {
   const { mode, setMode, accent, scrim, setScrim } = useTheme();
@@ -39,7 +40,7 @@ export function SettingsScreen({ language, hasProfile, onOpen }: {
 
       <SettingsGroup title="Account">
         <SettingsRow icon={<CircleUserRound size={19} />} label="Personal profile" value={hasProfile ? 'Set up' : 'Not set'} onClick={() => onOpen('profile')} />
-        <SettingsRow icon={<Cloud size={19} />} label="Account & cloud sync" value="Not signed in" onClick={() => onOpen('account')} />
+        <SettingsRow icon={<Cloud size={19} />} label="Account & cloud sync" value={accountStatus === 'synced' ? 'Synced' : accountStatus === 'syncing' ? 'Syncing' : accountStatus === 'error' ? 'Needs attention' : accountStatus} onClick={() => onOpen('account')} />
         <SettingsRow icon={<Languages size={19} />} label="Language" value={languageName(language)} onClick={() => onOpen('language')} />
       </SettingsGroup>
 

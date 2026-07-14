@@ -8,6 +8,8 @@ alter table public.saved_scenarios enable row level security;
 alter table public.ongoing_loans enable row level security;
 alter table public.app_settings enable row level security;
 alter table public.sync_events enable row level security;
+alter table public.app_snapshots enable row level security;
+alter table public.app_snapshots force row level security;
 
 drop policy if exists "Profiles are readable by owner" on public.profiles;
 create policy "Profiles are readable by owner"
@@ -149,3 +151,27 @@ drop policy if exists "Sync events are deletable by owner" on public.sync_events
 create policy "Sync events are deletable by owner"
 on public.sync_events for delete
 using (auth.uid() = user_id);
+
+drop policy if exists "App snapshots are readable by owner" on public.app_snapshots;
+create policy "App snapshots are readable by owner"
+on public.app_snapshots for select to authenticated
+using ((select auth.uid()) = user_id);
+
+drop policy if exists "App snapshots are insertable by owner" on public.app_snapshots;
+create policy "App snapshots are insertable by owner"
+on public.app_snapshots for insert to authenticated
+with check ((select auth.uid()) = user_id);
+
+drop policy if exists "App snapshots are updateable by owner" on public.app_snapshots;
+create policy "App snapshots are updateable by owner"
+on public.app_snapshots for update to authenticated
+using ((select auth.uid()) = user_id)
+with check ((select auth.uid()) = user_id);
+
+drop policy if exists "App snapshots are deletable by owner" on public.app_snapshots;
+create policy "App snapshots are deletable by owner"
+on public.app_snapshots for delete to authenticated
+using ((select auth.uid()) = user_id);
+
+revoke all on table public.app_snapshots from anon;
+grant select, insert, update, delete on table public.app_snapshots to authenticated;

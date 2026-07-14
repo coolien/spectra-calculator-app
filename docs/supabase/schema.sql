@@ -6,6 +6,7 @@ create extension if not exists pgcrypto;
 create or replace function public.set_updated_at()
 returns trigger
 language plpgsql
+set search_path = ''
 as $$
 begin
   new.updated_at = now();
@@ -107,6 +108,23 @@ create table if not exists public.sync_events (
   created_at timestamptz not null default now()
 );
 
+create table if not exists public.app_snapshots (
+  user_id uuid not null references auth.users(id) on delete cascade,
+  app_id text not null,
+  schema_version integer not null default 1,
+  payload jsonb not null default '{}'::jsonb,
+  client_updated_at timestamptz not null,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  primary key (user_id, app_id),
+  constraint app_snapshots_app_id_format
+    check (app_id ~ '^[a-z0-9][a-z0-9-]{1,62}$'),
+  constraint app_snapshots_payload_object
+    check (jsonb_typeof(payload) = 'object'),
+  constraint app_snapshots_payload_size
+    check (octet_length(payload::text) <= 1048576)
+);
+
 create index if not exists idx_user_consents_user_id
   on public.user_consents (user_id);
 
@@ -147,4 +165,9 @@ for each row execute function public.set_updated_at();
 drop trigger if exists set_app_settings_updated_at on public.app_settings;
 create trigger set_app_settings_updated_at
 before update on public.app_settings
+for each row execute function public.set_updated_at();
+
+drop trigger if exists set_app_snapshots_updated_at on public.app_snapshots;
+create trigger set_app_snapshots_updated_at
+before update on public.app_snapshots
 for each row execute function public.set_updated_at();

@@ -7,6 +7,18 @@ Project:
 
 ## 1. Create Database Tables
 
+For the current Next.js PWA, run the idempotent migration:
+
+1. `docs/supabase/migrations/20260714_nextjs_cloud_sync.sql`
+
+It creates the shared account profile, versioned consent records, and one atomic
+`app_snapshots` row per user for `spectra-calculator`. RLS is enabled and forced,
+anonymous table access is revoked, and authenticated users are restricted to
+rows where `auth.uid()` matches `user_id`.
+
+The older normalized Flutter schema remains documented for compatibility. A
+brand-new database that needs those legacy tables can run these files first:
+
 Open the Supabase SQL Editor and run these files in order:
 
 1. `docs/supabase/schema.sql`
@@ -25,14 +37,13 @@ key into the app, GitHub, or Cloudflare Pages client bundle.
 
 In Supabase Auth settings:
 
-- Enable email/password sign-in.
+- Keep email sign-in enabled. The PWA uses passwordless magic links.
 - Add the deployed PWA URL to allowed redirect/site URLs:
   - `https://calculatorapp.spectramsia.com`
   - local development URL if needed, such as `http://localhost:3000`
-- Keep email confirmation on for public beta unless you intentionally want
-  instant sign-up.
+- Keep email confirmation enabled.
 
-Google OAuth can be added later after email/password sync is stable.
+Google OAuth can be added later after magic-link sync is stable.
 
 ## 3. Next.js Environment Variables
 
@@ -55,22 +66,24 @@ Output directory:
 out
 ```
 
-The first Next.js cutover keeps calculator data local in the browser. Supabase
-cloud sync should be reconnected in the Next app before asking users to rely on
-cross-device profile backup.
+The app remains local-first. When a user signs in, the device state is merged
+with the user's cloud snapshot and later changes are backed up automatically.
 
 ## 4. Data Model
 
 Cloud sync is opt-in. The current app stores local data first, then users can
 sign in and choose to back up this device.
 
-Synced data:
+The versioned `app_snapshots.payload` stores:
 
 - Personal finance profile
 - Saved home/consumer loan scenarios
-- Ongoing loans
+- Calculator form drafts and last-used calculator
 - App language setting
-- Consent and sync event metadata
+
+Shared identity and cloud-sync consent are stored separately in `profiles` and
+`user_consents`. This gives future Spectra apps a common account boundary while
+keeping each app's state isolated by `app_id`.
 
 Do not store NRIC, bank account numbers, card numbers, OTPs, payslips, or
 official loan documents.

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { CalculatorKey } from '@/lib/calculators';
 import type {
   DetailKey, FormState, PersonalProfile, SalaryProfile, SavedScenario, TabKey,
@@ -23,6 +23,8 @@ import { LegalScreen } from '@/components/screens/LegalScreen';
 import { PersonalProfileScreen } from '@/components/screens/PersonalProfileScreen';
 import { AddSalaryProfileScreen } from '@/components/screens/AddSalaryProfileScreen';
 import { LegalConsentGate, LEGAL_CONSENT_KEY, LEGAL_CONSENT_VERSION } from '@/components/LegalConsentGate';
+import { useCloudSync } from '@/hooks/useCloudSync';
+import type { CloudPayload } from '@/lib/cloud-sync';
 
 const STORAGE_KEY = 'spectra_app_state_v2';
 
@@ -74,6 +76,27 @@ function SpectraExperience() {
     };
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   }, [hydrated, language, forms, lastCalculator, personalProfile, salaryProfiles, savedScenarios]);
+
+  const cloudPayload = useMemo<CloudPayload>(() => ({
+    language, forms, lastCalculator, personalProfile, salaryProfiles, savedScenarios,
+  }), [language, forms, lastCalculator, personalProfile, salaryProfiles, savedScenarios]);
+
+  const applyCloudState = useCallback((cloud: CloudPayload) => {
+    if (['en', 'bm', 'zh', 'ta'].includes(cloud.language)) setLanguage(cloud.language);
+    if (calculatorOrder.includes(cloud.lastCalculator)) setLastCalculator(cloud.lastCalculator);
+    setForms(Object.fromEntries(calculatorOrder.map((key) => [
+      key, { ...calculatorDefaults[key], ...(cloud.forms?.[key] ?? {}) },
+    ])) as Record<CalculatorKey, FormState>);
+    setPersonalProfile(cloud.personalProfile ?? null);
+    setSalaryProfiles(Array.isArray(cloud.salaryProfiles) ? cloud.salaryProfiles.slice(0, 15) : []);
+    setSavedScenarios(Array.isArray(cloud.savedScenarios) ? cloud.savedScenarios : []);
+  }, []);
+
+  const cloud = useCloudSync({
+    enabled: hydrated && hasLegalConsent === true,
+    payload: cloudPayload,
+    onCloudState: applyCloudState,
+  });
 
   function changeTab(next: TabKey) {
     setTab(next);
@@ -131,7 +154,7 @@ function SpectraExperience() {
       case 'language':
         return <LanguageScreen language={language} onChange={setLanguage} />;
       case 'account':
-        return <AccountScreen />;
+        return <AccountScreen cloud={cloud} />;
       case 'remove-ads':
         return <RemoveAdsScreen />;
       case 'app-icon':
@@ -148,7 +171,7 @@ function SpectraExperience() {
       case 'saved':
         return <SavedScreen salaryProfiles={salaryProfiles} scenarios={savedScenarios} onAddSalary={() => setDetail('add-salary-profile')} onDeleteScenario={(id) => setSavedScenarios((current) => current.filter((item) => item.id !== id))} />;
       case 'settings':
-        return <SettingsScreen language={language} hasProfile={Boolean(personalProfile)} onOpen={openSettingsDetail} />;
+        return <SettingsScreen language={language} hasProfile={Boolean(personalProfile)} accountStatus={cloud.session ? cloud.syncState : 'Not signed in'} onOpen={openSettingsDetail} />;
     }
   }
 
