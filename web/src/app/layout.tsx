@@ -6,8 +6,8 @@ export const metadata: Metadata = {
   description: "Spectra's Malaysia-focused finance planning calculator.",
   manifest: '/manifest.webmanifest',
   icons: {
-    icon: '/favicon.png',
-    apple: '/icons/Icon-192.png',
+    icon: '/spectra-ring-favicon.png',
+    apple: '/icons/spectra-ring-192.png',
   },
 };
 

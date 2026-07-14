@@ -46,7 +46,7 @@ export function SettingsScreen({ language, hasProfile, onOpen }: {
       <SettingsGroup title="More">
         <SettingsRow icon={<Shield size={19} />} label="Legal & privacy" value="Terms and data" onClick={() => onOpen('legal')} />
         <SettingsRow icon={<Sparkles size={19} />} label="Remove ads" action="Go ad-free" onClick={() => onOpen('remove-ads')} />
-        <SettingsRow icon={<Scale size={19} />} label="About Spectra" value="Official release" />
+        <SettingsRow icon={<Scale size={19} />} label="About Spectra" value="spectramsia.com" href="https://spectramsia.com/" />
       </SettingsGroup>
       <footer className="settings-footer">Developed by Spectrality Enterprise</footer>
     </div>

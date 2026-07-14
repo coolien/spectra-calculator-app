@@ -22,6 +22,7 @@ import { AppIconScreen } from '@/components/screens/AppIconScreen';
 import { LegalScreen } from '@/components/screens/LegalScreen';
 import { PersonalProfileScreen } from '@/components/screens/PersonalProfileScreen';
 import { AddSalaryProfileScreen } from '@/components/screens/AddSalaryProfileScreen';
+import { LegalConsentGate, LEGAL_CONSENT_KEY, LEGAL_CONSENT_VERSION } from '@/components/LegalConsentGate';
 
 const STORAGE_KEY = 'spectra_app_state_v2';
 
@@ -39,6 +40,7 @@ function SpectraExperience() {
   const [salaryProfiles, setSalaryProfiles] = useState<SalaryProfile[]>([]);
   const [savedScenarios, setSavedScenarios] = useState<SavedScenario[]>([]);
   const [hydrated, setHydrated] = useState(false);
+  const [hasLegalConsent, setHasLegalConsent] = useState<boolean | null>(null);
 
   useEffect(() => {
     try {
@@ -55,6 +57,12 @@ function SpectraExperience() {
       if (Array.isArray(saved.savedScenarios)) setSavedScenarios(saved.savedScenarios);
     } catch {
       // Invalid older data is ignored and replaced after the first edit.
+    }
+    try {
+      const consent = JSON.parse(window.localStorage.getItem(LEGAL_CONSENT_KEY) ?? '{}') as { version?: string };
+      setHasLegalConsent(consent.version === LEGAL_CONSENT_VERSION);
+    } catch {
+      setHasLegalConsent(false);
     }
     setHydrated(true);
   }, []);
@@ -92,6 +100,14 @@ function SpectraExperience() {
 
   function updateCalculatorField(key: CalculatorKey, field: string, value: string) {
     setForms((current) => ({ ...current, [key]: { ...current[key], [field]: value } }));
+  }
+
+  function acceptLegalTerms() {
+    window.localStorage.setItem(LEGAL_CONSENT_KEY, JSON.stringify({
+      version: LEGAL_CONSENT_VERSION,
+      acceptedAt: new Date().toISOString(),
+    }));
+    setHasLegalConsent(true);
   }
 
   function renderScreen() {
@@ -141,6 +157,7 @@ function SpectraExperience() {
       <TopBar isProfileOpen={detail === 'profile'} onProfileToggle={toggleProfile} />
       <div className="app-content">{renderScreen()}</div>
       <TabBar active={tab} onChange={changeTab} />
+      {hasLegalConsent === false && <LegalConsentGate onAccept={acceptLegalTerms} />}
     </main>
   );
 }
