@@ -1,4 +1,4 @@
-import type { CalculatorKey, CalculatorResult, FaraidResult } from '@/lib/calculators';
+import type { CalculatorKey, CalculatorResult, ComparisonSnapshot, FaraidResult } from '@/lib/calculators';
 
 export type TabKey = 'home' | 'calculators' | 'saved' | 'settings';
 
@@ -43,6 +43,7 @@ export type SavedScenario = {
   result: string;
   secondary: string;
   savedAt: string;
+  comparison?: ComparisonSnapshot;
 };
 
 export type FieldOption = {

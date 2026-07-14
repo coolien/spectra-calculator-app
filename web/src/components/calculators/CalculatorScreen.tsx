@@ -48,6 +48,7 @@ export function CalculatorScreen({
       result: result.primaryValue,
       secondary: secondary?.value ?? '',
       savedAt: new Intl.DateTimeFormat('en-MY', { day: 'numeric', month: 'short' }).format(new Date()),
+      comparison: result.comparison,
     };
     onSave(scenario);
     setSaved(true);
@@ -56,7 +57,7 @@ export function CalculatorScreen({
   return (
     <div className="calculator-screen">
       <div className="screen-scroll">
-        <ScreenHeading title={schema.screenTitle} subtitle="Estimates in MYR · review official quotes before deciding" />
+        <ScreenHeading title={schema.screenTitle} subtitle="Estimates in MYR - review official quotes before deciding" />
         {schema.disclaimer && <div className="faraid-disclaimer"><strong>Important</strong><p>{schema.disclaimer}</p></div>}
         <CalculatorForm schema={schema} form={form} onChange={(key, value) => { setSaved(false); onChange(key, value); }} />
         <p className="scroll-hint">Calculate to review the full breakdown</p>
@@ -64,9 +65,9 @@ export function CalculatorScreen({
       </div>
       <StickyResultBar
         primaryLabel={result?.title ?? 'Result'}
-        primaryValue={result?.primaryValue ?? '—'}
+        primaryValue={result?.primaryValue ?? '-'}
         secondaryLabel={schema.secondaryLabel}
-        secondaryValue={secondary?.value ?? '—'}
+        secondaryValue={secondary?.value ?? '-'}
         error={'error' in outcome ? outcome.error : undefined}
         saved={saved}
         calculated={calculated}

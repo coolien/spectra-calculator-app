@@ -11,6 +11,13 @@ export type ResultMetric = {
   value: string;
 };
 
+export type ComparisonSnapshot = {
+  monthlyPayment: number;
+  totalRepayment: number;
+  upfrontCash: number;
+  durationMonths: number | null;
+};
+
 export type CalculatorResult = {
   title: string;
   primaryValue: string;
@@ -18,6 +25,7 @@ export type CalculatorResult = {
   metrics: ResultMetric[];
   notes: string[];
   rows?: ResultMetric[];
+  comparison?: ComparisonSnapshot;
 };
 
 export type HomeLoanInput = {
@@ -135,6 +143,12 @@ export function calculateHomeLoan(input: HomeLoanInput): CalculatorResult {
       'Uses a standard reducing-balance installment estimate.',
       'Stamp duty and professional fees are planning estimates. Replace them with official quotes when available.',
     ],
+    comparison: {
+      monthlyPayment: monthlyInstallment,
+      totalRepayment,
+      upfrontCash,
+      durationMonths: input.tenureYears * 12,
+    },
   };
 }
 
@@ -171,6 +185,12 @@ export function calculateCarLoan(input: CarLoanInput): CalculatorResult {
       'Malaysia car hire purchase quotes commonly use flat-rate interest.',
       'The effective rate helps compare against reducing-balance financing.',
     ],
+    comparison: {
+      monthlyPayment: monthlyInstallment,
+      totalRepayment,
+      upfrontCash: downPayment + input.upfrontFees,
+      durationMonths: input.tenureYears * 12,
+    },
   };
 }
 
@@ -208,6 +228,12 @@ export function calculatePersonalLoan(input: PersonalLoanInput): CalculatorResul
     notes: [
       'Actual bank quotes may include fees, rebates, insurance, settlement rules, and different rounding.',
     ],
+    comparison: {
+      monthlyPayment: monthlyInstallment,
+      totalRepayment,
+      upfrontCash: stampDuty + input.upfrontFees,
+      durationMonths: input.tenureYears * 12,
+    },
   };
 }
 
@@ -247,6 +273,12 @@ export function calculateCreditCard(input: CreditCardInput): CalculatorResult {
         : 'Minimum-payment projection recalculates each month from the editable assumptions.',
       'Actual statement cycles, compounding, fees, and promotions can differ.',
     ],
+    comparison: {
+      monthlyPayment: input.monthlyPayment,
+      totalRepayment: fixed.totalPaid,
+      upfrontCash: 0,
+      durationMonths: fixed.isPaidOff ? fixed.months : null,
+    },
   };
 }
 
@@ -291,6 +323,12 @@ export function calculatePtptn(input: PtptnInput): CalculatorResult {
     notes: [
       'PTPTN statements and official schedules should be checked for actual service charge treatment.',
     ],
+    comparison: {
+      monthlyPayment: planned,
+      totalRepayment,
+      upfrontCash: 0,
+      durationMonths: simulated.months,
+    },
   };
 }
 
