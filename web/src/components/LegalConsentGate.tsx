@@ -6,7 +6,7 @@ import { RingLogo } from '@/components/ui/RingLogo';
 import { useTheme } from '@/components/app-shell/ThemeProvider';
 
 export const LEGAL_CONSENT_KEY = 'spectra_legal_consent';
-export const LEGAL_CONSENT_VERSION = '2026-07-14-cloud-v1';
+export const LEGAL_CONSENT_VERSION = '2026-07-14-cloud-v2';
 
 export function LegalConsentGate({ onAccept }: { onAccept: () => void }) {
   const [agreed, setAgreed] = useState(false);
@@ -32,7 +32,7 @@ export function LegalConsentGate({ onAccept }: { onAccept: () => void }) {
           </div>
           <div>
             <strong>Privacy notice</strong>
-            <p>Your data stays in this browser unless you choose to sign in. When cloud sync is enabled, your profile and saved scenarios are sent to Spectra's Supabase account storage. Service providers also process technical logs needed to deliver and secure the website.</p>
+            <p>Your data stays in this browser unless you choose to sign in. When cloud sync is enabled, your profile, saved scenarios, and active-loan records are sent to Spectra's Supabase account storage. Service providers also process technical logs needed to deliver and secure the website.</p>
             <small>Data anda kekal dalam pelayar ini melainkan anda memilih untuk log masuk. Apabila penyelarasan awan diaktifkan, profil dan senario tersimpan dihantar ke storan akaun Supabase Spectra.</small>
           </div>
         </div>

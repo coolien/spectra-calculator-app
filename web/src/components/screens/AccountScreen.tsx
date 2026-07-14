@@ -28,7 +28,7 @@ export function AccountScreen({ cloud }: { cloud: CloudController }) {
 
   return (
     <div className="standard-screen">
-      <ScreenHeading title="Account & cloud sync" subtitle="One free account keeps your profile and scenarios backed up everywhere." />
+      <ScreenHeading title="Account & cloud sync" subtitle="One free account keeps your profile, loans, and scenarios backed up everywhere." />
       {!cloud.configured ? (
         <section className="auth-card cloud-unavailable">
           <div className="auth-title"><span><CloudOff size={21} /></span><strong>Cloud setup pending</strong></div>
@@ -59,7 +59,7 @@ export function AccountScreen({ cloud }: { cloud: CloudController }) {
       )}
       <section className="why-account">
         <span><ShieldCheck size={20} /></span>
-        <div><h2>Local first, cloud when you choose</h2><p>Spectra works without an account. Signing in backs up your profile and saved scenarios so another device can restore them.</p><strong>Never enter NRIC, card numbers, OTPs, or official loan documents.</strong></div>
+        <div><h2>Local first, cloud when you choose</h2><p>Spectra works without an account. Signing in backs up your profile, active loans, and saved scenarios so another device can restore them.</p><strong>Never enter NRIC, card numbers, OTPs, or official loan documents.</strong></div>
       </section>
       <button className="secondary-action account-export" type="button" onClick={cloud.exportData}><Download size={17} />Export my Spectra data</button>
     </div>

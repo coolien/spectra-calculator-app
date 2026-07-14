@@ -1,11 +1,11 @@
 import type { Session, SupabaseClient } from '@supabase/supabase-js';
-import type { FormState, PersonalProfile, SalaryProfile, SavedScenario } from '@/lib/app-model';
+import type { ActiveLoan, FormState, PersonalProfile, SalaryProfile, SavedScenario } from '@/lib/app-model';
 import type { CalculatorKey } from '@/lib/calculators';
 import type { Language } from '@/lib/i18n';
 
 export const SPECTRA_APP_ID = 'spectra-calculator';
-export const CLOUD_SCHEMA_VERSION = 1;
-export const CLOUD_CONSENT_VERSION = 'cloud-sync-v1-2026-07-14';
+export const CLOUD_SCHEMA_VERSION = 2;
+export const CLOUD_CONSENT_VERSION = 'cloud-sync-v2-2026-07-14';
 
 export type CloudPayload = {
   language: Language;
@@ -14,6 +14,7 @@ export type CloudPayload = {
   personalProfile: PersonalProfile | null;
   salaryProfiles: SalaryProfile[];
   savedScenarios: SavedScenario[];
+  activeLoans: ActiveLoan[];
 };
 
 export type CloudSnapshot = {
@@ -82,6 +83,9 @@ export function mergeCloudPayload(local: CloudPayload, cloud: CloudPayload): Clo
   const savedScenarios = mergeById(cloud.savedScenarios, local.savedScenarios, (left, right) => {
     return Date.parse(right.savedAt) >= Date.parse(left.savedAt) ? right : left;
   });
+  const activeLoans = mergeById(cloud.activeLoans ?? [], local.activeLoans ?? [], (left, right) => {
+    return Date.parse(right.updatedAt) >= Date.parse(left.updatedAt) ? right : left;
+  });
 
   return {
     language: cloud.language ?? local.language,
@@ -90,6 +94,7 @@ export function mergeCloudPayload(local: CloudPayload, cloud: CloudPayload): Clo
     personalProfile: cloud.personalProfile ?? local.personalProfile,
     salaryProfiles: salaryProfiles.slice(0, 15),
     savedScenarios,
+    activeLoans,
   };
 }
 

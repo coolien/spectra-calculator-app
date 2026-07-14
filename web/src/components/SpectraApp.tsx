@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { CalculatorKey } from '@/lib/calculators';
 import type {
-  DetailKey, FormState, PersonalProfile, SalaryProfile, SavedScenario, TabKey,
+  ActiveLoan, DetailKey, FormState, PersonalProfile, SalaryProfile, SavedScenario, TabKey,
 } from '@/lib/app-model';
 import type { Language } from '@/lib/i18n';
 import { ThemeProvider } from '@/components/app-shell/ThemeProvider';
@@ -22,6 +22,7 @@ import { AppIconScreen } from '@/components/screens/AppIconScreen';
 import { LegalScreen } from '@/components/screens/LegalScreen';
 import { PersonalProfileScreen } from '@/components/screens/PersonalProfileScreen';
 import { AddSalaryProfileScreen } from '@/components/screens/AddSalaryProfileScreen';
+import { ActiveLoansScreen } from '@/components/screens/ActiveLoansScreen';
 import { LegalConsentGate, LEGAL_CONSENT_KEY, LEGAL_CONSENT_VERSION } from '@/components/LegalConsentGate';
 import { useCloudSync } from '@/hooks/useCloudSync';
 import type { CloudPayload } from '@/lib/cloud-sync';
@@ -41,6 +42,8 @@ function SpectraExperience() {
   const [personalProfile, setPersonalProfile] = useState<PersonalProfile | null>(null);
   const [salaryProfiles, setSalaryProfiles] = useState<SalaryProfile[]>([]);
   const [savedScenarios, setSavedScenarios] = useState<SavedScenario[]>([]);
+  const [activeLoans, setActiveLoans] = useState<ActiveLoan[]>([]);
+  const [trackingScenario, setTrackingScenario] = useState<SavedScenario | null>(null);
   const [hydrated, setHydrated] = useState(false);
   const [hasLegalConsent, setHasLegalConsent] = useState<boolean | null>(null);
 
@@ -57,6 +60,7 @@ function SpectraExperience() {
       if (saved.personalProfile) setPersonalProfile(saved.personalProfile);
       if (Array.isArray(saved.salaryProfiles)) setSalaryProfiles(saved.salaryProfiles.slice(0, 15));
       if (Array.isArray(saved.savedScenarios)) setSavedScenarios(saved.savedScenarios);
+      if (Array.isArray(saved.activeLoans)) setActiveLoans(saved.activeLoans);
     } catch {
       // Invalid older data is ignored and replaced after the first edit.
     }
@@ -72,14 +76,14 @@ function SpectraExperience() {
   useEffect(() => {
     if (!hydrated) return;
     const state: PersistedState = {
-      language, forms, lastCalculator, personalProfile, salaryProfiles, savedScenarios,
+      language, forms, lastCalculator, personalProfile, salaryProfiles, savedScenarios, activeLoans,
     };
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-  }, [hydrated, language, forms, lastCalculator, personalProfile, salaryProfiles, savedScenarios]);
+  }, [hydrated, language, forms, lastCalculator, personalProfile, salaryProfiles, savedScenarios, activeLoans]);
 
   const cloudPayload = useMemo<CloudPayload>(() => ({
-    language, forms, lastCalculator, personalProfile, salaryProfiles, savedScenarios,
-  }), [language, forms, lastCalculator, personalProfile, salaryProfiles, savedScenarios]);
+    language, forms, lastCalculator, personalProfile, salaryProfiles, savedScenarios, activeLoans,
+  }), [language, forms, lastCalculator, personalProfile, salaryProfiles, savedScenarios, activeLoans]);
 
   const applyCloudState = useCallback((cloud: CloudPayload) => {
     if (['en', 'bm', 'zh', 'ta'].includes(cloud.language)) setLanguage(cloud.language);
@@ -90,6 +94,7 @@ function SpectraExperience() {
     setPersonalProfile(cloud.personalProfile ?? null);
     setSalaryProfiles(Array.isArray(cloud.salaryProfiles) ? cloud.salaryProfiles.slice(0, 15) : []);
     setSavedScenarios(Array.isArray(cloud.savedScenarios) ? cloud.savedScenarios : []);
+    setActiveLoans(Array.isArray(cloud.activeLoans) ? cloud.activeLoans : []);
   }, []);
 
   const cloud = useCloudSync({
@@ -106,6 +111,11 @@ function SpectraExperience() {
   function openCalculator(key: CalculatorKey) {
     setLastCalculator(key);
     setDetail(key);
+  }
+
+  function openLoanTracker(scenario: SavedScenario | null = null) {
+    setTrackingScenario(scenario);
+    setDetail('active-loans');
   }
 
   function openSettingsDetail(screen: Exclude<DetailKey, CalculatorKey | 'add-salary-profile'>) {
@@ -151,6 +161,8 @@ function SpectraExperience() {
         return <PersonalProfileScreen profile={personalProfile} onSave={setPersonalProfile} />;
       case 'add-salary-profile':
         return <AddSalaryProfileScreen count={salaryProfiles.length} onSave={(profile) => { setSalaryProfiles((current) => [...current, profile].slice(0, 15)); setTab('saved'); setDetail(null); }} />;
+      case 'active-loans':
+        return <ActiveLoansScreen loans={activeLoans} initialScenario={trackingScenario} onConsumeScenario={() => setTrackingScenario(null)} onSave={(loan) => setActiveLoans((current) => [loan, ...current.filter((item) => item.id !== loan.id)])} onDelete={(id) => setActiveLoans((current) => current.filter((loan) => loan.id !== id))} />;
       case 'language':
         return <LanguageScreen language={language} onChange={setLanguage} />;
       case 'account':
@@ -165,11 +177,11 @@ function SpectraExperience() {
 
     switch (tab) {
       case 'home':
-        return <HomeScreen profile={personalProfile} lastCalculator={lastCalculator} onOpenCalculator={openCalculator} onOpenProfile={() => setDetail('profile')} onSeeAll={() => changeTab('calculators')} />;
+        return <HomeScreen profile={personalProfile} activeLoans={activeLoans} lastCalculator={lastCalculator} onOpenCalculator={openCalculator} onOpenProfile={() => setDetail('profile')} onOpenActiveLoans={() => openLoanTracker()} onSeeAll={() => changeTab('calculators')} />;
       case 'calculators':
         return <CalculatorsScreen onOpen={openCalculator} />;
       case 'saved':
-        return <SavedScreen salaryProfiles={salaryProfiles} scenarios={savedScenarios} onAddSalary={() => setDetail('add-salary-profile')} onDeleteScenario={(id) => setSavedScenarios((current) => current.filter((item) => item.id !== id))} />;
+        return <SavedScreen salaryProfiles={salaryProfiles} scenarios={savedScenarios} onAddSalary={() => setDetail('add-salary-profile')} onTrackScenario={(scenario) => openLoanTracker(scenario)} onOpenActiveLoans={() => openLoanTracker()} onDeleteScenario={(id) => setSavedScenarios((current) => current.filter((item) => item.id !== id))} />;
       case 'settings':
         return <SettingsScreen language={language} hasProfile={Boolean(personalProfile)} accountStatus={cloud.session ? cloud.syncState : 'Not signed in'} onOpen={openSettingsDetail} />;
     }
@@ -192,6 +204,7 @@ type PersistedState = {
   personalProfile: PersonalProfile | null;
   salaryProfiles: SalaryProfile[];
   savedScenarios: SavedScenario[];
+  activeLoans: ActiveLoan[];
 };
 
 function isCalculatorKey(value: DetailKey): value is CalculatorKey {

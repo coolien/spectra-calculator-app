@@ -113,7 +113,7 @@ export function useCloudSync({ enabled, payload, onCloudState }: {
   function exportData() {
     const blob = new Blob([JSON.stringify({
       app: 'Spectra Calculator',
-      schemaVersion: 1,
+      schemaVersion: 2,
       exportedAt: new Date().toISOString(),
       data: payloadRef.current,
     }, null, 2)], { type: 'application/json' });

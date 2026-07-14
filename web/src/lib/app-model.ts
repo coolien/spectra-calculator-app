@@ -5,6 +5,7 @@ export type TabKey = 'home' | 'calculators' | 'saved' | 'settings';
 export type DetailKey =
   | CalculatorKey
   | 'profile'
+  | 'active-loans'
   | 'add-salary-profile'
   | 'language'
   | 'account'
@@ -44,6 +45,21 @@ export type SavedScenario = {
   secondary: string;
   savedAt: string;
   comparison?: ComparisonSnapshot;
+};
+
+export type ActiveLoanType = Exclude<CalculatorKey, 'faraid'> | 'other';
+
+export type ActiveLoan = {
+  id: string;
+  name: string;
+  type: ActiveLoanType;
+  monthlyPayment: number;
+  remainingBalance: number;
+  originalBalance: number;
+  annualRatePercent: number;
+  nextPaymentDate: string;
+  createdAt: string;
+  updatedAt: string;
 };
 
 export type FieldOption = {

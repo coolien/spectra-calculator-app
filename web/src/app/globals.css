@@ -4,10 +4,10 @@
 * { box-sizing: border-box; }
 html, body { margin: 0; min-height: 100%; }
 body { font-family: 'Hanken Grotesk', 'Segoe UI', sans-serif; background: #EDEAE0; }
-button, input { font: inherit; }
+button, input, select { font: inherit; }
 button { color: inherit; }
-button, input, summary { -webkit-tap-highlight-color: transparent; }
-button:focus-visible, input:focus-visible, summary:focus-visible { outline: 3px solid color-mix(in srgb, var(--accent) 35%, transparent); outline-offset: 2px; }
+button, input, select, summary { -webkit-tap-highlight-color: transparent; }
+button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-visible { outline: 3px solid color-mix(in srgb, var(--accent) 35%, transparent); outline-offset: 2px; }
 
 .spectra-root { min-height: 100dvh; display: grid; place-items: center; background: var(--page-bg); color: var(--text); }
 .spectra-app { width: 100%; height: 100dvh; max-width: 720px; display: flex; flex-direction: column; overflow: hidden; background: var(--page-bg); }
@@ -54,6 +54,12 @@ button:focus-visible, input:focus-visible, summary:focus-visible { outline: 3px 
 .continue-card > span:nth-child(2), .calculator-list button > span:nth-child(2), .scenario-list article > span:nth-child(2) { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
 .continue-card strong, .calculator-list strong, .scenario-list strong { font-family: 'Bricolage Grotesque', sans-serif; font-size: 14px; font-weight: 700; }
 .continue-card small, .calculator-list small, .scenario-list small { color: var(--text-muted); font-size: 11.5px; line-height: 1.35; }
+.active-loans-home { width: 100%; min-height: 76px; padding: 12px 14px; border: 1px solid var(--border); border-radius: 18px; display: grid; grid-template-columns: 40px minmax(0, 1fr) minmax(90px, auto) 18px; align-items: center; gap: 10px; text-align: left; background: var(--card); cursor: pointer; }
+.active-loans-home > span:first-child { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; color: var(--accent); background: color-mix(in srgb, var(--accent) 10%, var(--chip)); }
+.active-loans-home > span:not(:first-child) { min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.active-loans-home strong { overflow-wrap: anywhere; font-family: 'Bricolage Grotesque', sans-serif; font-size: 13px; }
+.active-loans-home small { color: var(--text-muted); font-size: 10.5px; }
+.active-loans-home .active-loans-empty { grid-column: 2 / 4; }
 
 .calculator-icon { width: 44px; height: 44px; border-radius: 14px; }
 .icon-home { color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, var(--card)); }
@@ -62,6 +68,7 @@ button:focus-visible, input:focus-visible, summary:focus-visible { outline: 3px 
 .icon-credit { color: #B8402E; background: #F9E4E4; }
 .icon-ptptn { color: #9A6110; background: #F7EEDA; }
 .icon-faraid { color: #526057; background: var(--chip); }
+.icon-other { color: #526057; background: var(--chip); }
 .theme-dark .icon-car, .theme-dark .icon-personal, .theme-dark .icon-credit, .theme-dark .icon-ptptn { background: var(--chip); }
 
 .calculator-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 13px 8px; }
@@ -156,7 +163,7 @@ button:disabled { opacity: .45; cursor: not-allowed; }
 .salary-card b { color: var(--accent); font-family: 'Bricolage Grotesque', sans-serif; font-size: 14px; }
 .new-salary-card { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 7px; color: var(--accent); border-style: dashed; font-weight: 700; cursor: pointer; }
 .scenario-list { display: flex; flex-direction: column; gap: 9px; }
-.scenario-list article { min-height: 68px; padding: 11px 8px 11px 12px; border: 1px solid var(--border); border-radius: 16px; display: grid; grid-template-columns: 38px minmax(0, 1fr) 38px 38px; align-items: center; gap: 8px; background: var(--card); }
+.scenario-list article { min-height: 68px; padding: 11px 8px 11px 12px; border: 1px solid var(--border); border-radius: 16px; display: grid; grid-template-columns: 38px minmax(0, 1fr) 38px 38px 38px; align-items: center; gap: 6px; background: var(--card); }
 .scenario-list article.is-selected { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
 .scenario-list .calculator-icon { width: 38px; height: 38px; border-radius: 12px; }
 .scenario-list button { width: 38px; height: 38px; border: 0; border-radius: 11px; display: grid; place-items: center; color: var(--text-muted); background: transparent; cursor: pointer; }
@@ -231,7 +238,40 @@ button:disabled { opacity: .45; cursor: not-allowed; }
 .auth-title small { overflow: hidden; color: var(--text-muted); font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
 .auth-explainer, .cloud-unavailable p { margin: 0; color: var(--text-secondary); font-size: 11.5px; line-height: 1.5; }
 .simple-field { display: flex; flex-direction: column; gap: 6px; }
-.simple-field > input { width: 100%; min-height: 47px; padding: 0 13px; border: 1px solid var(--border); border-radius: 13px; outline: 0; color: var(--text); background: var(--page-bg); }
+.simple-field > input, .simple-field > select { width: 100%; min-height: 47px; padding: 0 13px; border: 1px solid var(--border); border-radius: 13px; outline: 0; color: var(--text); background: var(--page-bg); }
+.loan-summary { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border: 1px solid var(--border); border-radius: 18px; overflow: hidden; background: var(--card); }
+.loan-summary div { min-width: 0; padding: 14px 11px; border-left: 1px solid var(--border); display: flex; flex-direction: column; gap: 3px; }
+.loan-summary div:first-child { border-left: 0; }
+.loan-summary span { color: var(--text-muted); font-size: 10px; }
+.loan-summary strong { overflow-wrap: anywhere; color: var(--accent); font-family: 'Bricolage Grotesque', sans-serif; font-size: 13px; }
+.loan-form { padding: 15px; border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--border)); border-radius: 18px; display: flex; flex-direction: column; gap: 12px; background: var(--card); }
+.loan-form-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.loan-form-heading > div { display: flex; align-items: center; gap: 8px; color: var(--accent); }
+.loan-form-heading strong { color: var(--text); font-family: 'Bricolage Grotesque', sans-serif; font-size: 14px; }
+.loan-form-heading button, .active-loan-heading button { width: 36px; height: 36px; border: 0; border-radius: 10px; display: grid; place-items: center; color: var(--text-muted); background: var(--chip); cursor: pointer; }
+.loan-form > p { margin: 0; color: var(--text-muted); font-size: 11px; line-height: 1.45; }
+.loan-form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 11px 9px; }
+.input-with-prefix, .input-with-suffix { min-height: 47px; padding: 0 12px; border: 1px solid var(--border); border-radius: 13px; display: flex; align-items: center; gap: 6px; background: var(--page-bg); }
+.input-with-prefix > span, .input-with-suffix > span { color: var(--text-muted); font-size: 11px; font-weight: 700; }
+.input-with-prefix input, .input-with-suffix input { width: 100%; min-width: 0; height: 43px; padding: 0; border: 0; outline: 0; color: var(--text); background: transparent; }
+.active-loan-list { display: flex; flex-direction: column; gap: 10px; }
+.active-loan-card { padding: 14px; border: 1px solid var(--border); border-radius: 18px; display: flex; flex-direction: column; gap: 11px; background: var(--card); }
+.active-loan-heading { display: grid; grid-template-columns: 40px minmax(0, 1fr) 36px 36px; align-items: center; gap: 8px; }
+.active-loan-heading .calculator-icon { width: 40px; height: 40px; border-radius: 12px; }
+.active-loan-heading > span:nth-child(2) { min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.active-loan-heading strong { overflow: hidden; font-family: 'Bricolage Grotesque', sans-serif; font-size: 13px; text-overflow: ellipsis; white-space: nowrap; }
+.active-loan-heading small { color: var(--text-muted); font-size: 10.5px; }
+.active-loan-balance { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.active-loan-balance span { color: var(--text-muted); font-size: 11px; }
+.active-loan-balance strong { font-family: 'Bricolage Grotesque', sans-serif; font-size: 20px; }
+.loan-progress { height: 6px; overflow: hidden; border-radius: 4px; background: var(--segment); }
+.loan-progress span { display: block; height: 100%; border-radius: inherit; background: var(--accent); }
+.active-loan-metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.active-loan-metrics div { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.active-loan-metrics span { color: var(--text-muted); font-size: 9.5px; }
+.active-loan-metrics strong { overflow-wrap: anywhere; font-size: 11.5px; }
+.next-payment, .loan-warning { min-height: 32px; padding: 7px 9px; border-radius: 10px; display: flex; align-items: center; gap: 7px; color: var(--accent); background: color-mix(in srgb, var(--accent) 8%, var(--page-bg)); font-size: 10.5px; font-weight: 600; }
+.loan-warning { color: #A66A13; background: color-mix(in srgb, #F5B63F 14%, var(--page-bg)); }
 .form-message { margin: 0; padding: 9px 10px; border-radius: 10px; color: var(--accent); background: color-mix(in srgb, var(--accent) 10%, var(--card)); font-size: 11.5px; font-weight: 600; }
 .form-message.is-error { color: #A22D3C; background: #FCE8EA; }
 .cloud-status { min-height: 64px; padding: 11px 12px; border: 1px solid var(--border); border-radius: 14px; display: flex; align-items: center; gap: 10px; color: var(--accent); background: color-mix(in srgb, var(--accent) 8%, var(--page-bg)); }
@@ -302,6 +342,11 @@ button:disabled { opacity: .45; cursor: not-allowed; }
   .accordion-summary { display: none; }
   .settings-value { max-width: 85px; }
   .result-totals strong { font-size: 18px; }
+  .scenario-list article { grid-template-columns: 34px minmax(0, 1fr) 34px 34px 34px; gap: 4px; padding-left: 9px; padding-right: 5px; }
+  .scenario-list button { width: 34px; height: 34px; }
+  .loan-form-grid { grid-template-columns: 1fr; }
+  .active-loans-home { grid-template-columns: 40px minmax(0, 1fr) 18px; }
+  .active-loans-home > span:nth-child(3) { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {

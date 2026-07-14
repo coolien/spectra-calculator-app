@@ -1,16 +1,18 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { Check, Circle, Plus, Scale, Trash2, X } from 'lucide-react';
+import { Check, Circle, Landmark, Plus, Scale, Trash2, X } from 'lucide-react';
 import type { SalaryProfile, SavedScenario } from '@/lib/app-model';
 import { CalculatorIcon } from '@/components/calculators/CalculatorIcon';
 import { ScreenHeading } from '@/components/ui/Controls';
 import { formatRinggit } from '@/lib/profile-math';
 
-export function SavedScreen({ salaryProfiles, scenarios, onAddSalary, onDeleteScenario }: {
+export function SavedScreen({ salaryProfiles, scenarios, onAddSalary, onTrackScenario, onOpenActiveLoans, onDeleteScenario }: {
   salaryProfiles: SalaryProfile[];
   scenarios: SavedScenario[];
   onAddSalary: () => void;
+  onTrackScenario: (scenario: SavedScenario) => void;
+  onOpenActiveLoans: () => void;
   onDeleteScenario: (id: string) => void;
 }) {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -87,6 +89,7 @@ export function SavedScreen({ salaryProfiles, scenarios, onAddSalary, onDeleteSc
                   >
                     {selected ? <Check size={17} /> : <Circle size={17} />}
                   </button>
+                  <button type="button" aria-label={`Track ${scenario.label} as an active loan`} title="Track active loan" disabled={!scenario.comparison || scenario.calculator === 'faraid'} onClick={() => onTrackScenario(scenario)}><Landmark size={17} /></button>
                   <button type="button" aria-label={`Delete ${scenario.label}`} title="Delete scenario" onClick={() => deleteScenario(scenario.id)}><Trash2 size={17} /></button>
                 </article>
               );
@@ -98,6 +101,9 @@ export function SavedScreen({ salaryProfiles, scenarios, onAddSalary, onDeleteSc
         )}
         <button className="secondary-action compare-action" type="button" disabled={selectedScenarios.length < 2} onClick={() => setComparisonOpen(true)}>
           <Scale size={17} /> Compare selected
+        </button>
+        <button className="secondary-action compare-action" type="button" onClick={onOpenActiveLoans}>
+          <Landmark size={17} /> View active loans
         </button>
       </section>
     </div>
