@@ -83,7 +83,7 @@ function isVersionedAppFile(requestUrl) {
 async function networkFirst(request, fallbackUrl) {
   const cache = await caches.open(CACHE_NAME);
   try {
-    const response = await fetch(request);
+    const response = await fetch(new Request(request, { cache: "no-store" }));
     if (response.ok) {
       cache.put(request, response.clone());
     }
@@ -106,14 +106,14 @@ async function networkFirst(request, fallbackUrl) {
 }
 
 async function cacheFirst(request) {
-  const cached = await caches.match(request);
+  const cache = await caches.open(CACHE_NAME);
+  const cached = await cache.match(request);
   if (cached) {
     return cached;
   }
 
   const response = await fetch(request);
   if (response.ok) {
-    const cache = await caches.open(CACHE_NAME);
     cache.put(request, response.clone());
   }
   return response;

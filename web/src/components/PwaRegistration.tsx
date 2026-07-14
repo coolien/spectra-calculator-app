@@ -19,7 +19,7 @@ export function PwaRegistration() {
       window.location.reload();
     });
 
-    window.addEventListener('load', () => {
+    const register = () => {
       navigator.serviceWorker.register('/sw.js').then((registration) => {
         registration.update();
 
@@ -40,7 +40,15 @@ export function PwaRegistration() {
           });
         });
       });
-    });
+    };
+
+    if (document.readyState === 'complete') {
+      register();
+    } else {
+      window.addEventListener('load', register, { once: true });
+    }
+
+    return () => window.removeEventListener('load', register);
   }, []);
 
   return null;
