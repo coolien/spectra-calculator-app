@@ -28,6 +28,10 @@ writeFileSync(
 );
 
 function resolveBuildId() {
+  if (process.argv.includes('--dev')) {
+    return sanitizeBuildId(`dev-${Date.now()}`);
+  }
+
   const environmentBuildId =
     process.env.SPECTRA_BUILD_ID ||
     process.env.CF_PAGES_COMMIT_SHA ||

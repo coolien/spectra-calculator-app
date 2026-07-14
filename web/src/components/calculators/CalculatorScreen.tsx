@@ -9,6 +9,7 @@ import { CalculatorForm } from '@/components/calculators/CalculatorForm';
 import { CalculatorResult } from '@/components/calculators/CalculatorResult';
 import { StickyResultBar } from '@/components/calculators/StickyResultBar';
 import { ScreenHeading } from '@/components/ui/Controls';
+import { useI18n } from '@/components/app-shell/I18nProvider';
 
 export function CalculatorScreen({
   calculator, form, onChange, onReset, onSave,
@@ -19,6 +20,7 @@ export function CalculatorScreen({
   onReset: () => void;
   onSave: (scenario: SavedScenario) => void;
 }) {
+  const { language, t } = useI18n();
   const schema = calculatorSchemas[calculator];
   const [calculated, setCalculated] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -27,9 +29,9 @@ export function CalculatorScreen({
     try {
       return { result: calculateFromForm(calculator, form) };
     } catch (error) {
-      return { error: error instanceof Error ? error.message : 'Check the input values.' };
+      return { error: t(error instanceof Error ? error.message : 'Check the input values.') };
     }
-  }, [calculator, form]);
+  }, [calculator, form, t]);
 
   const result = 'result' in outcome ? outcome.result : null;
   const secondary = result?.metrics[schema.secondaryMetricIndex];
@@ -44,10 +46,10 @@ export function CalculatorScreen({
     const scenario: SavedScenario = {
       id: `${calculator}-${Date.now()}`,
       calculator,
-      label: `${schema.title} scenario`,
+      label: `${t(schema.title)} - ${t('saved plan')}`,
       result: result.primaryValue,
       secondary: secondary?.value ?? '',
-      savedAt: new Intl.DateTimeFormat('en-MY', { day: 'numeric', month: 'short' }).format(new Date()),
+      savedAt: new Intl.DateTimeFormat(language === 'bm' ? 'ms-MY' : language === 'zh' ? 'zh-MY' : language === 'ta' ? 'ta-MY' : 'en-MY', { day: 'numeric', month: 'short' }).format(new Date()),
       comparison: result.comparison,
     };
     onSave(scenario);
@@ -58,15 +60,15 @@ export function CalculatorScreen({
     <div className="calculator-screen">
       <div className="screen-scroll">
         <ScreenHeading title={schema.screenTitle} subtitle="Estimates in MYR - review official quotes before deciding" />
-        {schema.disclaimer && <div className="faraid-disclaimer"><strong>Important</strong><p>{schema.disclaimer}</p></div>}
+        {schema.disclaimer && <div className="faraid-disclaimer"><strong>{t('Important')}</strong><p>{t(schema.disclaimer)}</p></div>}
         <CalculatorForm schema={schema} form={form} onChange={(key, value) => { setSaved(false); onChange(key, value); }} />
-        <p className="scroll-hint">Calculate to review the full breakdown</p>
+        <p className="scroll-hint">{t('Calculate to review the full breakdown')}</p>
         {calculated && result && <div ref={resultRef}><CalculatorResult result={result} /></div>}
       </div>
       <StickyResultBar
-        primaryLabel={result?.title ?? 'Result'}
+        primaryLabel={t(result?.title ?? 'Result')}
         primaryValue={result?.primaryValue ?? '-'}
-        secondaryLabel={schema.secondaryLabel}
+        secondaryLabel={t(schema.secondaryLabel)}
         secondaryValue={secondary?.value ?? '-'}
         error={'error' in outcome ? outcome.error : undefined}
         saved={saved}

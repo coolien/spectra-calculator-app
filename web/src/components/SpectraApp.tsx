@@ -7,6 +7,7 @@ import type {
 } from '@/lib/app-model';
 import type { Language } from '@/lib/i18n';
 import { ThemeProvider } from '@/components/app-shell/ThemeProvider';
+import { I18nProvider } from '@/components/app-shell/I18nProvider';
 import { TopBar } from '@/components/app-shell/TopBar';
 import { TabBar } from '@/components/app-shell/TabBar';
 import { calculatorDefaults, calculatorOrder } from '@/components/calculators/schemas';
@@ -188,12 +189,12 @@ function SpectraExperience() {
   }
 
   return (
-    <main className="spectra-app">
+    <I18nProvider language={language}><main className="spectra-app">
       <TopBar isProfileOpen={detail === 'profile'} onProfileToggle={toggleProfile} />
       <div className="app-content">{renderScreen()}</div>
       <TabBar active={tab} onChange={changeTab} />
       {hasLegalConsent === false && <LegalConsentGate onAccept={acceptLegalTerms} />}
-    </main>
+    </main></I18nProvider>
   );
 }
 

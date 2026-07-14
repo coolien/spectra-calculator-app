@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "predev": "node scripts/prepare-pwa.mjs",
+    "predev": "node scripts/prepare-pwa.mjs --dev",
     "dev": "next dev",
     "prebuild": "node scripts/prepare-pwa.mjs",
     "build": "next build",

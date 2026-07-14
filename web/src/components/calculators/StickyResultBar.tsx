@@ -1,4 +1,5 @@
 import { Bookmark, RotateCcw } from 'lucide-react';
+import { useI18n } from '@/components/app-shell/I18nProvider';
 
 export function StickyResultBar({
   primaryLabel, primaryValue, secondaryLabel, secondaryValue, saved, error,
@@ -8,6 +9,7 @@ export function StickyResultBar({
   saved: boolean; error?: string; calculated: boolean;
   onSave: () => void; onReset: () => void; onCalculate: () => void;
 }) {
+  const { t } = useI18n();
   return (
     <div className="sticky-result-bar">
       {error ? <div className="result-error">{error}</div> : (
@@ -17,12 +19,12 @@ export function StickyResultBar({
         </div>
       )}
       <div className="result-actions">
-        <button className={saved ? 'icon-action is-saved' : 'icon-action'} type="button" onClick={onSave} aria-label="Save result" disabled={Boolean(error)}>
+        <button className={saved ? 'icon-action is-saved' : 'icon-action'} type="button" onClick={onSave} aria-label={t('Save result')} disabled={Boolean(error)}>
           <Bookmark size={19} fill={saved ? 'currentColor' : 'none'} />
         </button>
-        <button className="icon-action" type="button" onClick={onReset} aria-label="Reset calculator"><RotateCcw size={19} /></button>
+        <button className="icon-action" type="button" onClick={onReset} aria-label={t('Reset calculator')}><RotateCcw size={19} /></button>
         <button className="primary-action" type="button" onClick={onCalculate} disabled={Boolean(error)}>
-          {calculated ? 'Recalculate' : 'Calculate'}
+          {t(calculated ? 'Recalculate' : 'Calculate')}
         </button>
       </div>
     </div>

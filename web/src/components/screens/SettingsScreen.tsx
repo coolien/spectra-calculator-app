@@ -5,6 +5,7 @@ import { SettingsGroup, SettingsRow } from '@/components/screens/ScreenParts';
 import type { Language } from '@/lib/i18n';
 import { languageName } from '@/lib/i18n';
 import { RingLogo } from '@/components/ui/RingLogo';
+import { useI18n } from '@/components/app-shell/I18nProvider';
 
 export function SettingsScreen({ language, hasProfile, accountStatus, onOpen }: {
   language: Language;
@@ -13,43 +14,44 @@ export function SettingsScreen({ language, hasProfile, accountStatus, onOpen }: 
   onOpen: (screen: 'profile' | 'account' | 'language' | 'legal' | 'remove-ads' | 'app-icon') => void;
 }) {
   const { mode, setMode, accent, scrim, setScrim } = useTheme();
+  const { t } = useI18n();
   return (
     <div className="standard-screen settings-screen">
-      <ScreenHeading title="Settings" subtitle="Just the essentials — one screen, no rabbit holes." />
+      <ScreenHeading title="Settings" subtitle="Just the essentials - one screen, no rabbit holes." />
 
-      <SettingsGroup title="Appearance">
+      <SettingsGroup title={t('Appearance')}>
         <div className="appearance-panel">
           <SegmentedControl
             value={mode}
-            options={[{ value: 'light', label: 'Light' }, { value: 'dark', label: 'Dark' }]}
+            options={[{ value: 'light', label: t('Light') }, { value: 'dark', label: t('Dark') }]}
             onChange={(value) => setMode(value === 'dark' ? 'dark' : 'light')}
-            ariaLabel="Appearance"
+            ariaLabel={t('Appearance')}
           />
           <button className="app-icon-preview" type="button" onClick={() => onOpen('app-icon')}>
             <span><RingLogo stops={accent.stops} size={42} /></span>
-            <span><strong>App icon</strong><small>{accent.label}</small></span>
+            <span><strong>{t('App icon')}</strong><small>{t(accent.label)}</small></span>
           </button>
           <label className="slider-field">
-            <span><strong>Card background darkness</strong><b>{Math.round(scrim * 100)}%</b></span>
+            <span><strong>{t('Card background darkness')}</strong><b>{Math.round(scrim * 100)}%</b></span>
             <input type="range" min="0" max="70" value={Math.round(scrim * 100)} onChange={(event) => setScrim(Number(event.target.value) / 100)} />
           </label>
-          <div className="theme-panel-title"><strong>Theme colour</strong><span>{accent.label}</span></div>
+          <div className="theme-panel-title"><strong>{t('Theme colour')}</strong><span>{t(accent.label)}</span></div>
           <ThemeSwatchGrid compact />
         </div>
       </SettingsGroup>
 
-      <SettingsGroup title="Account">
-        <SettingsRow icon={<CircleUserRound size={19} />} label="Personal profile" value={hasProfile ? 'Set up' : 'Not set'} onClick={() => onOpen('profile')} />
-        <SettingsRow icon={<Cloud size={19} />} label="Account & cloud sync" value={accountStatus === 'synced' ? 'Synced' : accountStatus === 'syncing' ? 'Syncing' : accountStatus === 'error' ? 'Needs attention' : accountStatus} onClick={() => onOpen('account')} />
-        <SettingsRow icon={<Languages size={19} />} label="Language" value={languageName(language)} onClick={() => onOpen('language')} />
+      <SettingsGroup title={t('Account')}>
+        <SettingsRow icon={<CircleUserRound size={19} />} label={t('Personal profile')} value={t(hasProfile ? 'Set up' : 'Not set')} onClick={() => onOpen('profile')} />
+        <SettingsRow icon={<Cloud size={19} />} label={t('Account & cloud sync')} value={t(accountStatus === 'synced' ? 'Synced' : accountStatus === 'syncing' ? 'Syncing' : accountStatus === 'error' ? 'Needs attention' : accountStatus)} onClick={() => onOpen('account')} />
+        <SettingsRow icon={<Languages size={19} />} label={t('Language')} value={languageName(language)} onClick={() => onOpen('language')} />
       </SettingsGroup>
 
-      <SettingsGroup title="More">
-        <SettingsRow icon={<Shield size={19} />} label="Legal & privacy" value="Terms and data" onClick={() => onOpen('legal')} />
-        <SettingsRow icon={<Sparkles size={19} />} label="Remove ads" action="Go ad-free" onClick={() => onOpen('remove-ads')} />
-        <SettingsRow icon={<Scale size={19} />} label="About Spectra" value="spectramsia.com" href="https://spectramsia.com/" />
+      <SettingsGroup title={t('More')}>
+        <SettingsRow icon={<Shield size={19} />} label={t('Legal & privacy')} value={t('Terms and data')} onClick={() => onOpen('legal')} />
+        <SettingsRow icon={<Sparkles size={19} />} label={t('Remove ads')} action={t('Go ad-free')} onClick={() => onOpen('remove-ads')} />
+        <SettingsRow icon={<Scale size={19} />} label={t('About Spectra')} value="spectramsia.com" href="https://spectramsia.com/" />
       </SettingsGroup>
-      <footer className="settings-footer">Developed by Spectrality Enterprise</footer>
+      <footer className="settings-footer">{t('Developed by Spectrality Enterprise')}</footer>
     </div>
   );
 }

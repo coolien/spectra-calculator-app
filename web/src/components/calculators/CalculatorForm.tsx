@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { AccordionCard, SegmentedControl, Toggle } from '@/components/ui/Controls';
 import type { CalculatorField, CalculatorSchema, FormState } from '@/lib/app-model';
+import { useI18n } from '@/components/app-shell/I18nProvider';
 
 export function CalculatorForm({
   schema, form, onChange,
@@ -11,6 +12,7 @@ export function CalculatorForm({
   form: FormState;
   onChange: (key: string, value: string) => void;
 }) {
+  const { t } = useI18n();
   const [openSteps, setOpenSteps] = useState<string[]>([schema.steps[0].id]);
 
   useEffect(() => setOpenSteps([schema.steps[0].id]), [schema]);
@@ -31,7 +33,7 @@ export function CalculatorForm({
               ? current.filter((id) => id !== step.id)
               : [...current, step.id])}
           >
-            {step.description && <p className="step-description">{step.description}</p>}
+            {step.description && <p className="step-description">{t(step.description)}</p>}
             <div className="field-grid">
               {step.fields.map((field) => shouldShowField(schema.key, field, form) && (
                 <CalculatorFieldControl
@@ -54,6 +56,7 @@ function CalculatorFieldControl({
 }: {
   field: CalculatorField; value: string; onChange: (value: string) => void;
 }) {
+  const { t } = useI18n();
   if (field.type === 'toggle') {
     return (
       <div className={field.fullWidth ? 'field-wrap is-full' : 'field-wrap'}>
@@ -65,21 +68,21 @@ function CalculatorFieldControl({
   if (field.type === 'segmented') {
     return (
       <div className={field.fullWidth ? 'field-wrap is-full' : 'field-wrap'}>
-        <label className="field-label">{field.label}</label>
-        <SegmentedControl value={value} options={field.options ?? []} onChange={onChange} ariaLabel={field.label} />
+        <label className="field-label">{t(field.label)}</label>
+        <SegmentedControl value={value} options={field.options ?? []} onChange={onChange} ariaLabel={t(field.label)} />
       </div>
     );
   }
 
   return (
     <label className={field.fullWidth ? 'field-wrap is-full' : 'field-wrap'}>
-      <span className="field-label">{field.label}</span>
+      <span className="field-label">{t(field.label)}</span>
       <span className="input-shell">
         {field.prefix && <span>{field.prefix}</span>}
         <input
           value={value}
           inputMode="decimal"
-          placeholder={field.placeholder}
+          placeholder={field.placeholder ? t(field.placeholder) : undefined}
           onChange={(event) => onChange(event.target.value)}
         />
         {field.suffix && <span>{field.suffix}</span>}
