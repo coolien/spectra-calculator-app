@@ -2,6 +2,13 @@
 
 Spectra's PWA uses Google AdSense for web advertising. Keep ads disabled until the site is approved and consent messaging is ready.
 
+## Current connection status
+
+- Publisher: `ca-pub-5926336244150639`
+- Root verification record: `https://spectramsia.com/ads.txt`
+- Calculator publisher variable: configured in Cloudflare Pages
+- Ad delivery: disabled until site approval, consent setup, and a responsive ad-unit slot are ready
+
 ## 1. Add and verify the site
 
 1. In AdSense, open **Sites** and add `spectramsia.com`. AdSense does not accept an ordinary subdomain such as `calculatorapp.spectramsia.com` as a separate site.
