@@ -15,6 +15,12 @@ test('PDF export labels translate in every supported language', () => {
   assert.equal(translate('bm', 'Generated on {date}', { date: '15 Julai 2026' }), 'Dijana pada 15 Julai 2026');
 });
 
+test('payoff planner labels translate in every supported language', () => {
+  assert.equal(translate('bm', 'Pay faster & settle early'), 'Bayar cepat & selesai awal');
+  assert.equal(translate('zh', 'Interest saved'), '节省利息');
+  assert.equal(translate('ta', 'Estimated settlement balance'), 'மதிப்பிட்ட முடிப்பு மீதி');
+});
+
 test('dynamic MYR result copy handles non-breaking currency spaces', () => {
   const source = 'RM\u00a081,000.00 financed after RM\u00a09,000.00 down payment.';
   assert.equal(translate('bm', source), 'RM 81,000.00 dibiayai selepas bayaran muka RM 9,000.00.');

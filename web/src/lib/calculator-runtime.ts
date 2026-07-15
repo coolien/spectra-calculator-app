@@ -24,6 +24,8 @@ export function calculateFromForm(
         monthlyIncome: parseNumber(form.monthlyIncome),
         existingCommitments: parseNumber(form.existingCommitments),
         targetDsrPercent: parseNumber(form.targetDsrPercent),
+        extraMonthlyPayment: parseNumber(form.extraMonthlyPayment),
+        settlementYears: parseNumber(form.settlementYears),
       });
     case 'car':
       return calculateCarLoan({

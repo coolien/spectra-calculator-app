@@ -22,12 +22,35 @@ test('home loan uses reducing-balance repayment and Malaysia upfront estimates',
     monthlyIncome: 8_000,
     existingCommitments: 500,
     targetDsrPercent: 60,
+    extraMonthlyPayment: 0,
+    settlementYears: 0,
   });
 
   closeTo(result.comparison!.monthlyPayment, 2_148.37);
   closeTo(result.comparison!.totalRepayment, 773_412.78);
   assert.ok(result.comparison!.upfrontCash > 50_000);
   assert.equal(result.comparison!.durationMonths, 360);
+});
+
+test('home loan extra payments shorten payoff and estimate early settlement', () => {
+  const baseInput = {
+    propertyPrice: 500_000,
+    downPaymentPercent: 10,
+    annualRatePercent: 4,
+    tenureYears: 30,
+    monthlyIncome: 8_000,
+    existingCommitments: 500,
+    targetDsrPercent: 60,
+  };
+  const regular = calculateHomeLoan({ ...baseInput, extraMonthlyPayment: 0, settlementYears: 0 });
+  const accelerated = calculateHomeLoan({ ...baseInput, extraMonthlyPayment: 500, settlementYears: 10 });
+
+  assert.ok(accelerated.comparison!.durationMonths! < regular.comparison!.durationMonths!);
+  assert.ok(accelerated.comparison!.totalRepayment < regular.comparison!.totalRepayment);
+  const interestSaved = accelerated.rows!.find((row) => row.label === 'Interest saved')!;
+  const settlementBalance = accelerated.rows!.find((row) => row.label === 'Estimated settlement balance')!;
+  assert.ok(Number(interestSaved.value.replace(/[^\d.]/g, '')) > 0);
+  assert.ok(Number(settlementBalance.value.replace(/[^\d.]/g, '')) > 0);
 });
 
 test('car loan uses flat-rate hire purchase math', () => {

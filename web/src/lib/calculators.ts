@@ -36,6 +36,8 @@ export type HomeLoanInput = {
   monthlyIncome: number;
   existingCommitments: number;
   targetDsrPercent: number;
+  extraMonthlyPayment: number;
+  settlementYears: number;
 };
 
 export type CarLoanInput = {
@@ -105,6 +107,11 @@ export function calculateHomeLoan(input: HomeLoanInput): CalculatorResult {
   requireNonNegative(input.monthlyIncome, 'Monthly income');
   requireNonNegative(input.existingCommitments, 'Existing commitments');
   requirePercentAtMost100(input.targetDsrPercent, 'Target DSR');
+  requireNonNegative(input.extraMonthlyPayment, 'Extra monthly payment');
+  requireNonNegative(input.settlementYears, 'Settlement year');
+  if (input.settlementYears > input.tenureYears) {
+    throw new Error('Settlement year cannot exceed tenure.');
+  }
 
   const downPayment = input.propertyPrice * input.downPaymentPercent / 100;
   const loanAmount = input.propertyPrice - downPayment;
@@ -115,12 +122,22 @@ export function calculateHomeLoan(input: HomeLoanInput): CalculatorResult {
   );
   const totalRepayment = monthlyInstallment * input.tenureYears * 12;
   const totalInterest = totalRepayment - loanAmount;
+  const plannedMonthlyPayment = monthlyInstallment + input.extraMonthlyPayment;
+  const accelerated = simulateReducingBalance({
+    principal: loanAmount,
+    annualRatePercent: input.annualRatePercent,
+    monthlyPayment: plannedMonthlyPayment,
+    maximumMonths: input.tenureYears * 12,
+    captureMonth: input.settlementYears > 0 ? Math.round(input.settlementYears * 12) : undefined,
+  });
+  const monthsSaved = Math.max(0, input.tenureYears * 12 - accelerated.months);
+  const interestSaved = Math.max(0, totalInterest - accelerated.totalInterest);
   const transferDuty = calculateMotStampDuty(input.propertyPrice);
   const loanDuty = loanAmount * 0.005;
   const professionalFees = estimateProfessionalFees(input.propertyPrice, loanAmount);
   const upfrontCash = downPayment + transferDuty + loanDuty + professionalFees;
   const dsr = input.monthlyIncome > 0
-    ? (input.existingCommitments + monthlyInstallment) / input.monthlyIncome * 100
+    ? (input.existingCommitments + plannedMonthlyPayment) / input.monthlyIncome * 100
     : 0;
 
   return {
@@ -130,7 +147,7 @@ export function calculateHomeLoan(input: HomeLoanInput): CalculatorResult {
     metrics: [
       { label: 'Loan amount', value: formatMyr(loanAmount) },
       { label: 'Upfront cash', value: formatMyr(upfrontCash) },
-      { label: 'Total interest/profit', value: formatMyr(totalInterest) },
+      { label: 'Total interest/profit', value: formatMyr(accelerated.totalInterest) },
       {
         label: 'DSR after loan',
         value: input.monthlyIncome > 0 ? formatPercent(dsr) : 'Add income',
@@ -141,16 +158,27 @@ export function calculateHomeLoan(input: HomeLoanInput): CalculatorResult {
       { label: 'Loan agreement duty', value: formatMyr(loanDuty) },
       { label: 'Professional fee estimate', value: formatMyr(professionalFees) },
       { label: 'Planning DSR target', value: formatPercent(input.targetDsrPercent) },
+      { label: 'Base monthly installment', value: formatMyr(monthlyInstallment) },
+      { label: 'Planned monthly payment', value: formatMyr(plannedMonthlyPayment) },
+      { label: 'Estimated payoff time', value: formatMonths(accelerated.months) },
+      { label: 'Time saved', value: monthsSaved > 0 ? formatMonths(monthsSaved) : 'No time saved' },
+      { label: 'Interest saved', value: formatMyr(interestSaved) },
+      ...(input.settlementYears > 0 ? [{
+        label: 'Estimated settlement balance',
+        value: formatMyr(accelerated.balanceAtCapture ?? 0),
+      }] : []),
     ],
     notes: [
       'Uses a standard reducing-balance installment estimate.',
       'Stamp duty and professional fees are planning estimates. Replace them with official quotes when available.',
+      'Extra-payment savings assume the rate stays unchanged and every extra payment reduces principal immediately.',
+      'Early settlement estimate excludes lock-in penalties, rebates, legal fees, and lender-specific settlement terms.',
     ],
     comparison: {
-      monthlyPayment: monthlyInstallment,
-      totalRepayment,
+      monthlyPayment: plannedMonthlyPayment,
+      totalRepayment: accelerated.totalPaid,
       upfrontCash,
-      durationMonths: input.tenureYears * 12,
+      durationMonths: accelerated.months,
     },
   };
 }
@@ -700,16 +728,19 @@ function simulateReducingBalance({
   annualRatePercent,
   monthlyPayment,
   maximumMonths,
+  captureMonth,
 }: {
   principal: number;
   annualRatePercent: number;
   monthlyPayment: number;
   maximumMonths: number;
+  captureMonth?: number;
 }) {
   let balance = principal;
   let totalInterest = 0;
   let totalPaid = 0;
   const monthlyRate = annualRatePercent / 100 / 12;
+  let balanceAtCapture: number | undefined;
 
   for (let month = 1; month <= maximumMonths; month += 1) {
     const interest = balance * monthlyRate;
@@ -717,12 +748,20 @@ function simulateReducingBalance({
     balance = balance + interest - payment;
     totalInterest += interest;
     totalPaid += payment;
+    if (month === captureMonth) {
+      balanceAtCapture = Math.max(0, balance);
+    }
     if (balance <= 0.01) {
-      return { months: month, totalInterest, totalPaid };
+      return {
+        months: month,
+        totalInterest,
+        totalPaid,
+        balanceAtCapture: captureMonth && captureMonth > month ? 0 : balanceAtCapture,
+      };
     }
   }
 
-  return { months: maximumMonths, totalInterest, totalPaid };
+  return { months: maximumMonths, totalInterest, totalPaid, balanceAtCapture };
 }
 
 function requirePositive(value: number, label: string) {
@@ -786,7 +825,7 @@ function formatMonths(months: number) {
   if (remainingMonths === 0) {
     return years === 1 ? '1 year' : `${years} years`;
   }
-  return `${years}y ${remainingMonths}m`;
+  return `${years} yr ${remainingMonths} mo`;
 }
 
 function round(value: number) {

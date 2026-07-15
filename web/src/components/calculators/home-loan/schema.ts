@@ -20,6 +20,8 @@ export const homeLoanSchema: CalculatorSchema = {
     monthlyIncome: '8000',
     existingCommitments: '500',
     targetDsrPercent: '40',
+    extraMonthlyPayment: '0',
+    settlementYears: '0',
   },
   steps: [
     {
@@ -69,6 +71,17 @@ export const homeLoanSchema: CalculatorSchema = {
         { key: 'monthlyIncome', label: 'Monthly gross income', type: 'number', prefix: 'RM', fullWidth: true },
         { key: 'existingCommitments', label: 'Existing commitments', type: 'number', prefix: 'RM' },
         { key: 'targetDsrPercent', label: 'Target DSR', type: 'number', suffix: '%' },
+      ],
+    },
+    {
+      id: 'payoff',
+      title: 'Pay faster & settle early',
+      optional: true,
+      description: 'Add an optional extra payment and estimate the balance at an early settlement year.',
+      summary: (form) => Number(form.extraMonthlyPayment) > 0 || Number(form.settlementYears) > 0 ? 'Plan added' : 'Not added',
+      fields: [
+        { key: 'extraMonthlyPayment', label: 'Extra monthly payment', type: 'number', prefix: 'RM' },
+        { key: 'settlementYears', label: 'Settlement after', type: 'number', suffix: 'years' },
       ],
     },
   ],
