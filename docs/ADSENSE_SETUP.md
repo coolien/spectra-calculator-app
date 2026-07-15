@@ -4,11 +4,12 @@ Spectra's PWA uses Google AdSense for web advertising. Keep ads disabled until t
 
 ## 1. Add and verify the site
 
-1. In AdSense, open **Sites** and add the Spectra calculator URL accepted by Google.
+1. In AdSense, open **Sites** and add `spectramsia.com`. AdSense does not accept an ordinary subdomain such as `calculatorapp.spectramsia.com` as a separate site.
 2. Copy the publisher ID in the format `ca-pub-1234567890123456`.
-3. In Cloudflare Pages, add `NEXT_PUBLIC_ADSENSE_CLIENT` for both Production and Preview.
-4. Redeploy. Spectra will publish a `google-adsense-account` meta tag for ownership verification without loading ads.
-5. In AdSense, confirm verification and request review. Leave `NEXT_PUBLIC_ADSENSE_ENABLED=false` while the site is being reviewed.
+3. Verify ownership from the root domain using either the AdSense meta tag on the `spectramsia.com` homepage or the real publisher line at `https://spectramsia.com/ads.txt`.
+4. In the calculator's Cloudflare Pages project, add `NEXT_PUBLIC_ADSENSE_CLIENT` for both Production and Preview. This prepares the calculator subdomain but does not replace root-domain verification.
+5. Redeploy. Spectra will publish a `google-adsense-account` meta tag on the calculator without loading ads.
+6. In AdSense, confirm verification and request review. Leave `NEXT_PUBLIC_ADSENSE_ENABLED=false` while the site is being reviewed.
 
 Site review can take several days and sometimes two to four weeks.
 
@@ -37,7 +38,7 @@ After receiving the real publisher ID, publish this exact pattern at the domain 
 google.com, pub-1234567890123456, DIRECT, f08c47fec0942fa0
 ```
 
-Because the calculator is on a subdomain, follow the AdSense ads.txt status shown for the approved site. If the root `spectramsia.com` site and calculator subdomain need different files, the root file can point to it with:
+The root-domain publisher line normally covers the calculator when both use the same publisher ID. Only if the root site and calculator subdomain use different authorized sellers or publisher IDs should the root file point to a separate subdomain file with:
 
 ```text
 subdomain=calculatorapp.spectramsia.com
