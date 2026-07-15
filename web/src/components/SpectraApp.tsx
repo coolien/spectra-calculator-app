@@ -178,7 +178,7 @@ function SpectraExperience() {
 
     switch (tab) {
       case 'home':
-        return <HomeScreen profile={personalProfile} activeLoans={activeLoans} lastCalculator={lastCalculator} onOpenCalculator={openCalculator} onOpenProfile={() => setDetail('profile')} onOpenActiveLoans={() => openLoanTracker()} onSeeAll={() => changeTab('calculators')} />;
+        return <HomeScreen profile={personalProfile} lastCalculator={lastCalculator} onOpenCalculator={openCalculator} onOpenProfile={() => setDetail('profile')} onSeeAll={() => changeTab('calculators')} />;
       case 'calculators':
         return <CalculatorsScreen onOpen={openCalculator} />;
       case 'saved':

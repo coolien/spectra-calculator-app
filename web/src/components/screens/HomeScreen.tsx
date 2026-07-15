@@ -1,6 +1,6 @@
-import { ArrowRight, Landmark, UserRound } from 'lucide-react';
+import { ArrowRight, UserRound } from 'lucide-react';
 import type { CalculatorKey } from '@/lib/calculators';
-import type { ActiveLoan, PersonalProfile } from '@/lib/app-model';
+import type { PersonalProfile } from '@/lib/app-model';
 import { calculatorOrder, calculatorSchemas } from '@/components/calculators/schemas';
 import { CalculatorIcon } from '@/components/calculators/CalculatorIcon';
 import { ScreenHeading } from '@/components/ui/Controls';
@@ -8,21 +8,17 @@ import { formatRinggit, profileMetrics } from '@/lib/profile-math';
 import { useI18n } from '@/components/app-shell/I18nProvider';
 
 export function HomeScreen({
-  profile, activeLoans, lastCalculator, onOpenCalculator, onOpenProfile, onOpenActiveLoans, onSeeAll,
+  profile, lastCalculator, onOpenCalculator, onOpenProfile, onSeeAll,
 }: {
   profile: PersonalProfile | null;
-  activeLoans: ActiveLoan[];
   lastCalculator: CalculatorKey;
   onOpenCalculator: (key: CalculatorKey) => void;
   onOpenProfile: () => void;
-  onOpenActiveLoans: () => void;
   onSeeAll: () => void;
 }) {
   const { t } = useI18n();
   const metrics = profile ? profileMetrics(profile) : null;
   const last = calculatorSchemas[lastCalculator];
-  const totalBalance = activeLoans.reduce((total, loan) => total + loan.remainingBalance, 0);
-  const totalMonthly = activeLoans.reduce((total, loan) => total + loan.monthlyPayment, 0);
   return (
     <div className="standard-screen home-screen">
       <ScreenHeading title="Good evening" subtitle="Here's where your money stands today." />
@@ -44,19 +40,6 @@ export function HomeScreen({
           <p>{t('Comfortable room for {amount} more before your {percent}% DSR target.', { amount: formatRinggit(metrics!.roomLeft), percent: profile.targetDsr })}</p>
         </section>
       )}
-
-      <section className="home-section">
-        <div className="section-title-row"><h2>{t('Active loans')}</h2><button type="button" onClick={onOpenActiveLoans}>{t(activeLoans.length ? 'Manage' : 'Add loan')}</button></div>
-        <button className="active-loans-home" type="button" onClick={onOpenActiveLoans}>
-          <span><Landmark size={20} /></span>
-          {activeLoans.length ? (
-            <><span><strong>{formatRinggit(totalBalance)}</strong><small>{t(activeLoans.length === 1 ? '{count} loan outstanding' : '{count} loans outstanding', { count: activeLoans.length })}</small></span><span><strong>{formatRinggit(totalMonthly)}</strong><small>{t('per month')}</small></span></>
-          ) : (
-            <span className="active-loans-empty"><strong>{t('Track real loan balances')}</strong><small>{t('See payoff time, commitments and projected interest.')}</small></span>
-          )}
-          <ArrowRight size={18} />
-        </button>
-      </section>
 
       <section className="home-section">
         <h2>{t('Continue where you left off')}</h2>

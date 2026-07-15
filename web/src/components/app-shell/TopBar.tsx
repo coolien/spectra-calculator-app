@@ -7,7 +7,7 @@ export function TopBar({ isProfileOpen, onProfileToggle }: { isProfileOpen: bool
   return (
     <header className="top-bar">
       <div className="brand-lockup" aria-label="Spectra">
-        <BrandRingLogo />
+        <BrandRingLogo size={26} />
         <span>Spectra</span>
       </div>
       <div className="top-bar-slot top-bar-slot-right">
