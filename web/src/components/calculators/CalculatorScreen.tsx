@@ -35,6 +35,8 @@ export function CalculatorScreen({
 
   const result = 'result' in outcome ? outcome.result : null;
   const secondary = result?.metrics[schema.secondaryMetricIndex];
+  const locale = language === 'bm' ? 'ms-MY' : language === 'zh' ? 'zh-MY' : language === 'ta' ? 'ta-MY' : 'en-MY';
+  const generatedDate = new Intl.DateTimeFormat(locale, { dateStyle: 'long' }).format(new Date());
 
   function calculate() {
     setCalculated(true);
@@ -49,11 +51,20 @@ export function CalculatorScreen({
       label: `${t(schema.title)} - ${t('saved plan')}`,
       result: result.primaryValue,
       secondary: secondary?.value ?? '',
-      savedAt: new Intl.DateTimeFormat(language === 'bm' ? 'ms-MY' : language === 'zh' ? 'zh-MY' : language === 'ta' ? 'ta-MY' : 'en-MY', { day: 'numeric', month: 'short' }).format(new Date()),
+      savedAt: new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'short' }).format(new Date()),
       comparison: result.comparison,
     };
     onSave(scenario);
     setSaved(true);
+  }
+
+  function exportPdf() {
+    const originalTitle = document.title;
+    document.title = `Spectra - ${t(schema.title)}`;
+    const restoreTitle = () => { document.title = originalTitle; };
+    window.addEventListener('afterprint', restoreTitle, { once: true });
+    window.print();
+    window.setTimeout(restoreTitle, 1000);
   }
 
   return (
@@ -63,7 +74,16 @@ export function CalculatorScreen({
         {schema.disclaimer && <div className="faraid-disclaimer"><strong>{t('Important')}</strong><p>{t(schema.disclaimer)}</p></div>}
         <CalculatorForm schema={schema} form={form} onChange={(key, value) => { setSaved(false); onChange(key, value); }} />
         <p className="scroll-hint">{t('Calculate to review the full breakdown')}</p>
-        {calculated && result && <div ref={resultRef}><CalculatorResult result={result} /></div>}
+        {calculated && result && (
+          <div ref={resultRef}>
+            <CalculatorResult
+              result={result}
+              calculatorTitle={schema.title}
+              generatedDate={generatedDate}
+              onExportPdf={exportPdf}
+            />
+          </div>
+        )}
       </div>
       <StickyResultBar
         primaryLabel={t(result?.title ?? 'Result')}

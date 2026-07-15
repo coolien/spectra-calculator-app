@@ -132,6 +132,9 @@ button:disabled { opacity: .45; cursor: not-allowed; }
 .result-error { padding: 8px 10px; border-radius: 10px; color: #A22D3C; background: #FCE8EA; font-size: 12px; font-weight: 600; }
 
 .full-result { display: flex; flex-direction: column; gap: 12px; scroll-margin-top: 10px; }
+.result-export-action { width: 100%; min-height: 46px; padding: 0 15px; border: 1px solid var(--border); border-radius: 14px; display: flex; align-items: center; justify-content: center; gap: 8px; color: var(--accent); background: var(--card); font-family: 'Sora', sans-serif; font-size: 12.5px; font-weight: 700; cursor: pointer; }
+.result-export-action svg { flex: 0 0 auto; }
+.print-report-header, .print-report-footer { display: none; }
 .result-summary-card { padding: 17px; border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--border)); border-radius: 18px; display: flex; flex-direction: column; gap: 3px; background: color-mix(in srgb, var(--accent) 8%, var(--card)); }
 .result-summary-card span { color: var(--text-secondary); font-size: 11.5px; font-weight: 600; }
 .result-summary-card strong { color: var(--accent); font-family: 'Sora', sans-serif; font-size: 25px; font-weight: 800; }
@@ -357,4 +360,23 @@ button:disabled { opacity: .45; cursor: not-allowed; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; }
+}
+
+@media print {
+  @page { size: A4; margin: 14mm; }
+  html, body { width: auto; min-height: 0; color: #14231D; background: #FFF; }
+  body * { visibility: hidden; }
+  .print-report, .print-report * { visibility: visible; }
+  .spectra-root, .spectra-app, .app-content, .calculator-screen, .screen-scroll { width: auto; height: auto; min-height: 0; max-width: none; overflow: visible; color: #14231D; background: #FFF; }
+  .print-report { position: absolute; top: 0; left: 0; width: 100%; gap: 11px; }
+  .print-report-header { margin-bottom: 5mm; padding-bottom: 5mm; border-bottom: 1px solid #D9DDD8; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+  .print-report-header > div:last-child { min-width: 0; text-align: right; }
+  .print-report-brand { display: flex; align-items: center; gap: 9px; font-family: 'Bricolage Grotesque', sans-serif; font-size: 20px; }
+  .print-report-header h1 { margin: 0; font-family: 'Sora', sans-serif; font-size: 18px; }
+  .print-report-header p { margin: 3px 0 0; color: #6B7566; font-size: 10px; }
+  .result-export-action { display: none; }
+  .result-summary-card, .metric-card, .breakdown-card, .notes-card { break-inside: avoid; border-color: #D9DDD8; box-shadow: none; }
+  .result-summary-card { background: #F1F7F4; }
+  .result-summary-card strong, .metric-card strong { color: #146356; }
+  .print-report-footer { margin-top: 4mm; padding-top: 4mm; border-top: 1px solid #D9DDD8; display: block; color: #6B7566; font-size: 9.5px; line-height: 1.45; }
 }

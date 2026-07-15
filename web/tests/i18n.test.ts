@@ -8,6 +8,13 @@ test('navigation and casual interface copy translate in every supported language
   assert.equal(translate('ta', 'Good evening'), 'மாலை வணக்கம்');
 });
 
+test('PDF export labels translate in every supported language', () => {
+  assert.equal(translate('bm', 'Save as PDF'), 'Simpan sebagai PDF');
+  assert.equal(translate('zh', 'Save as PDF'), '保存为 PDF');
+  assert.equal(translate('ta', 'Save as PDF'), 'PDF ஆக சேமி');
+  assert.equal(translate('bm', 'Generated on {date}', { date: '15 Julai 2026' }), 'Dijana pada 15 Julai 2026');
+});
+
 test('dynamic MYR result copy handles non-breaking currency spaces', () => {
   const source = 'RM\u00a081,000.00 financed after RM\u00a09,000.00 down payment.';
   assert.equal(translate('bm', source), 'RM 81,000.00 dibiayai selepas bayaran muka RM 9,000.00.');
