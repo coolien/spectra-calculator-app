@@ -102,6 +102,9 @@ export function calculateHomeLoan(input: HomeLoanInput): CalculatorResult {
   requirePercentBelow(input.downPaymentPercent, 'Down payment');
   requireNonNegative(input.annualRatePercent, 'Interest/profit rate');
   requirePositive(input.tenureYears, 'Tenure');
+  requireNonNegative(input.monthlyIncome, 'Monthly income');
+  requireNonNegative(input.existingCommitments, 'Existing commitments');
+  requirePercentAtMost100(input.targetDsrPercent, 'Target DSR');
 
   const downPayment = input.propertyPrice * input.downPaymentPercent / 100;
   const loanAmount = input.propertyPrice - downPayment;
@@ -157,6 +160,7 @@ export function calculateCarLoan(input: CarLoanInput): CalculatorResult {
   requirePercentBelow(input.downPaymentPercent, 'Down payment');
   requireNonNegative(input.annualFlatRatePercent, 'Flat interest rate');
   requirePositive(input.tenureYears, 'Tenure');
+  requireNonNegative(input.upfrontFees, 'Upfront fees');
 
   const downPayment = input.vehiclePrice * input.downPaymentPercent / 100;
   const amountFinanced = input.vehiclePrice - downPayment;
@@ -198,6 +202,8 @@ export function calculatePersonalLoan(input: PersonalLoanInput): CalculatorResul
   requirePositive(input.principal, 'Loan amount');
   requireNonNegative(input.annualRatePercent, 'Interest rate');
   requirePositive(input.tenureYears, 'Tenure');
+  requireNonNegative(input.upfrontFees, 'Upfront fees');
+  requirePercentAtMost100(input.stampDutyRatePercent, 'Stamp duty rate');
 
   const monthlyInstallment = input.method === 'reducing'
     ? reducingBalancePayment(input.principal, input.annualRatePercent, input.tenureYears)
@@ -241,6 +247,10 @@ export function calculateCreditCard(input: CreditCardInput): CalculatorResult {
   requirePositive(input.outstandingBalance, 'Outstanding balance');
   requirePositive(input.monthlyPayment, 'Monthly payment');
   requireNonNegative(input.annualFinanceChargePercent, 'Finance charge');
+  requireNonNegative(input.monthlyNewSpending, 'Monthly new spending');
+  requirePositive(input.minimumPaymentPercent, 'Minimum payment');
+  requirePercentAtMost100(input.minimumPaymentPercent, 'Minimum payment');
+  requireNonNegative(input.minimumPaymentFloor, 'Minimum floor');
 
   const fixed = simulateCardPayoff(input, 'fixed');
   const minimum = simulateCardPayoff(input, 'minimum');
@@ -286,6 +296,7 @@ export function calculatePtptn(input: PtptnInput): CalculatorResult {
   requirePositive(input.outstandingBalance, 'Outstanding balance');
   requireNonNegative(input.annualUjrahRatePercent, 'Ujrah rate');
   requirePositive(input.tenureYears, 'Tenure');
+  requireNonNegative(input.extraMonthlyPayment, 'Extra monthly payment');
 
   const scheduled = input.method === 'reducing'
     ? reducingBalancePayment(input.outstandingBalance, input.annualUjrahRatePercent, input.tenureYears)
@@ -337,9 +348,9 @@ export function calculateFaraid(input: FaraidInput): FaraidResult {
   requireNonNegative(input.debtsAndExpenses, 'Debts and expenses');
   requireNonNegative(input.wasiyyah, 'Wasiyyah');
 
-  if (input.wives < 0 || input.sons < 0 || input.daughters < 0) {
-    throw new Error('Heir counts cannot be negative.');
-  }
+  requireWholeNonNegative(input.wives, 'Wife count');
+  requireWholeNonNegative(input.sons, 'Son count');
+  requireWholeNonNegative(input.daughters, 'Daughter count');
   if (input.deceasedGender === 'male' && input.wives > 4) {
     throw new Error('Wife count cannot exceed 4.');
   }
@@ -730,6 +741,20 @@ function requirePercentBelow(value: number, label: string) {
   requireNonNegative(value, label);
   if (value >= 100) {
     throw new Error(`${label} must be below 100%.`);
+  }
+}
+
+function requirePercentAtMost100(value: number, label: string) {
+  requireNonNegative(value, label);
+  if (value > 100) {
+    throw new Error(`${label} must be 100% or below.`);
+  }
+}
+
+function requireWholeNonNegative(value: number, label: string) {
+  requireNonNegative(value, label);
+  if (!Number.isInteger(value)) {
+    throw new Error(`${label} must be a whole number.`);
   }
 }
 

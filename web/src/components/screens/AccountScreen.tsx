@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { Check, Cloud, CloudOff, Download, RefreshCw, ShieldCheck, Trash2 } from 'lucide-react';
+import { useRef, useState } from 'react';
+import { Check, Cloud, CloudOff, Download, RefreshCw, ShieldCheck, Trash2, Upload } from 'lucide-react';
 import { ScreenHeading } from '@/components/ui/Controls';
 import type { useCloudSync } from '@/hooks/useCloudSync';
 import { useI18n } from '@/components/app-shell/I18nProvider';
@@ -13,6 +13,7 @@ export function AccountScreen({ cloud }: { cloud: CloudController }) {
   const [email, setEmail] = useState('');
   const [busy, setBusy] = useState(false);
   const [localMessage, setLocalMessage] = useState('');
+  const importInputRef = useRef<HTMLInputElement>(null);
 
   async function run(action: () => Promise<unknown>) {
     setBusy(true);
@@ -63,7 +64,23 @@ export function AccountScreen({ cloud }: { cloud: CloudController }) {
         <span><ShieldCheck size={20} /></span>
         <div><h2>{t('Local first, cloud when you choose')}</h2><p>{t('Spectra works without an account. Signing in backs up your profile, active loans, and saved scenarios so another device can restore them.')}</p><strong>{t('Never enter NRIC, card numbers, OTPs, or official loan documents.')}</strong></div>
       </section>
-      <button className="secondary-action account-export" type="button" onClick={cloud.exportData}><Download size={17} />{t('Export my Spectra data')}</button>
+      <div className="account-data-actions">
+        <button className="secondary-action account-export" type="button" onClick={cloud.exportData}><Download size={17} />{t('Export my Spectra data')}</button>
+        <button className="secondary-action account-export" type="button" disabled={busy} onClick={() => importInputRef.current?.click()}><Upload size={17} />{t('Restore Spectra backup')}</button>
+        <input
+          ref={importInputRef}
+          className="visually-hidden"
+          type="file"
+          accept="application/json,.json"
+          aria-label={t('Select Spectra backup file')}
+          onChange={(event) => {
+            const file = event.target.files?.[0];
+            event.target.value = '';
+            if (!file || !window.confirm(t('Restore this backup? It will replace the Spectra data on this device.'))) return;
+            void run(() => cloud.importData(file));
+          }}
+        />
+      </div>
     </div>
   );
 }

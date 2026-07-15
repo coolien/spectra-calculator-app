@@ -8,6 +8,7 @@
     "dev": "next dev",
     "prebuild": "node scripts/prepare-pwa.mjs",
     "build": "next build",
+    "test": "node --test tests/*.test.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

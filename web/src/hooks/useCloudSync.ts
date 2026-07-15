@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { Session } from '@supabase/supabase-js';
 import {
-  deleteCloudData, mergeCloudPayload, readCloudSnapshot, type CloudPayload, writeCloudSnapshot,
+  deleteCloudData, mergeCloudPayload, parseSpectraExport, readCloudSnapshot, type CloudPayload, writeCloudSnapshot,
 } from '@/lib/cloud-sync';
 import { getSupabaseClient } from '@/lib/supabase-client';
 
@@ -125,6 +125,19 @@ export function useCloudSync({ enabled, payload, onCloudState }: {
     URL.revokeObjectURL(url);
   }
 
+  async function importData(file: File) {
+    let parsed: unknown;
+    try {
+      parsed = JSON.parse(await file.text());
+    } catch {
+      throw new Error('This file is not valid JSON.');
+    }
+    const imported = parseSpectraExport(parsed);
+    payloadRef.current = imported;
+    onCloudState(imported);
+    setMessage('Spectra backup restored on this device.');
+  }
+
   return {
     configured: Boolean(client),
     session,
@@ -136,6 +149,7 @@ export function useCloudSync({ enabled, payload, onCloudState }: {
     signOut,
     removeCloudData,
     exportData,
+    importData,
   };
 }
 

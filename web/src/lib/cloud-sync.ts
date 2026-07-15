@@ -22,6 +22,24 @@ export type CloudSnapshot = {
   clientUpdatedAt: string;
 };
 
+export function parseSpectraExport(value: unknown): CloudPayload {
+  if (!isRecord(value) || value.app !== 'Spectra Calculator' || value.schemaVersion !== CLOUD_SCHEMA_VERSION) {
+    throw new Error('This is not a supported Spectra backup file.');
+  }
+  const data = value.data;
+  if (!isRecord(data) || !isLanguage(data.language) || !isCalculatorKey(data.lastCalculator)) {
+    throw new Error('This Spectra backup is missing required app data.');
+  }
+  if (!isFormCollection(data.forms) || !isPersonalProfile(data.personalProfile)) {
+    throw new Error('This Spectra backup contains invalid profile or calculator data.');
+  }
+  if (!isArrayOf(data.salaryProfiles, isSalaryProfile) || !isArrayOf(data.savedScenarios, isSavedScenario) || !isArrayOf(data.activeLoans, isActiveLoan)) {
+    throw new Error('This Spectra backup contains invalid saved records.');
+  }
+
+  return data as CloudPayload;
+}
+
 export async function readCloudSnapshot(client: SupabaseClient, userId: string): Promise<CloudSnapshot | null> {
   const { data, error } = await client
     .from('app_snapshots')
@@ -109,4 +127,64 @@ function mergeById<T extends { id: string }>(
     merged.set(item.id, cloudItem ? resolve(cloudItem, item) : item);
   }
   return [...merged.values()];
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function isLanguage(value: unknown): value is Language {
+  return value === 'en' || value === 'bm' || value === 'zh' || value === 'ta';
+}
+
+function isCalculatorKey(value: unknown): value is CalculatorKey {
+  return value === 'home' || value === 'car' || value === 'personal' || value === 'credit' || value === 'ptptn' || value === 'faraid';
+}
+
+function isFormCollection(value: unknown): value is CloudPayload['forms'] {
+  if (!isRecord(value)) return false;
+  return ['home', 'car', 'personal', 'credit', 'ptptn', 'faraid'].every((key) => {
+    const form = value[key];
+    return isRecord(form) && Object.values(form).every((field) => typeof field === 'string');
+  });
+}
+
+function isPersonalProfile(value: unknown): value is PersonalProfile | null {
+  if (value === null) return true;
+  if (!isRecord(value)) return false;
+  return ['grossSalary', 'epfRate', 'tax', 'livingExpenses', 'commitments', 'targetDsr']
+    .every((key) => typeof value[key] === 'string');
+}
+
+function isArrayOf<T>(value: unknown, guard: (item: unknown) => item is T): value is T[] {
+  return Array.isArray(value) && value.every(guard);
+}
+
+function isSalaryProfile(value: unknown): value is SalaryProfile {
+  if (!isRecord(value)) return false;
+  return ['id', 'name', 'label'].every((key) => typeof value[key] === 'string')
+    && ['grossSalary', 'commitments', 'targetDsr', 'takeHome', 'maxInstallment'].every((key) => isFiniteNumber(value[key]));
+}
+
+function isSavedScenario(value: unknown): value is SavedScenario {
+  if (!isRecord(value) || !isCalculatorKey(value.calculator)) return false;
+  const stringsValid = ['id', 'label', 'result', 'secondary', 'savedAt'].every((key) => typeof value[key] === 'string');
+  if (!stringsValid || value.comparison === undefined) return stringsValid;
+  const comparison = value.comparison;
+  if (!isRecord(comparison)) return false;
+  return ['monthlyPayment', 'totalRepayment', 'upfrontCash'].every((key) => isFiniteNumber(comparison[key]))
+    && (comparison.durationMonths === null || isFiniteNumber(comparison.durationMonths));
+}
+
+function isActiveLoan(value: unknown): value is ActiveLoan {
+  if (!isRecord(value)) return false;
+  const type = value.type;
+  const validType = type === 'home' || type === 'car' || type === 'personal' || type === 'credit' || type === 'ptptn' || type === 'other';
+  return validType
+    && ['id', 'name', 'nextPaymentDate', 'createdAt', 'updatedAt'].every((key) => typeof value[key] === 'string')
+    && ['monthlyPayment', 'remainingBalance', 'originalBalance', 'annualRatePercent'].every((key) => isFiniteNumber(value[key]));
+}
+
+function isFiniteNumber(value: unknown): value is number {
+  return typeof value === 'number' && Number.isFinite(value);
 }
