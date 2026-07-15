@@ -1,4 +1,4 @@
-const LEGAL_PAGE = 'https://calculatorapp.spectramsia.com/legal/index.html';
+const LEGAL_PAGE = 'https://calculatorapp.spectramsia.com/legal/';
 
 export default {
   async fetch(request) {
