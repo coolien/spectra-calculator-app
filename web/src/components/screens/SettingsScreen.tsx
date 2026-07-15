@@ -4,7 +4,7 @@ import { useTheme } from '@/components/app-shell/ThemeProvider';
 import { SettingsGroup, SettingsRow } from '@/components/screens/ScreenParts';
 import type { Language } from '@/lib/i18n';
 import { languageName } from '@/lib/i18n';
-import { RingLogo } from '@/components/ui/RingLogo';
+import { BrandRingLogo } from '@/components/ui/RingLogo';
 import { useI18n } from '@/components/app-shell/I18nProvider';
 
 export function SettingsScreen({ language, hasProfile, accountStatus, onOpen }: {
@@ -28,8 +28,8 @@ export function SettingsScreen({ language, hasProfile, accountStatus, onOpen }: 
             ariaLabel={t('Appearance')}
           />
           <button className="app-icon-preview" type="button" onClick={() => onOpen('app-icon')}>
-            <span><RingLogo stops={accent.stops} size={42} /></span>
-            <span><strong>{t('App icon')}</strong><small>{t(accent.label)}</small></span>
+            <span><BrandRingLogo size={42} /></span>
+            <span><strong>{t('App icon')}</strong><small>{t('Rainbow ring')}</small></span>
           </button>
           <label className="slider-field">
             <span><strong>{t('Card background darkness')}</strong><b>{Math.round(scrim * 100)}%</b></span>

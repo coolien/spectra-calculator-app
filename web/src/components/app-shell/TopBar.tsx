@@ -1,15 +1,13 @@
 import { UserRound } from 'lucide-react';
-import { RingLogo } from '@/components/ui/RingLogo';
-import { useTheme } from '@/components/app-shell/ThemeProvider';
+import { BrandRingLogo } from '@/components/ui/RingLogo';
 import { useI18n } from '@/components/app-shell/I18nProvider';
 
 export function TopBar({ isProfileOpen, onProfileToggle }: { isProfileOpen: boolean; onProfileToggle: () => void }) {
-  const { accent } = useTheme();
   const { t } = useI18n();
   return (
     <header className="top-bar">
       <div className="brand-lockup" aria-label="Spectra">
-        <RingLogo stops={accent.stops} />
+        <BrandRingLogo />
         <span>Spectra</span>
       </div>
       <div className="top-bar-slot top-bar-slot-right">

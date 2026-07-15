@@ -5,11 +5,11 @@ const APP_SHELL = [
   "/",
   "/manifest.webmanifest",
   "/spectra_build.json",
-  "/spectra-ring-favicon.png",
-  "/icons/spectra-ring-192.png",
-  "/icons/spectra-ring-512.png",
-  "/icons/spectra-ring-maskable-192.png",
-  "/icons/spectra-ring-maskable-512.png"
+  "/spectra-brand-v2-favicon.png",
+  "/icons/spectra-brand-v2-192.png",
+  "/icons/spectra-brand-v2-512.png",
+  "/icons/spectra-brand-v2-maskable-192.png",
+  "/icons/spectra-brand-v2-maskable-512.png"
 ];
 
 self.addEventListener("install", (event) => {

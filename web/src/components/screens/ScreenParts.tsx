@@ -11,8 +11,10 @@ export function SettingsRow({ icon, label, value, action, onClick, href }: {
   const content = (
     <>
       <span className="settings-icon">{icon}</span>
-      <span className="settings-label">{label}</span>
-      {(action || value) && <span className={action ? 'settings-value is-action' : 'settings-value'}>{action ?? value}</span>}
+      <span className="settings-copy">
+        <span className="settings-label">{label}</span>
+        {(action || value) && <span className={action ? 'settings-value is-action' : 'settings-value'}>{action ?? value}</span>}
+      </span>
       {href ? <ExternalLink size={16} /> : <ChevronRight size={17} />}
     </>
   );

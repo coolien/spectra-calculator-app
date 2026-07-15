@@ -6,8 +6,8 @@ export const metadata: Metadata = {
   description: "Spectra's Malaysia-focused finance planning calculator.",
   manifest: '/manifest.webmanifest',
   icons: {
-    icon: '/spectra-ring-favicon.png',
-    apple: '/icons/spectra-ring-192.png',
+    icon: '/spectra-brand-v2-favicon.png',
+    apple: '/icons/spectra-brand-v2-192.png',
   },
 };
 
@@ -18,18 +18,6 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
-const pwaBootstrapScript = `
-  if ('serviceWorker' in navigator) {
-    let refreshing = false;
-    navigator.serviceWorker.addEventListener('controllerchange', () => {
-      if (refreshing) return;
-      refreshing = true;
-      window.location.reload();
-    });
-    navigator.serviceWorker.register('/sw.js').then((registration) => registration.update());
-  }
-`;
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -38,7 +26,6 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <script dangerouslySetInnerHTML={{ __html: pwaBootstrapScript }} />
         {children}
       </body>
     </html>

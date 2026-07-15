@@ -2,6 +2,10 @@
 
 import { useId } from 'react';
 
+export function BrandRingLogo({ size = 28 }: { size?: number }) {
+  return <img src="/icons/spectra-brand-v2-192.png" width={size} height={size} alt="" aria-hidden="true" />;
+}
+
 export function RingLogo({ stops, size = 28 }: { stops: string[]; size?: number }) {
   const id = useId().replaceAll(':', '');
   return (
