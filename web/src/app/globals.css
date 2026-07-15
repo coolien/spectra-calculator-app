@@ -77,6 +77,9 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
 .calculator-grid button { min-width: 0; min-height: 76px; padding: 2px; border: 0; background: transparent; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; font-size: 11px; font-weight: 600; cursor: pointer; }
 .calculator-grid .calculator-icon { width: 52px; height: 52px; border-radius: 16px; }
 
+.ad-placement { width: 100%; min-height: 112px; padding-top: 14px; border-top: 1px solid var(--border); overflow: hidden; }
+.ad-label { display: block; margin-bottom: 7px; color: var(--text-muted); font-size: 10px; line-height: 1.3; text-align: center; }
+
 .calculator-list { display: flex; flex-direction: column; gap: 10px; }
 .calculator-list button { width: 100%; min-height: 74px; padding: 14px 15px; border: 1px solid var(--border); border-radius: 18px; display: grid; grid-template-columns: 44px 1fr auto; align-items: center; gap: 12px; text-align: left; background: var(--card); cursor: pointer; }
 
@@ -309,6 +312,7 @@ button:disabled { opacity: .45; cursor: not-allowed; }
 .legal-screen details { border: 1px solid var(--border); border-radius: 16px; overflow: hidden; background: var(--card); }
 .legal-screen summary { min-height: 52px; padding: 14px 15px; display: flex; align-items: center; font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; }
 .legal-screen details p { margin: 0; padding: 0 15px 15px; color: var(--text-secondary); font-size: 11.5px; line-height: 1.55; }
+.legal-inline-link { display: inline-block; margin: -4px 15px 15px; color: var(--accent); font-size: 11.5px; font-weight: 700; }
 .legal-site-link { min-height: 46px; border: 1px solid var(--border); border-radius: 14px; display: flex; align-items: center; justify-content: center; color: var(--accent); text-decoration: none; background: var(--card); font-weight: 700; }
 
 .consent-backdrop { position: absolute; inset: 0; z-index: 30; padding: max(18px, env(safe-area-inset-top)) 16px max(18px, env(safe-area-inset-bottom)); display: grid; place-items: center; background: color-mix(in srgb, #101812 70%, transparent); backdrop-filter: blur(8px); }

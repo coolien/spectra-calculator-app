@@ -21,10 +21,31 @@ export type Translate = (source: string, values?: Record<string, string | number
 
 export function translate(language: Language, source: string, values?: Record<string, string | number>): string {
   const lookupSource = language === 'en' ? source : source.replaceAll('\u00a0', ' ');
-  const translated: string = language === 'en' ? source : dictionaries[language][lookupSource] ?? financeDictionaries[language][lookupSource] ?? uiDictionaries[language][lookupSource] ?? translateDynamic(language, lookupSource) ?? lookupSource;
+  const translated: string = language === 'en' ? source : dictionaries[language][lookupSource] ?? financeDictionaries[language][lookupSource] ?? uiDictionaries[language][lookupSource] ?? advertisingDictionaries[language][lookupSource] ?? translateDynamic(language, lookupSource) ?? lookupSource;
   if (!values) return translated;
   return Object.entries(values).reduce((text, [key, value]) => text.replaceAll(`{${key}}`, String(value)), translated);
 }
+
+const advertisingDictionaries: Record<Exclude<Language, 'en'>, Record<string, string>> = {
+  bm: {
+    'Advertisement': 'Iklan',
+    'Advertising': 'Pengiklanan',
+    'How Google uses advertising data': 'Cara Google guna data iklan',
+    'When advertising is enabled, Google AdSense and its partners may use cookies, local storage, device information, IP address, and interaction data to select, deliver, measure, and protect ads. Where required, Spectra will use a Google-certified consent platform before ad storage or personalized advertising.': 'Bila iklan dihidupkan, Google AdSense dan rakan mereka mungkin guna cookies, storan browser, maklumat peranti, alamat IP dan cara anda berinteraksi untuk pilih, papar, ukur dan lindungi iklan. Di tempat yang diwajibkan, Spectra akan minta persetujuan melalui platform yang disahkan Google sebelum simpan data iklan atau tunjuk iklan peribadi.',
+  },
+  zh: {
+    'Advertisement': '广告',
+    'Advertising': '广告说明',
+    'How Google uses advertising data': 'Google 怎么使用广告数据',
+    'When advertising is enabled, Google AdSense and its partners may use cookies, local storage, device information, IP address, and interaction data to select, deliver, measure, and protect ads. Where required, Spectra will use a Google-certified consent platform before ad storage or personalized advertising.': '开启广告后，Google AdSense 和合作伙伴可能会使用 Cookie、浏览器储存、设备资料、IP 地址和互动数据来选择、显示、衡量及保护广告。在法律要求的地区，Spectra 会先通过 Google 认证的同意平台征求你的同意，才储存广告数据或显示个人化广告。',
+  },
+  ta: {
+    'Advertisement': 'விளம்பரம்',
+    'Advertising': 'விளம்பர தகவல்',
+    'How Google uses advertising data': 'விளம்பரத் தரவை Google எப்படி பயன்படுத்துகிறது',
+    'When advertising is enabled, Google AdSense and its partners may use cookies, local storage, device information, IP address, and interaction data to select, deliver, measure, and protect ads. Where required, Spectra will use a Google-certified consent platform before ad storage or personalized advertising.': 'விளம்பரங்கள் இயக்கப்பட்டால், Google AdSense மற்றும் அதன் கூட்டாளர்கள் cookies, browser storage, சாதனத் தகவல், IP முகவரி மற்றும் நீங்கள் பயன்படுத்தும் விதம் பற்றிய தரவை விளம்பரங்களை தேர்வு செய்யவும், காட்டவும், அளவிடவும், பாதுகாக்கவும் பயன்படுத்தலாம். தேவைப்படும் இடங்களில், விளம்பரத் தரவை சேமிக்கவோ தனிப்பயன் விளம்பரங்களை காட்டவோ முன் Google அங்கீகரித்த consent platform மூலம் Spectra உங்கள் அனுமதியை கேட்கும்.',
+  },
+};
 
 function translateDynamic(language: Exclude<Language, 'en'>, source: string): string | null {
   for (const suffix of ['Adjusted proportionally because fixed shares exceed the estate.', 'Residue returned proportionally by radd estimate.']) {

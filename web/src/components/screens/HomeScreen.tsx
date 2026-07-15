@@ -6,6 +6,7 @@ import { CalculatorIcon } from '@/components/calculators/CalculatorIcon';
 import { ScreenHeading } from '@/components/ui/Controls';
 import { formatRinggit, profileMetrics } from '@/lib/profile-math';
 import { useI18n } from '@/components/app-shell/I18nProvider';
+import { AdSenseSlot } from '@/components/ads/AdSenseSlot';
 
 export function HomeScreen({
   profile, lastCalculator, onOpenCalculator, onOpenProfile, onSeeAll,
@@ -61,6 +62,8 @@ export function HomeScreen({
           ))}
         </div>
       </section>
+
+      <AdSenseSlot />
     </div>
   );
 }

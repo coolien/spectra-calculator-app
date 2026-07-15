@@ -1,28 +1,28 @@
 # Privacy Policy Draft
 
-Last updated: 30 June 2026
+Last updated: 15 July 2026
 
-Malaysia Loan & Finance Planner is developed by Spetrality Enterprise.
+Spectra is developed by Spectrality Enterprise.
 
-## Current v1 Data Handling
+## Data Handling
 
-The current v1 app stores saved scenarios, ongoing loan commitments, and the optional Personal Profile locally on the user's device. The app does not upload this data to Spetrality Enterprise, banks, lawyers, valuers, PTPTN, LHDN, Google, or any cloud account in this version.
+Spectra stores saved scenarios, ongoing loan commitments, and optional profiles locally on the user's device. When a user chooses account sign-in, profile, loan, and scenario data is backed up in Spectra's Supabase project so it can be restored on their devices. Users should not enter NRIC, card numbers, OTPs, passwords, or official documents.
 
 ## Data Users May Enter
 
 Users may enter property price, vehicle price, loan balances, finance rates, saved scenario names, optional monthly income, salary, statutory deduction assumptions, living expenses, commitments, ongoing loan payments, and optional investment cashflow assumptions.
 
-## Sensitive Data
+## Cloud Services
 
-The app does not ask for NRIC, bank account details, card numbers, passwords, OTPs, or official loan application documents. Salary and loan commitment values are sensitive financial information and remain local-only in v1.
+Website infrastructure, authentication, database, and font providers may process email address, IP address, device information, and service logs to deliver and protect Spectra.
+
+## Advertising
+
+When advertising is enabled, Google AdSense and its partners may use cookies, local storage, device information, IP address, and interaction data to select, deliver, measure, and protect ads. Where required, Spectra will use a Google-certified consent platform before ad storage or personalized advertising. More information is available in [Google's advertising data guidance](https://business.safety.google/privacy/ads-and-data/).
 
 ## User Control
 
 Users can delete saved scenarios, ongoing loans, and the Personal Profile from the app. Users can also use Local Data Controls to delete all local app data.
-
-## Future Features
-
-If ads, billing, analytics, login, cloud sync, or account features are added later, this policy and the Google Play Data Safety form must be updated before release.
 
 ## Contact
 
