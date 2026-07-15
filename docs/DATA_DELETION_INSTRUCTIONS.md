@@ -1,25 +1,19 @@
-# Data Deletion Instructions
+# Spectra Data Deletion Instructions
 
-Last updated: 30 June 2026
+Last updated: 15 July 2026
 
-The current v1 app stores data locally on the user's device only.
+The publishable bilingual instructions are maintained in
+`web/public/legal/index.html` and published at:
 
-## Delete All Local Data
+https://spectramsia.com/legal#deletion
 
-1. Open the app.
-2. Open the hamburger menu.
-3. Tap Settings.
-4. Tap Local Data Controls.
-5. Tap Delete all local data.
+Current controls:
 
-This removes saved scenarios, ongoing loans, and the optional Personal Profile from the device.
-
-## Delete Individual Data
-
-- Saved scenarios: open Saved Scenarios and delete the selected item.
-- Ongoing loans: open Overall Loans and delete the selected loan.
-- Personal Profile: replace saved values or use Delete all local data.
-
-## Cloud Accounts
-
-The current v1 app has no cloud account, login, or server sync. If cloud sync is added later, server-side deletion instructions must be added before launch.
+1. Local data is removed through the browser's site-data settings for
+   `calculatorapp.spectramsia.com`.
+2. App data can be exported from **Settings > Account & cloud sync**.
+3. A signed-in user can select **Delete cloud backup** to delete their Spectra
+   profile, app snapshot and cloud-consent rows, then sign out.
+4. Full Supabase authentication-account deletion is handled by a verified email
+   request to `sales@spectramsia.com` until a secure server-side self-service
+   account deletion function is implemented.

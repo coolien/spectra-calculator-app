@@ -43,7 +43,7 @@ export function LegalConsentGate({ onAccept }: { onAccept: () => void }) {
         </label>
 
         <button className="primary-action full consent-accept" type="button" disabled={!agreed} onClick={onAccept}>{t('Agree and continue')}</button>
-        <a className="consent-site-link" href="https://spectramsia.com/" target="_blank" rel="noreferrer">{t('Visit spectramsia.com')}</a>
+        <a className="consent-site-link" href="https://spectramsia.com/legal#calculator-privacy" target="_blank" rel="noreferrer">{t('Read the full legal and privacy notice')}</a>
       </section>
     </div>
   );
