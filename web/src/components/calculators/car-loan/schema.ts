@@ -3,15 +3,20 @@ import type { CalculatorSchema } from '@/lib/app-model';
 export const carLoanSchema: CalculatorSchema = {
   key: 'car',
   shortName: 'Car',
-  title: 'Car Loan',
+  title: 'Car Loan / Hire Purchase',
   screenTitle: 'Hire purchase estimate',
-  description: 'Malaysia flat-rate hire purchase planning',
-  homeDescription: 'Hire purchase flat-rate installment',
+  description: 'Malaysia hire-purchase planning with EIR and reducing balance',
+  homeDescription: 'Hire purchase EIR and reducing-balance planning',
   secondaryMetricIndex: 0,
   secondaryLabel: 'Total interest',
   defaults: {
-    vehiclePrice: '90000', downPaymentPercent: '10', annualFlatRatePercent: '3.00',
-    tenureYears: '7', upfrontFees: '0', vehicleType: 'new',
+    vehiclePrice: '90000', downPaymentPercent: '10', downPaymentAmount: '9000', downPaymentMode: 'percent',
+    annualFlatRatePercent: '3.00', flatRatePercent: '3.00', eirPercent: '5.00', rateMode: 'eir',
+    rateType: 'fixed', referenceRate: '3.00', spread: '2.00', oprStress: '0',
+    tenureYears: '7', customTenureYears: '7', upfrontFees: '0', vehicleType: 'new',
+    agreementTiming: 'after', providerReadiness: 'not-sure', settleAfterMonths: '12',
+    processingFee: '0', firstYearInsurance: '0', roadTax: '0', registrationTransfer: '0', accessories: '0',
+    insuranceRenewal: '0', recurringRoadTax: '0', maintenance: '0', tyres: '0', parkingTollFuel: '0',
   },
   steps: [
     {

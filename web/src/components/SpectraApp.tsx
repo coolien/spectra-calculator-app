@@ -12,6 +12,7 @@ import { TopBar } from '@/components/app-shell/TopBar';
 import { TabBar } from '@/components/app-shell/TabBar';
 import { calculatorDefaults, calculatorOrder } from '@/components/calculators/schemas';
 import { CalculatorScreen } from '@/components/calculators/CalculatorScreen';
+import { CarLoanCalculatorScreen } from '@/components/calculators/car-loan/CarLoanCalculatorScreen';
 import { HomeScreen } from '@/components/screens/HomeScreen';
 import { CalculatorsScreen } from '@/components/screens/CalculatorsScreen';
 import { SavedScreen } from '@/components/screens/SavedScreen';
@@ -146,6 +147,16 @@ function SpectraExperience() {
 
   function renderScreen() {
     if (detail && isCalculatorKey(detail)) {
+      if (detail === 'car') {
+        return (
+          <CarLoanCalculatorScreen
+            form={forms[detail]}
+            onChange={(field, value) => updateCalculatorField(detail, field, value)}
+            onReset={() => setForms((current) => ({ ...current, [detail]: { ...calculatorDefaults[detail] } }))}
+            onSave={(scenario) => setSavedScenarios((current) => [scenario, ...current.filter((item) => item.id !== scenario.id)])}
+          />
+        );
+      }
       return (
         <CalculatorScreen
           calculator={detail}
