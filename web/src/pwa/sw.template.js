@@ -3,6 +3,9 @@ const CACHE_NAME = "__SPECTRA_CACHE_NAME__";
 
 const APP_SHELL = [
   "/",
+  "/learn",
+  "/about",
+  "/contact",
   "/manifest.webmanifest",
   "/spectra_build.json",
   "/spectra-brand-v2-favicon.png",

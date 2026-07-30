@@ -1,11 +1,17 @@
 import type { Metadata, Viewport } from 'next';
 import Script from 'next/script';
 import { adsenseConfig } from '@/lib/ads';
+import { SITE_URL } from '@/lib/site';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Spectra',
-  description: "Spectra's Malaysia-focused finance planning calculator.",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: 'Spectra Calculator — Malaysian home, car and loan affordability',
+    template: '%s | Spectra Calculator',
+  },
+  description:
+    'Work out Malaysian home financing, car hire purchase, personal loans, credit cards and PTPTN with the rules that actually apply here — flat rate, reducing balance, stamp duty and DSR.',
   manifest: '/manifest.webmanifest',
   icons: {
     icon: '/spectra-brand-v2-favicon.png',
