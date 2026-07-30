@@ -264,3 +264,104 @@ export function calculateHousingPurchase(input: HousingPurchaseInput, cfg: Malay
 }
 
 export { CONFIG as MALAYSIA_2026_CONFIG };
+
+export interface AffordablePriceInput {
+  grossMonthlyIncome: number;
+  existingCommitments?: number;
+  monthlyTax?: number;
+  age?: number;
+  targetDsrPercent?: number;
+  annualRatePercent: number;
+  tenureYears: number;
+  downPaymentPercent?: number;
+  buyerType?: BuyerType;
+  firstHome?: boolean;
+  propertyType?: PropertyType;
+}
+
+export interface AffordablePriceResult {
+  maxPropertyPrice: number;
+  maxLoanAmount: number;
+  monthlyInstalment: number;
+  instalmentBudget: number;
+  upfrontCashNeeded: number;
+  dsrGross: number;
+  dsrNet: number;
+  netIncome: number;
+  targetDsrPercent: number;
+  basis: 'gross';
+  limitedBy: 'dsr' | 'zero-budget';
+}
+
+/**
+ * Solves the reverse question — "what price can I afford?" — which the rest of the
+ * engine cannot answer, because everything else runs price -> instalment -> DSR.
+ *
+ * Bisection on property price rather than a closed form: upfront cash, stamp duty
+ * and legal fees are all tiered and price-dependent, so there is no clean inverse.
+ * 60 iterations over a 0..RM50m bracket converges well past sen precision.
+ *
+ * DSR is assessed on GROSS income, matching how Malaysian banks decide (see
+ * docs/RATE_AUDIT_2026-07-30.md, DEFECT-2). `dsrNet` is returned alongside as the
+ * honest cash-flow picture, and callers should show both.
+ *
+ * This is a planning estimate, not an approval. Banks apply their own credit
+ * scoring, income multiples and internal DSR ceilings on top of this.
+ */
+export function maxAffordablePrice(input: AffordablePriceInput, cfg: MalaysiaConfig = CONFIG): AffordablePriceResult {
+  const gross = Math.max(0, input.grossMonthlyIncome);
+  const commitments = Math.max(0, input.existingCommitments ?? 0);
+  const targetDsrPercent = input.targetDsrPercent ?? 40;
+  const downPaymentPercent = input.downPaymentPercent ?? 10;
+  const tenureMonths = Math.max(1, Math.round(input.tenureYears * 12));
+
+  const income = netMonthlyIncome({ grossMonthlyIncome: gross, monthlyTax: input.monthlyTax, age: input.age }, cfg);
+  const instalmentBudget = round2(Math.max(0, gross * targetDsrPercent / 100 - commitments));
+
+  const empty = (): AffordablePriceResult => ({
+    maxPropertyPrice: 0, maxLoanAmount: 0, monthlyInstalment: 0, instalmentBudget,
+    upfrontCashNeeded: 0, dsrGross: 0, dsrNet: 0, netIncome: income.net,
+    targetDsrPercent, basis: 'gross', limitedBy: 'zero-budget',
+  });
+  if (gross <= 0 || instalmentBudget <= 0) return empty();
+
+  const instalmentFor = (price: number) =>
+    reducingBalanceInstalment(price * Math.max(0, 1 - downPaymentPercent / 100), input.annualRatePercent, tenureMonths);
+
+  let low = 0;
+  let high = 50_000_000;
+  for (let i = 0; i < 60; i += 1) {
+    const mid = (low + high) / 2;
+    if (instalmentFor(mid) <= instalmentBudget) low = mid; else high = mid;
+  }
+
+  // Round down to the nearest RM1,000 — a price to shop at, not a false precision.
+  const maxPropertyPrice = Math.floor(low / 1000) * 1000;
+  if (maxPropertyPrice <= 0) return empty();
+
+  const maxLoanAmount = round2(maxPropertyPrice * Math.max(0, 1 - downPaymentPercent / 100));
+  const monthlyInstalment = round2(instalmentFor(maxPropertyPrice));
+
+  const buyerType = input.buyerType ?? 'citizen';
+  const firstHome = input.firstHome ?? true;
+  const mot = calculateMOTStampDuty({ propertyPrice: maxPropertyPrice, buyerType, firstHome }, cfg);
+  const loanDuty = calculateLoanStampDuty({ loanAmount: maxLoanAmount, propertyPrice: maxPropertyPrice, buyerType, firstHome }, cfg);
+  const spaLegal = calculateSPALegalFees(maxPropertyPrice, 0, cfg);
+  const loanLegal = calculateLoanLegalFees(maxLoanAmount, 0, cfg);
+  const valuation = calculateValuationFees(maxPropertyPrice, input.propertyType ?? 'subsale', cfg);
+  const downPayment = maxPropertyPrice * downPaymentPercent / 100;
+
+  return {
+    maxPropertyPrice,
+    maxLoanAmount,
+    monthlyInstalment,
+    instalmentBudget,
+    upfrontCashNeeded: round2(downPayment + mot.netDuty + loanDuty.netDuty + spaLegal.total + loanLegal.total + valuation),
+    dsrGross: round2((commitments + monthlyInstalment) / gross * 100),
+    dsrNet: income.net > 0 ? round2((commitments + monthlyInstalment) / income.net * 100) : 0,
+    netIncome: income.net,
+    targetDsrPercent,
+    basis: 'gross',
+    limitedBy: 'dsr',
+  };
+}

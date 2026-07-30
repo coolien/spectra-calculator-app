@@ -59,28 +59,24 @@ fits that pattern even when each page is fine.
 
 So the pipeline is deliberately built to make *quality* the bottleneck, not throughput.
 
-## On publishing daily
+## Cadence: none
 
-Daily is achievable for a stretch and it is the wrong target on its own. Two reasons, both
-practical rather than cautious:
+**There is no publishing schedule. An article ships when it qualifies, and not before.**
 
-1. **You have ~18 strong topics**, growing as calculators grow. Daily publishing exhausts
-   genuine questions in under three weeks, and what comes after is variations — which is
-   precisely the content-farm signature.
-2. **Indexing lags publishing.** Google needs days to weeks per page. Publishing faster
-   than you get indexed does not accelerate ranking; it just enlarges the crawl surface.
+A topic qualifies only when all of these hold:
 
-Suggested ramp:
+- A real Malaysian searches it before a money decision
+- A Spectra engine computes the answer — no hand-waved numbers
+- The current top results are wrong, thin, or silent on something that matters
+- Every rule it depends on is sourced and dated
+- The owner has read it
 
-| Phase | Cadence | Goal |
-| --- | --- | --- |
-| Weeks 1–4 | 2–3 / week | Reach 8–12 articles, request AdSense review |
-| Weeks 5–12 | 2 / week | Reach ~30, watch Search Console for what actually ranks |
-| After | 1 / week + updates | Depth over count; refresh each Budget cycle |
+If that means two articles this month and none next, that is the correct output. A quiet
+month is not a failure of the pipeline — it is the pipeline working. The failure mode is
+shipping a page because it was Tuesday.
 
-If you want daily, the honest version is: **draft daily, publish when a draft earns it.**
-The research and drafting can run every day — that costs nothing and builds a queue. The
-gate is what protects the domain.
+Practical consequence: research and drafting may run whenever, building a queue. Queue depth
+is not a target either. Do not let a full drafts folder become a reason to publish.
 
 ## What nobody should promise you
 

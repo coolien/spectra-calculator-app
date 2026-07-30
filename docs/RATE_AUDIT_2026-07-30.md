@@ -24,13 +24,55 @@ or missing a dimension.
 | Credit card minimum payment | 5%, floor RM50 | BNM (raised from 3%) |
 | Credit card min income | RM24,000 p.a. | BNM credit card guidelines |
 | PTPTN ujrah | 1% p.a. | PTPTN |
-| PTPTN discounts | 15% full settlement / 10% partial or salary deduction / 10% consistent | PTPTN 2026 incentives |
+| ~~PTPTN discounts~~ | **RETRACTED — see DISPUTED-1** | — |
 | HP Act effective date | 1 June 2026, grace to 31 Mar 2027 | Hire-Purchase (Amendment) Act 2026 |
 
 The HP EIR caps (fixed 17% ≤5y / 16% >5y, variable 17%) are cited in
 `SPEC-Car-Loan-2026.md` to BNM's consumer guide via Business Today and The Edge. The test
 suite independently reproduces the official guide's published EIR example. Treated as
 verified, but see UNVERIFIED-1 — I could not confirm the caps from BNM's own page directly.
+
+## DISPUTED — highest priority
+
+**DISPUTED-1 — `ptptn.discounts2026` contradicted by PTPTN itself. BLOCKING.**
+
+*Added 30 Jul 2026, correcting this document's own first pass.*
+
+Config carries `discounts2026: [15% full settlement, 10% partial/salary deduction, 10%
+consistent scheduled]`, and the first version of this audit marked those **VERIFIED**. That
+was wrong. It rested on secondary sources — finance blogs and calculator sites — not on
+PTPTN.
+
+PTPTN's own official accounts state repeatedly, in reply to borrowers:
+
+> "Buat masa ini tiada diskaun bagi bayaran balik pinjaman PTPTN berdasarkan Belanjawan
+> 2026. Sekiranya ada pada masa akan datang, hebahan akan dilakukan melalui laman web rasmi
+> serta saluran media baharu PTPTN."
+
+Sources: [@PTPTNOfficial on X](https://x.com/PTPTNOfficial/status/2020662177112486330),
+and the same statement on Threads
+([1](https://www.threads.com/@ptptnofficial/post/DWf8A2ukX3V/),
+[2](https://www.threads.com/@ptptnofficial/post/DUUnWCgkdGc/)).
+
+`ptptn.gov.my/DiskaunPTPTN/` returns HTTP 403 to automated fetch, so the authoritative page
+could not be read. It must be opened in a browser.
+
+**Why this matters more than anything else in this document:** the live calculator shows a
+user a settlement saving that may not exist. Someone could pay off a PTPTN loan early
+expecting a 15% discount and receive nothing. That is real money, and it is exactly the
+harm this audit exists to prevent.
+
+**Not changed unilaterally.** The evidence is strong but not complete — a standing
+SG-PTPTN salary-deduction incentive may exist independently of Budget 2026, which would
+explain the secondary sources without vindicating the config. Silently zeroing a financial
+figure on partial evidence would be its own kind of wrong.
+
+**Required next step, in order:**
+1. Open `ptptn.gov.my/DiskaunPTPTN/` in a browser and read what is actually offered today.
+2. If no discount applies, remove or zero `discounts2026` and ship it as a correction.
+3. If a discount applies but is not Budget-2026-derived, keep it and fix its provenance and
+   label.
+4. Until resolved, no PTPTN article may be published (see `docs/CONTENT_PIPELINE.md`).
 
 ## UNVERIFIED — needs a source or a visible "estimate" label
 
@@ -57,10 +99,27 @@ derivable constant — true EIR depends on tenure. Not attributable to any sourc
 *Recommendation:* compute EIR properly per tenure as the car loan engine already does, or
 label the output an approximation in the UI.
 
-**UNVERIFIED-3 — legal fee scale and valuation fee bands.**
-`legalFeeScaleSRO2023` (min RM500, 25% max negotiable discount, disbursements
-RM1,000–1,500) and `valuationFeeScale` (min RM50) come from the Solicitors' Remuneration
-Order. Not independently confirmed here. Check the SRO text.
+**UNVERIFIED-3 — legal fee scale and valuation fee bands.** *(partly closed 30 Jul 2026)*
+The **SRO 2023 scale itself is now corroborated**: 1.25% on the first RM500,000, 1% on the
+next RM7,000,000, RM500 minimum, 25% maximum negotiable discount — matching config exactly,
+per two independent Malaysian law firms
+([JY Ko](https://jykolaw.com/legal-fees-solicitors-remuneration-order-2023-a-comprehensive-guide/),
+[Nor Chambers](https://norchambers.com.my/2024/01/11/legal-fees/)). Worth noting several
+ranking competitor calculators still use the superseded SRO 2005 scale (1.0% / 0.8%) and
+therefore understate legal fees.
+
+Still unverified: the RM1,000–1,500 **disbursements** range and the **valuation fee scale**.
+Label both as estimates until sourced.
+
+**UNVERIFIED-6 — car loan tenure and margin caps.**
+`carLoan.tenureCaps` (9 years new / 7 used) and `carLoan.marginOfFinanceMax` (90%) were not
+covered in the first pass. Source before any article quotes them.
+
+**UNVERIFIED-7 — personal loan flat/Rule-78 abolition date.**
+`personalLoan.flatAndRuleOf78AbolishedFrom: "2027-01-01"`. Secondary reporting supports a
+1 Jan 2027 transition deadline for personal financing under a revised BNM policy document —
+note this is **separate from the Hire-Purchase Act 2026**, and the two are widely conflated.
+The BNM policy document itself must be obtained. Blocking for any personal loan article.
 
 **UNVERIFIED-4 — indicative financing rates.**
 `sbrIndicative 3%`, `spreadRange 0.85–1.2%`, `typicalRate 4%`,

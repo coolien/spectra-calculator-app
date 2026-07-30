@@ -7,6 +7,7 @@ import {
   calculateDSR,
   netMonthlyIncome,
   epfEmployeeRateForAge,
+  maxAffordablePrice,
 } from '../src/lib/finance/housing-finance-engine.ts';
 import {
   effectiveInterestRate,
@@ -154,4 +155,76 @@ test('DSR verdict bands on gross income, the basis banks assess', () => {
   });
   assert.equal(comfortable.dsrGross, 39);
   assert.equal(comfortable.verdict, 'comfortable');
+});
+
+test('maxAffordablePrice solves the reverse question and respects the gross DSR budget', () => {
+  const result = maxAffordablePrice({
+    grossMonthlyIncome: 6_000,
+    existingCommitments: 800,
+    age: 30,
+    targetDsrPercent: 40,
+    annualRatePercent: 4,
+    tenureYears: 35,
+    downPaymentPercent: 10,
+  });
+
+  // Budget = 40% of RM6,000 gross, less RM800 existing = RM1,600/month.
+  assert.equal(result.instalmentBudget, 1_600);
+  assert.equal(result.basis, 'gross');
+  assert.equal(result.limitedBy, 'dsr');
+
+  // The instalment must fit the budget, and the price must be the largest that does.
+  assert.ok(result.monthlyInstalment <= result.instalmentBudget);
+  assert.ok(result.maxPropertyPrice > 0);
+  assert.equal(result.maxPropertyPrice % 1000, 0, 'price is rounded down to a shoppable figure');
+
+  // Total DSR on gross lands at or just under the target — never above it.
+  assert.ok(result.dsrGross <= 40 + 0.01, `dsrGross ${result.dsrGross} exceeded target`);
+  assert.ok(result.dsrNet > result.dsrGross, 'net DSR is always the harsher number');
+
+  // Upfront cash must exceed the bare down payment: duties, legal fees and valuation.
+  assert.ok(result.upfrontCashNeeded > result.maxPropertyPrice * 0.1);
+});
+
+test('maxAffordablePrice returns zero when commitments already exhaust the DSR budget', () => {
+  const result = maxAffordablePrice({
+    grossMonthlyIncome: 4_000,
+    existingCommitments: 2_000, // already 50% of gross, past a 40% target
+    targetDsrPercent: 40,
+    annualRatePercent: 4,
+    tenureYears: 35,
+  });
+
+  assert.equal(result.limitedBy, 'zero-budget');
+  assert.equal(result.maxPropertyPrice, 0);
+  assert.equal(result.monthlyInstalment, 0);
+  assert.equal(result.instalmentBudget, 0);
+});
+
+test('maxAffordablePrice is consistent with calculateHousingPurchase at the same price', () => {
+  const affordable = maxAffordablePrice({
+    grossMonthlyIncome: 8_000,
+    existingCommitments: 0,
+    age: 30,
+    targetDsrPercent: 40,
+    annualRatePercent: 4,
+    tenureYears: 30,
+    downPaymentPercent: 10,
+  });
+
+  const forward = calculateHousingPurchase({
+    propertyPrice: affordable.maxPropertyPrice,
+    downPaymentPercent: 10,
+    annualRatePercent: 4,
+    tenureYears: 30,
+    buyerType: 'citizen',
+    firstHome: true,
+    grossMonthlyIncome: 8_000,
+    existingCommitments: 0,
+    targetDsrPercent: 40,
+  });
+
+  // The reverse solver and the forward calculator must agree on the instalment.
+  assert.equal(forward.monthlyCommitment.baseInstalment, affordable.monthlyInstalment);
+  assert.equal(forward.affordability?.dsrGross, affordable.dsrGross);
 });
