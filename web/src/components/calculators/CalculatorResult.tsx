@@ -1,4 +1,5 @@
-import { CheckCircle2, FileDown } from 'lucide-react';
+import { CheckCircle2, ChevronDown, FileDown } from 'lucide-react';
+import { useState } from 'react';
 import { formatMyr, formatPercent } from '@/lib/calculators';
 import type { CalculatorOutcome } from '@/lib/app-model';
 import { MetricCard } from '@/components/ui/Controls';
@@ -14,6 +15,7 @@ export function CalculatorResult({
   onExportPdf: () => void;
 }) {
   const { t } = useI18n();
+  const [openInsight, setOpenInsight] = useState<string | null>(null);
   return (
     <section className="full-result print-report" aria-label={t('Full calculation breakdown')}>
       <header className="print-report-header">
@@ -34,6 +36,8 @@ export function CalculatorResult({
       <div className="metric-grid">
         {result.metrics.map((metric) => <MetricCard key={metric.label} {...metric} />)}
       </div>
+
+      {result.insights && result.insights.length > 0 && <section className="insight-stack" aria-label="Reality check"><h2>Reality check</h2>{result.insights.map((insight) => { const open = openInsight === insight.id; return <article className={`insight-card ${insight.tone ? `tone-${insight.tone}` : ''}`} key={insight.id}><button type="button" className="insight-toggle" aria-expanded={open} onClick={() => setOpenInsight(open ? null : insight.id)}><span className="insight-title"><strong>{insight.title}</strong><small>{insight.headline}</small></span><ChevronDown size={17} className={open ? 'chevron is-open' : 'chevron'} /></button>{open && <p className="insight-detail">{insight.detail}</p>}</article>; })}</section>}
 
       {result.rows && (
         <section className="breakdown-card">

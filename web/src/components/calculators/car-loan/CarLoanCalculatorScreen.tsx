@@ -24,6 +24,7 @@ import {
   totalCostOfOwnership,
   type AmortisationRow,
 } from '@/lib/finance/hirePurchase';
+import { carLoanReview } from '@/lib/finance/car-loan-engine';
 import {
   APP_VERSION,
   contentLastReviewed,
@@ -92,6 +93,7 @@ type CarLoanCalculation = {
   settlement: SettlementComparison;
   stressRows: StressRow[];
   validation: ValidationState;
+  dsr: ReturnType<typeof carLoanReview>['dsr'];
 };
 
 type StressRow = {
@@ -320,6 +322,16 @@ export function CarLoanCalculatorScreen({
               <MoneyInput label="Parking / toll / fuel (monthly)" value={form.parkingTollFuel ?? ''} prefix="RM" suffix="/mo" onChange={(value) => changeField('parkingTollFuel', value)} />
             </div>
           </AccordionCard>
+
+          <AccordionCard number={6} title="Affordability check" summary={form.grossMonthlyIncome ? `RM ${form.grossMonthlyIncome} income` : 'Optional'} optional open={openSteps.includes('affordability')} onToggle={() => toggleStep('affordability')}>
+            <p className="step-description">Use your profile income and commitments to see the payment's DSR on net income.</p>
+            <div className="field-grid">
+              <NumberInput label="Gross monthly income" value={form.grossMonthlyIncome ?? ''} suffix="RM" onChange={(value) => changeField('grossMonthlyIncome', value)} />
+              <NumberInput label="Existing commitments" value={form.existingCommitments ?? ''} suffix="RM" onChange={(value) => changeField('existingCommitments', value)} />
+              <NumberInput label="Monthly PCB / tax" value={form.monthlyTax ?? ''} suffix="RM" onChange={(value) => changeField('monthlyTax', value)} />
+              {result?.dsr && <div className="hp-cap-check is-full"><CheckCircle2 size={16} /><span>{formatPercent(result.dsr.dsrNet)} net DSR · {result.dsr.label}</span></div>}
+            </div>
+          </AccordionCard>
         </div>
 
         {validation.errors.length > 0 && <div className="hp-validation-summary" role="alert" aria-live="polite">{validation.errors.map((error) => <p key={error}><AlertTriangle size={15} />{error}</p>)}</div>}
@@ -390,6 +402,7 @@ function CarLoanResult({
         <MetricCard label="Effective Interest Rate (EIR)" value={formatPercent(calculation.effectiveEIRPercent)} />
         <MetricCard label="Total repayment" value={formatSen(calculation.selectedTotalRepaymentSen)} />
         <MetricCard label="Upfront cash estimate" value={formatSen(calculation.downPaymentSen + calculation.upfrontCostsSen)} />
+        <MetricCard label="DSR on net income" value={calculation.dsr ? formatPercent(calculation.dsr.dsrNet) : 'Add income'} />
       </div>
 
       <section className="breakdown-card">
@@ -405,6 +418,7 @@ function CarLoanResult({
           ['Tenure', `${calculation.tenureYears} years (${calculation.tenureMonths} months)`],
           ['Upfront ownership costs', formatSen(calculation.upfrontCostsSen)],
           ['Recurring monthly-equivalent costs', formatSen(calculation.trueMonthlyCostSen - calculation.selectedMonthlySen)],
+          ['DSR on net income', calculation.dsr ? `${formatPercent(calculation.dsr.dsrNet)} · ${calculation.dsr.verdict}` : 'Add income in step 6'],
         ].map(([label, value]) => <div className="breakdown-row" key={label}><span>{label}</span><strong>{value}</strong></div>)}
       </section>
 
@@ -615,7 +629,8 @@ function calculateCarLoanForm(form: FormState): CarLoanCalculation {
     const guide = publishedGuideQuoteFromEIR(principalSen, stressEIR, tenureMonths);
     return { delta, eirPercent: stressEIR, monthlySen: guide.monthlySen, totalInterestSen: roundMoney(stressInterest), overCap: stressEIR > statutoryCapPercent };
   });
-  return { vehiclePriceSen, downPaymentSen, downPaymentPercent, principalSen, tenureMonths, tenureYears, rateMode, rateType, flatRatePercent, eirPercent, effectiveEIRPercent, statutoryCapPercent, schedule, newMonthlySen, newTotalInterestSen, newExactTotalInterestSen, legacyMonthlySen, legacyTotalInterestSen, legacyTotalRepaymentSen, selectedMonthlySen, selectedTotalInterestSen, selectedTotalRepaymentSen, upfrontCostsSen: tco.upfrontCostsSen, trueMonthlyCostSen: tco.trueMonthlyCostSen, transition, settlement, stressRows, validation };
+  const rmReview = carLoanReview({ vehiclePrice: vehiclePriceSen / 100, downPaymentPercent, flatRatePercent, years: tenureYears, vehicleType: form.vehicleType === 'used' ? 'used' : 'new', rateType, grossMonthlyIncome: Number.isFinite(numberValue(form.grossMonthlyIncome)) && numberValue(form.grossMonthlyIncome) > 0 ? numberValue(form.grossMonthlyIncome) : undefined, existingCommitments: numberValue(form.existingCommitments), monthlyTax: numberValue(form.monthlyTax), settleAfterYears: settlementMonth / 12, costs: { annualInsurance: numberValue(form.insuranceRenewal), annualRoadTax: numberValue(form.recurringRoadTax), annualMaintenance: numberValue(form.maintenance), annualTyres: numberValue(form.tyres), monthlyParkingTollFuel: numberValue(form.parkingTollFuel) } });
+  return { vehiclePriceSen, downPaymentSen, downPaymentPercent, principalSen, tenureMonths, tenureYears, rateMode, rateType, flatRatePercent, eirPercent, effectiveEIRPercent, statutoryCapPercent, schedule, newMonthlySen, newTotalInterestSen, newExactTotalInterestSen, legacyMonthlySen, legacyTotalInterestSen, legacyTotalRepaymentSen, selectedMonthlySen, selectedTotalInterestSen, selectedTotalRepaymentSen, upfrontCostsSen: tco.upfrontCostsSen, trueMonthlyCostSen: tco.trueMonthlyCostSen, transition, settlement, stressRows, validation, dsr: rmReview.dsr };
 }
 
 function calculateSettlement(input: { principalSen: number; tenureMonths: number; effectiveEIRPercent: number; flatRatePercent: number; schedule: AmortisationRow[]; newTotalInterestSen: number; legacyTotalInterestSen: number }, month: number): SettlementComparison {

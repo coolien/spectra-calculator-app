@@ -1,0 +1,167 @@
+{
+  "meta": {
+    "schemaVersion": "2026.1.0",
+    "jurisdiction": "Malaysia (Peninsular)",
+    "effectiveFrom": "2026-01-01",
+    "lastVerified": "2026-07-29",
+    "currency": "MYR",
+    "description": "Config-driven planning rules for Spectra. Update the data when the law or Budget changes."
+  },
+  "serviceTax": { "rateOnProfessionalServices": 0.08 },
+  "legalFeeScaleSRO2023": {
+    "minimumFee": 500,
+    "maxNegotiableDiscount": 0.25,
+    "bands": [
+      { "sliceUpTo": 500000, "rate": 0.0125, "label": "First RM500,000" },
+      { "sliceUpTo": 7000000, "rate": 0.01, "label": "Next RM7,000,000" },
+      { "sliceUpTo": 2000000, "rate": 0.006, "label": "Next RM2,000,000" },
+      { "sliceUpTo": 2500000, "rate": 0.005, "label": "Next RM2,500,000" },
+      { "sliceUpTo": null, "rate": 0.005, "label": "Excess above RM12,000,000" }
+    ],
+    "disbursementsPerDocument": { "typicalLow": 1000, "typicalHigh": 1500, "default": 1200 }
+  },
+  "stampDuty": {
+    "memorandumOfTransfer": {
+      "citizenAndPrTiers": [
+        { "sliceUpTo": 100000, "rate": 0.01, "label": "First RM100,000" },
+        { "sliceUpTo": 400000, "rate": 0.02, "label": "Next RM400,000" },
+        { "sliceUpTo": 500000, "rate": 0.03, "label": "Next RM500,000" },
+        { "sliceUpTo": null, "rate": 0.04, "label": "Above RM1,000,000" }
+      ],
+      "foreignFlatRate": 0.08,
+      "foreignAppliesTo": ["foreign-individual", "foreign-company"]
+    },
+    "loanAgreement": { "rate": 0.005 }
+  },
+  "firstHomeExemption": {
+    "tiers": [{ "priceUpTo": 500000, "motExemptionRate": 1, "loanAgreementExemptionRate": 1 }]
+  },
+  "valuationFeeScale": {
+    "minimumFee": 50,
+    "serviceTaxApplies": true,
+    "bands": [
+      { "sliceUpTo": 100000, "rate": 0.0025 },
+      { "sliceUpTo": 1900000, "rate": 0.002 },
+      { "sliceUpTo": 5000000, "rate": 0.0016667 },
+      { "sliceUpTo": null, "rate": 0.00125 }
+    ]
+  },
+  "financing": {
+    "tenure": { "maxYears": 35, "maxAgeAtEnd": 70 },
+    "loanToValueCap": { "firstAndSecondProperty": 0.9, "thirdAndSubsequent": 0.7 },
+    "conventional": { "sbrIndicative": 0.03, "spreadRange": { "min": 0.0085, "max": 0.012 }, "typicalRate": 0.04 },
+    "islamic": { "ceilingProfitRateIndicative": 0.1, "typicalRate": 0.04, "ibraMandatory": true }
+  },
+  "affordability": {
+    "dsr": {
+      "benchmarkBands": [
+        { "maxRatio": 0.4, "verdict": "comfortable", "label": "≤ 40% — typically comfortable" },
+        { "maxRatio": 0.6, "verdict": "stretched", "label": "40%–60% — bank-dependent" },
+        { "maxRatio": null, "verdict": "high", "label": "> 60% — high risk of decline" }
+      ]
+    },
+    "statutoryDeductions": {
+      "epfEmployeeRate": 0.11,
+      "socso": { "employeeRate": 0.005, "wageCeiling": 6000 },
+      "eis": { "employeeRate": 0.002, "wageCeiling": 6000 }
+    }
+  },
+  "taxRelief": {
+    "housingLoanInterest": {
+      "consecutiveYearsOfAssessment": 3,
+      "bands": [
+        { "priceUpTo": 500000, "annualReliefCap": 7000 },
+        { "priceUpTo": 750000, "annualReliefCap": 5000 },
+        { "priceUpTo": null, "annualReliefCap": 0 }
+      ]
+    },
+    "marginalTaxRateBandsYA2026": [
+      { "chargeableUpTo": 5000, "rate": 0 },
+      { "chargeableUpTo": 20000, "rate": 0.01 },
+      { "chargeableUpTo": 35000, "rate": 0.03 },
+      { "chargeableUpTo": 50000, "rate": 0.06 },
+      { "chargeableUpTo": 70000, "rate": 0.11 },
+      { "chargeableUpTo": 100000, "rate": 0.19 },
+      { "chargeableUpTo": 400000, "rate": 0.25 },
+      { "chargeableUpTo": 600000, "rate": 0.26 },
+      { "chargeableUpTo": 2000000, "rate": 0.28 },
+      { "chargeableUpTo": null, "rate": 0.3 }
+    ]
+  },
+  "profile": {
+    "financingProductMap": {
+      "islamic": {
+        "home": "Musharakah Mutanaqisah / Tawarruq",
+        "car": "AITAB",
+        "personal": "Tawarruq / Commodity Murabahah",
+        "insurance": "Takaful",
+        "rateLabel": "profit rate",
+        "settlementRebate": "Ibra' rebate",
+        "showFaraid": true
+      },
+      "conventional": {
+        "home": "Term loan",
+        "car": "Hire purchase",
+        "personal": "Personal loan",
+        "insurance": "Insurance",
+        "rateLabel": "interest rate",
+        "settlementRebate": "rebate",
+        "showFaraid": false
+      }
+    },
+    "healthScore": {
+      "pillars": [
+        { "key": "affordability", "weight": 0.25, "measures": "Net-income DSR headroom" },
+        { "key": "savings", "weight": 0.2, "measures": "Emergency-fund months" },
+        { "key": "debtHealth", "weight": 0.2, "measures": "Credit utilisation and conduct" },
+        { "key": "protection", "weight": 0.2, "measures": "Takaful/insurance and EPF" },
+        { "key": "planning", "weight": 0.15, "measures": "Savings habits and goals" }
+      ],
+      "bands": [
+        { "min": 80, "label": "Strong" },
+        { "min": 60, "label": "Stable" },
+        { "min": 40, "label": "Building" },
+        { "min": 0, "label": "At risk" }
+      ]
+    }
+  },
+  "personalLoan": {
+    "flatToEirApprox": 1.88,
+    "stampDutyRate": 0.005,
+    "flatAndRuleOf78AbolishedFrom": "2027-01-01",
+    "licensedLenders": {
+      "banks": "Regulated by Bank Negara Malaysia.",
+      "moneylenders": "Verify a KPKT-licensed moneylender through i-KrediKom."
+    }
+  },
+  "creditCard": {
+    "eligibility": { "minAnnualIncome": 24000, "lowIncomeThresholdAnnual": 36000, "maxIssuersLowIncome": 2, "limitMultipleLowIncome": 2 },
+    "interest": { "capAPR": 0.18, "tier1": 0.15, "tier2": 0.17 },
+    "fees": { "minimumPaymentPercent": 0.05, "minimumPaymentFloor": 50, "latePercent": 0.01, "lateMin": 10, "lateMax": 100 },
+    "dsrCommitmentPercent": 0.05,
+    "healthyUtilization": 0.3,
+    "bnplInterestIfOnTime": 0
+  },
+  "ptptn": {
+    "ujrahRatePerAnnum": 0.01,
+    "minMonthlyInstalment": 150,
+    "discounts2026": [
+      { "type": "full-settlement", "rate": 0.15, "label": "15% off full lump-sum settlement" },
+      { "type": "partial-or-salary-deduction", "rate": 0.1, "label": "10% off partial lump-sum or salary deduction" },
+      { "type": "consistent-scheduled", "rate": 0.1, "label": "10% off consistent scheduled payments" }
+    ],
+    "creditReporting": { "reportedToCCRIS": true, "dsrCounts": true }
+  },
+  "carLoan": {
+    "effectiveDate": "1 June 2026",
+    "providerGracePeriodEnd": "31 March 2027",
+    "eirCaps": { "fixed": [{ "maxTenureMonths": 60, "capPercent": 17 }, { "maxTenureMonths": null, "capPercent": 16 }], "variable": [{ "maxTenureMonths": null, "capPercent": 17 }] },
+    "tenureCaps": { "newVehicleYears": 9, "usedVehicleYears": 7 },
+    "marginOfFinanceMax": 0.9
+  },
+  "disclaimer": {
+    "short": "Guidance only — not financial, legal, tax or Syariah advice. Figures are estimates; your provider's and the authorities' actual terms prevail.",
+    "full": "Spectra provides educational planning estimates based on the information you enter and published Malaysian rules current at the last-reviewed date. It is not financial, legal, tax, Syariah or investment advice, not a quotation or an offer of credit. Actual eligibility, rates, fees, taxes, rebates, insurance/takaful and limits are determined by the relevant provider or authority and may differ. Verify the latest terms before acting.",
+    "rateEstimateNote": "Estimate only — not an offer or quotation. The bank's letter of offer and product disclosure sheet are the final figures. Spectra and its developers accept no liability for decisions made using these estimates."
+  }
+}

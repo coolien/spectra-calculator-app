@@ -1,7 +1,7 @@
 import type { PersonalProfile } from '@/lib/app-model';
 
 export function profileMetrics(profile: PersonalProfile) {
-  const gross = numeric(profile.grossSalary);
+  const gross = numeric(profile.grossSalary) + numeric(profile.otherIncome);
   const epf = gross * numeric(profile.epfRate) / 100;
   const tax = numeric(profile.tax);
   const socsoAndEis = Math.min(75, gross * 0.0065);
@@ -12,7 +12,7 @@ export function profileMetrics(profile: PersonalProfile) {
   return { gross, takeHome, roomLeft, dsrUsed };
 }
 
-export function numeric(value: string | number) {
+export function numeric(value: string | number | undefined) {
   const parsed = Number(String(value).replaceAll(',', '').replaceAll('RM', '').trim());
   return Number.isFinite(parsed) ? parsed : 0;
 }

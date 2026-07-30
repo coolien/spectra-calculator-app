@@ -25,9 +25,12 @@ import { LegalScreen } from '@/components/screens/LegalScreen';
 import { PersonalProfileScreen } from '@/components/screens/PersonalProfileScreen';
 import { AddSalaryProfileScreen } from '@/components/screens/AddSalaryProfileScreen';
 import { ActiveLoansScreen } from '@/components/screens/ActiveLoansScreen';
+import { LearnScreen } from '@/components/screens/LearnScreen';
+import { GlobalDisclaimer } from '@/components/app-shell/GlobalDisclaimer';
 import { LegalConsentGate, LEGAL_CONSENT_KEY, LEGAL_CONSENT_VERSION } from '@/components/LegalConsentGate';
 import { useCloudSync } from '@/hooks/useCloudSync';
 import type { CloudPayload } from '@/lib/cloud-sync';
+import { deriveCalculatorDefaults, type UserProfile } from '@/lib/finance/profile-engine';
 
 const STORAGE_KEY = 'spectra_app_state_v2';
 
@@ -112,6 +115,7 @@ function SpectraExperience() {
 
   function openCalculator(key: CalculatorKey) {
     setLastCalculator(key);
+    setForms((current) => applyProfileDefaults(current, key, personalProfile));
     setDetail(key);
   }
 
@@ -192,6 +196,8 @@ function SpectraExperience() {
         return <HomeScreen profile={personalProfile} lastCalculator={lastCalculator} onOpenCalculator={openCalculator} onOpenProfile={() => setDetail('profile')} onSeeAll={() => changeTab('calculators')} />;
       case 'calculators':
         return <CalculatorsScreen onOpen={openCalculator} />;
+      case 'learn':
+        return <LearnScreen onOpenCalculator={openCalculator} />;
       case 'saved':
         return <SavedScreen salaryProfiles={salaryProfiles} scenarios={savedScenarios} onAddSalary={() => setDetail('add-salary-profile')} onTrackScenario={(scenario) => openLoanTracker(scenario)} onOpenActiveLoans={() => openLoanTracker()} onDeleteScenario={(id) => setSavedScenarios((current) => current.filter((item) => item.id !== id))} />;
       case 'settings':
@@ -204,6 +210,7 @@ function SpectraExperience() {
       <TopBar isProfileOpen={detail === 'profile'} onProfileToggle={toggleProfile} />
       <div className="app-content">{renderScreen()}</div>
       <TabBar active={tab} onChange={changeTab} />
+      <GlobalDisclaimer />
       {hasLegalConsent === false && <LegalConsentGate onAccept={acceptLegalTerms} />}
     </main></I18nProvider>
   );
@@ -221,4 +228,52 @@ type PersistedState = {
 
 function isCalculatorKey(value: DetailKey): value is CalculatorKey {
   return calculatorOrder.includes(value as CalculatorKey);
+}
+
+function numeric(value: string | number | undefined): number {
+  const parsed = Number(String(value ?? '').replaceAll(',', '').replaceAll('RM', '').replaceAll('%', '').trim());
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
+function toUserProfile(profile: PersonalProfile | null): UserProfile | null {
+  if (!profile) return null;
+  return {
+    age: numeric(profile.age),
+    citizenship: profile.citizenship,
+    financingPreference: profile.financingPreference,
+    isMuslim: profile.isMuslim,
+    ownsResidentialProperty: profile.ownsResidentialProperty,
+    propertiesOwned: numeric(profile.propertiesOwned),
+    grossMonthlySalary: numeric(profile.grossSalary),
+    otherMonthlyIncome: numeric(profile.otherIncome),
+    epfEmployeeRate: numeric(profile.epfRate),
+    monthlyTax: numeric(profile.tax),
+    existingMonthlyCommitments: numeric(profile.commitments),
+    creditCardTotalLimit: numeric(profile.creditCardLimit),
+    creditCardBalance: numeric(profile.creditCardBalance),
+    emergencyFundMonths: numeric(profile.emergencyFundMonths),
+    epfBalance: numeric(profile.epfBalance),
+    monthlySavings: numeric(profile.monthlySavings),
+    monthlyExpenses: numeric(profile.livingExpenses),
+    hasLifeOrTakaful: profile.hasLifeOrTakaful,
+    hasMedicalCard: profile.hasMedicalCard,
+    hasMortgageCover: profile.hasMortgageCover,
+    ctosBand: profile.ctosBand,
+    recentLatePayments12m: numeric(profile.recentLatePayments12m),
+    targetDsrPercent: numeric(profile.targetDsr),
+    savingsGoal: numeric(profile.savingsGoal),
+  };
+}
+
+function applyProfileDefaults(forms: Record<CalculatorKey, FormState>, key: CalculatorKey, profile: PersonalProfile | null) {
+  const engineProfile = toUserProfile(profile);
+  if (!engineProfile) return forms;
+  const defaults = deriveCalculatorDefaults(engineProfile);
+  const next = { ...forms, [key]: { ...forms[key] } };
+  if (key === 'home') next.home = { ...next.home, buyerStatus: defaults.home.buyerStatus, firstHome: String(defaults.home.firstHome), financingType: defaults.home.financingType, monthlyIncome: String(defaults.home.monthlyIncome), existingCommitments: String(defaults.home.existingCommitments), targetDsrPercent: String(defaults.home.targetDsrPercent), tenureYears: String(defaults.home.tenureYears) };
+  if (key === 'car') next.car = { ...next.car, financingType: defaults.car.financingType, grossMonthlyIncome: String(defaults.car.grossMonthlyIncome), existingCommitments: String(defaults.car.existingCommitments), monthlyTax: String(engineProfile.monthlyTax ?? 0) };
+  if (key === 'personal') next.personal = { ...next.personal, financingType: defaults.personal.financingType, grossMonthlyIncome: String(defaults.personal.grossMonthlyIncome), existingCommitments: String(defaults.personal.existingCommitments), monthlyTax: String(engineProfile.monthlyTax ?? 0) };
+  if (key === 'credit') next.credit = { ...next.credit, grossMonthlyIncome: String(defaults.credit.grossMonthlyIncome), existingMonthlyCommitments: String(defaults.credit.existingMonthlyCommitments), totalLimit: String(defaults.credit.creditCardTotalLimit) };
+  if (key === 'ptptn') next.ptptn = { ...next.ptptn, grossMonthlyIncome: String(defaults.ptptn.grossMonthlyIncome), monthlyTax: String(engineProfile.monthlyTax ?? 0) };
+  return next;
 }

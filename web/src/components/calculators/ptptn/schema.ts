@@ -11,7 +11,7 @@ export const ptptnSchema: CalculatorSchema = {
   secondaryLabel: 'Total Ujrah',
   defaults: {
     outstandingBalance: '30000', annualUjrahRatePercent: '1.00', tenureYears: '10',
-    extraMonthlyPayment: '0', method: 'reducing',
+    extraMonthlyPayment: '0', method: 'reducing', grossMonthlyIncome: '0', monthlyTax: '0', settlementDiscount: 'full-settlement',
   },
   steps: [
     {
@@ -35,6 +35,15 @@ export const ptptnSchema: CalculatorSchema = {
       id: 'extra', title: 'Pay faster', optional: true,
       summary: (form) => form.extraMonthlyPayment === '0' ? 'No extra payment' : `+ RM ${form.extraMonthlyPayment}/mo`,
       fields: [{ key: 'extraMonthlyPayment', label: 'Extra monthly payment', type: 'number', prefix: 'RM', fullWidth: true }],
+    },
+    {
+      id: 'reality', title: 'Discount & credit impact', optional: true,
+      summary: (form) => form.grossMonthlyIncome === '0' ? 'Add income' : `RM ${form.grossMonthlyIncome} income`,
+      fields: [
+        { key: 'settlementDiscount', label: 'Settlement option', type: 'segmented', fullWidth: true, options: [{ value: 'full-settlement', label: '15% full settlement' }, { value: 'partial-or-salary-deduction', label: '10% partial / salary' }, { value: 'consistent-scheduled', label: '10% scheduled' }] },
+        { key: 'grossMonthlyIncome', label: 'Gross monthly income', type: 'number', prefix: 'RM' },
+        { key: 'monthlyTax', label: 'Monthly PCB / tax', type: 'number', prefix: 'RM' },
+      ],
     },
   ],
 };

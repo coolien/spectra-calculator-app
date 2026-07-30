@@ -22,6 +22,7 @@ export const homeLoanSchema: CalculatorSchema = {
     targetDsrPercent: '40',
     extraMonthlyPayment: '0',
     settlementYears: '0',
+    financingType: 'conventional', epfWithdrawal: '0', solicitorDiscountPercent: '0', mrtaPremium: '0', mrtaCapitalize: 'false', mltaMonthlyPremium: '0', monthlyTax: '0', annualChargeableIncome: '0',
   },
   steps: [
     {
@@ -59,6 +60,9 @@ export const homeLoanSchema: CalculatorSchema = {
           ],
         },
         { key: 'firstHome', label: 'First residential home', type: 'toggle', fullWidth: true },
+        { key: 'financingType', label: 'Financing type', type: 'segmented', fullWidth: true, options: [{ value: 'conventional', label: 'Conventional' }, { value: 'islamic', label: 'Islamic' }] },
+        { key: 'mrtaPremium', label: 'MRTA / MRTT premium', type: 'number', prefix: 'RM' },
+        { key: 'mrtaCapitalize', label: 'Capitalise MRTA / MRTT', type: 'toggle' },
       ],
     },
     {
@@ -69,6 +73,7 @@ export const homeLoanSchema: CalculatorSchema = {
       summary: (form) => form.monthlyIncome ? `RM ${Number(form.monthlyIncome).toLocaleString('en-MY')} income` : 'Not added',
       fields: [
         { key: 'monthlyIncome', label: 'Monthly gross income', type: 'number', prefix: 'RM', fullWidth: true },
+        { key: 'monthlyTax', label: 'Monthly PCB / tax', type: 'number', prefix: 'RM' },
         { key: 'existingCommitments', label: 'Existing commitments', type: 'number', prefix: 'RM' },
         { key: 'targetDsrPercent', label: 'Target DSR', type: 'number', suffix: '%' },
       ],
@@ -82,6 +87,8 @@ export const homeLoanSchema: CalculatorSchema = {
       fields: [
         { key: 'extraMonthlyPayment', label: 'Extra monthly payment', type: 'number', prefix: 'RM' },
         { key: 'settlementYears', label: 'Settlement after', type: 'number', suffix: 'years' },
+        { key: 'epfWithdrawal', label: 'EPF withdrawal offset', type: 'number', prefix: 'RM' },
+        { key: 'solicitorDiscountPercent', label: 'Solicitor discount', type: 'number', suffix: '%' },
       ],
     },
   ],

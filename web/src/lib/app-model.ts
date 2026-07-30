@@ -1,6 +1,6 @@
 import type { CalculatorKey, CalculatorResult, ComparisonSnapshot, FaraidResult } from '@/lib/calculators';
 
-export type TabKey = 'home' | 'calculators' | 'saved' | 'settings';
+export type TabKey = 'home' | 'calculators' | 'learn' | 'saved' | 'settings';
 
 export type DetailKey =
   | CalculatorKey
@@ -24,6 +24,24 @@ export type PersonalProfile = {
   livingExpenses: string;
   commitments: string;
   targetDsr: string;
+  age?: string;
+  citizenship?: 'citizen' | 'pr' | 'foreign';
+  financingPreference?: 'islamic' | 'conventional' | 'either';
+  isMuslim?: boolean;
+  ownsResidentialProperty?: boolean;
+  propertiesOwned?: string;
+  otherIncome?: string;
+  creditCardLimit?: string;
+  creditCardBalance?: string;
+  emergencyFundMonths?: string;
+  epfBalance?: string;
+  monthlySavings?: string;
+  savingsGoal?: string;
+  hasLifeOrTakaful?: boolean;
+  hasMedicalCard?: boolean;
+  hasMortgageCover?: boolean;
+  ctosBand?: 'excellent' | 'good' | 'fair' | 'needs-work';
+  recentLatePayments12m?: string;
 };
 
 export type SalaryProfile = {

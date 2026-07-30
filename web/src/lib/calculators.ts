@@ -11,6 +11,14 @@ export type ResultMetric = {
   value: string;
 };
 
+export type ResultInsight = {
+  id: string;
+  title: string;
+  headline: string;
+  detail: string;
+  tone?: 'accent' | 'warning' | 'neutral';
+};
+
 export type ComparisonSnapshot = {
   monthlyPayment: number;
   totalRepayment: number;
@@ -26,6 +34,7 @@ export type CalculatorResult = {
   notes: string[];
   rows?: ResultMetric[];
   comparison?: ComparisonSnapshot;
+  insights?: ResultInsight[];
 };
 
 export type HomeLoanInput = {

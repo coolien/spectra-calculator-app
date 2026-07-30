@@ -1,10 +1,11 @@
-import { Bookmark, Calculator, Home, Settings } from 'lucide-react';
+import { Bookmark, BookOpen, Calculator, Home, Settings } from 'lucide-react';
 import type { TabKey } from '@/lib/app-model';
 import { useI18n } from '@/components/app-shell/I18nProvider';
 
 const tabs = [
   { key: 'home', label: 'Home', icon: Home },
   { key: 'calculators', label: 'Calculators', icon: Calculator },
+  { key: 'learn', label: 'Learn', icon: BookOpen },
   { key: 'saved', label: 'Saved', icon: Bookmark },
   { key: 'settings', label: 'Settings', icon: Settings },
 ] as const;

@@ -10,6 +10,7 @@ import { CalculatorResult } from '@/components/calculators/CalculatorResult';
 import { StickyResultBar } from '@/components/calculators/StickyResultBar';
 import { ScreenHeading } from '@/components/ui/Controls';
 import { useI18n } from '@/components/app-shell/I18nProvider';
+import config from '@/lib/finance/malaysia-2026-config.json' with { type: 'json' };
 
 export function CalculatorScreen({
   calculator, form, onChange, onReset, onSave,
@@ -76,6 +77,7 @@ export function CalculatorScreen({
         <p className="scroll-hint">{t('Calculate to review the full breakdown')}</p>
         {calculated && result && (
           <div ref={resultRef}>
+            {(calculator === 'home' || calculator === 'personal') && <div className="calculator-disclaimer calculator-disclaimer-compact"><span aria-hidden="true">ⓘ</span><p><strong>Rate estimate:</strong> {config.disclaimer.rateEstimateNote}</p></div>}
             <CalculatorResult
               result={result}
               calculatorTitle={schema.title}

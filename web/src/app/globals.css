@@ -20,7 +20,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
 .brand-lockup span { font-family: 'Bricolage Grotesque', 'Segoe UI', sans-serif; font-size: 17px; font-weight: 700; }
 .icon-button { width: 34px; height: 34px; border: 0; border-radius: 11px; display: grid; place-items: center; background: var(--chip); cursor: pointer; }
 
-.tab-bar { position: relative; z-index: 5; flex: 0 0 auto; display: grid; grid-template-columns: repeat(4, 1fr); min-height: 70px; padding: 7px max(10px, env(safe-area-inset-right)) max(7px, env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left)); border-top: 1px solid var(--border); background: var(--page-bg); }
+.tab-bar { position: relative; z-index: 5; flex: 0 0 auto; display: grid; grid-template-columns: repeat(5, 1fr); min-height: 70px; padding: 7px max(10px, env(safe-area-inset-right)) max(7px, env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left)); border-top: 1px solid var(--border); background: var(--page-bg); }
 .tab-item { min-width: 0; min-height: 54px; border: 0; background: transparent; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; cursor: pointer; }
 .tab-item span { font-family: 'Sora', sans-serif; font-size: 10.5px; font-weight: 700; }
 .tab-item.is-active { color: var(--accent); }
@@ -503,4 +503,100 @@ button:disabled { opacity: .45; cursor: not-allowed; }
   .faq-item button { min-height: 32px; padding: 6px 0; }
   .faq-item .chevron { display: none; }
   .print-report-footer { margin-top: 4mm; padding-top: 4mm; border-top: 1px solid #D9DDD8; display: block; color: #6B7566; font-size: 9.5px; line-height: 1.45; }
+}
+
+/* Spectra 2026 foundation + literacy surfaces */
+.global-disclaimer { flex: 0 0 auto; padding: 7px 16px max(8px, env(safe-area-inset-bottom)); border-top: 1px solid var(--border); color: var(--text-secondary); background: var(--card); }
+.global-disclaimer-line { display: flex; align-items: center; gap: 7px; }
+.global-disclaimer-line svg { flex: 0 0 auto; color: var(--accent); }
+.global-disclaimer p { margin: 0; font-size: 9.5px; line-height: 1.35; }
+.global-disclaimer-line p { min-width: 0; flex: 1 1 auto; }
+.global-disclaimer-button { min-width: 42px; min-height: 30px; padding: 0 7px; border: 1px solid var(--border); border-radius: 9px; display: inline-grid; place-items: center; color: var(--accent); background: var(--chip); font-size: 9.5px; font-weight: 800; cursor: pointer; }
+.global-disclaimer-full { margin: 7px 30px 2px 22px !important; color: var(--text-muted); line-height: 1.45 !important; }
+
+.health-card { padding: 16px; border: 1px solid color-mix(in srgb, var(--accent) 30%, var(--border)); border-radius: 20px; color: var(--text); background: color-mix(in srgb, var(--accent) 7%, var(--card)); }
+.health-card-heading { display: flex; align-items: center; justify-content: space-between; gap: 15px; }
+.health-card-heading > div:first-child { min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.health-card-heading strong { color: var(--accent); font-family: 'Sora', sans-serif; font-size: 24px; line-height: 1; }
+.health-card-heading p { margin: 0; color: var(--text-secondary); font-size: 11px; }
+.health-score-ring { width: 64px; height: 64px; border-radius: 50%; display: grid; place-items: center; flex: 0 0 auto; background: conic-gradient(var(--accent) var(--score), var(--border) 0); }
+.health-score-ring::before { content: ''; position: absolute; width: 51px; height: 51px; border-radius: 50%; background: var(--card); }
+.health-score-ring span { position: relative; color: var(--accent); font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 800; }
+.health-pillars { margin-top: 15px; display: flex; flex-direction: column; gap: 8px; }
+.health-pillars > div { display: grid; grid-template-columns: 90px 1fr 25px; gap: 8px; align-items: center; font-size: 10px; }
+.health-pillars > div > span { color: var(--text-secondary); }
+.health-pillars > div > div { height: 6px; overflow: hidden; border-radius: 999px; background: var(--segment); }
+.health-pillars i { display: block; height: 100%; border-radius: inherit; background: var(--accent); }
+.health-pillars b { color: var(--accent); text-align: right; font-size: 10px; }
+.health-suggestions { margin-top: 13px; padding-top: 11px; border-top: 1px solid var(--border); }
+.health-suggestions strong { font-family: 'Sora', sans-serif; font-size: 11px; }
+.health-suggestions p { margin: 6px 0 0; color: var(--text-secondary); font-size: 10.5px; line-height: 1.45; }
+.home-health-card { padding: 15px 16px; border: 1px solid var(--border); border-radius: 19px; background: var(--card); }
+.home-health-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.home-health-top > div { display: flex; flex-direction: column; gap: 3px; }
+.home-health-top strong { color: var(--accent); font-family: 'Sora', sans-serif; font-size: 21px; }
+.home-health-top p { margin: 0; color: var(--text-secondary); font-size: 10.5px; }
+.home-health-top button { min-height: 34px; padding: 0 10px; border: 1px solid var(--border); border-radius: 10px; color: var(--accent); background: var(--chip); font-size: 10px; font-weight: 800; cursor: pointer; }
+.home-health-bar { height: 7px; margin-top: 12px; overflow: hidden; border-radius: 999px; background: var(--segment); }
+.home-health-bar span { display: block; height: 100%; border-radius: inherit; background: var(--accent); }
+.home-health-suggestion { margin: 10px 0 0; color: var(--text-secondary); font-size: 10.5px; line-height: 1.45; }
+.home-health-suggestion strong { display: block; margin-bottom: 2px; color: var(--text); font-family: 'Sora', sans-serif; font-size: 10px; }
+
+.learn-screen { gap: 13px; }
+.learn-meta-row { display: flex; align-items: center; justify-content: space-between; color: var(--text-muted); font-family: 'Sora', sans-serif; font-size: 10px; font-weight: 700; }
+.learn-search { min-height: 47px; padding: 0 13px; border: 1px solid var(--border); border-radius: 14px; display: flex; align-items: center; gap: 8px; color: var(--accent); background: var(--card); }
+.learn-search input { width: 100%; min-width: 0; height: 43px; padding: 0; border: 0; outline: 0; color: var(--text); background: transparent; font-size: 12px; }
+.learn-search input::placeholder { color: var(--text-muted); }
+.learn-category { display: flex; flex-direction: column; gap: 9px; }
+.learn-category-heading { display: flex; align-items: center; gap: 10px; }
+.learn-category-icon { width: 37px; height: 37px; border-radius: 12px; display: grid; place-items: center; color: var(--accent); background: color-mix(in srgb, var(--accent) 11%, var(--card)); font-family: 'Sora', sans-serif; font-size: 17px; font-weight: 800; }
+.learn-category-heading h2 { margin: 0; font-family: 'Sora', sans-serif; font-size: 14px; }
+.learn-category-heading p { margin: 2px 0 0; color: var(--text-muted); font-size: 10.5px; line-height: 1.35; }
+.learn-lesson-list { display: flex; flex-direction: column; gap: 8px; }
+.learn-lesson { overflow: hidden; border: 1px solid var(--border); border-radius: 16px; background: var(--card); }
+.learn-lesson.is-open { border-color: color-mix(in srgb, var(--accent) 35%, var(--border)); }
+.learn-lesson-toggle { width: 100%; min-height: 64px; padding: 10px 12px; border: 0; display: grid; grid-template-columns: 31px minmax(0, 1fr) 18px; gap: 9px; align-items: center; text-align: left; color: var(--text); background: transparent; cursor: pointer; }
+.learn-lesson-mark { width: 31px; height: 31px; border-radius: 10px; display: grid; place-items: center; color: var(--accent); background: color-mix(in srgb, var(--accent) 10%, var(--chip)); font-family: 'Sora', sans-serif; font-size: 12px; font-weight: 800; }
+.learn-lesson-toggle > span:nth-child(2) { min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.learn-lesson-toggle strong { font-family: 'Sora', sans-serif; font-size: 12px; }
+.learn-lesson-toggle small { overflow: hidden; color: var(--text-muted); font-size: 10.5px; line-height: 1.35; text-overflow: ellipsis; white-space: nowrap; }
+.learn-lesson-body { padding: 0 13px 13px 52px; border-top: 1px solid var(--border); }
+.learn-lesson-body > p { margin: 11px 0; color: var(--text-secondary); font-size: 11px; line-height: 1.5; }
+.learn-why, .learn-tip { padding: 9px 10px; border-radius: 11px; display: flex; flex-direction: column; gap: 3px; font-size: 10.5px; line-height: 1.4; }
+.learn-why { background: color-mix(in srgb, var(--accent) 7%, var(--card)); }
+.learn-tip { margin-top: 7px; background: var(--chip); }
+.learn-why strong, .learn-tip strong { color: var(--accent); font-family: 'Sora', sans-serif; font-size: 10px; }
+.learn-why span, .learn-tip span { color: var(--text-secondary); }
+.learn-link-action { min-height: 38px; margin-top: 10px; padding: 0 10px; border: 0; border-radius: 10px; display: inline-flex; align-items: center; gap: 6px; color: var(--accent); background: transparent; font-size: 10.5px; font-weight: 800; cursor: pointer; }
+.compound-card { padding: 15px; border: 1px solid var(--border); border-radius: 19px; background: var(--card); }
+.compound-heading { display: flex; align-items: flex-start; gap: 9px; }
+.compound-icon { width: 34px; height: 34px; border-radius: 11px; display: grid; place-items: center; flex: 0 0 auto; color: var(--accent); background: color-mix(in srgb, var(--accent) 10%, var(--chip)); }
+.compound-heading h2 { margin: 0; font-family: 'Sora', sans-serif; font-size: 14px; }
+.compound-heading p { margin: 3px 0 0; color: var(--text-muted); font-size: 10.5px; }
+.compound-toggle { margin-top: 13px; }
+.compound-chart { position: relative; margin-top: 11px; padding: 8px 10px 9px; border: 1px solid var(--border); border-radius: 13px; background: var(--page-bg); }
+.compound-chart svg { width: 100%; height: 112px; display: block; overflow: visible; }
+.compound-chart strong { display: block; color: var(--accent); font-family: 'Sora', sans-serif; font-size: 17px; }
+.compound-controls { margin-top: 11px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 9px; }
+.compound-range { min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.compound-range > span { display: flex; flex-direction: column; gap: 2px; color: var(--text-muted); font-size: 9.5px; }
+.compound-range strong { color: var(--text); font-family: 'Sora', sans-serif; font-size: 11px; }
+.compound-range input { width: 100%; accent-color: var(--accent); }
+.learn-footnote { margin: 0; color: var(--text-muted); font-size: 10px; line-height: 1.45; text-align: center; }
+
+.insight-stack { display: flex; flex-direction: column; gap: 8px; }
+.insight-stack > h2 { margin: 0 0 1px; font-family: 'Sora', sans-serif; font-size: 14px; }
+.insight-card { overflow: hidden; border: 1px solid var(--border); border-radius: 15px; background: var(--card); }
+.insight-card.tone-accent { border-color: color-mix(in srgb, var(--accent) 34%, var(--border)); }
+.insight-card.tone-warning { border-color: #E8C86D; background: color-mix(in srgb, #FFB443 8%, var(--card)); }
+.insight-toggle { width: 100%; min-height: 58px; padding: 10px 12px; border: 0; display: flex; align-items: center; justify-content: space-between; gap: 10px; text-align: left; color: var(--text); background: transparent; cursor: pointer; }
+.insight-title { min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.insight-title strong { font-family: 'Sora', sans-serif; font-size: 12px; }
+.insight-title small { color: var(--text-secondary); font-size: 10.5px; line-height: 1.35; }
+.insight-detail { margin: 0; padding: 0 12px 12px; color: var(--text-secondary); font-size: 11px; line-height: 1.5; }
+
+@media (max-width: 360px) {
+  .health-pillars > div { grid-template-columns: 78px 1fr 22px; }
+  .learn-lesson-body { padding-left: 13px; }
+  .compound-controls { grid-template-columns: 1fr; }
 }

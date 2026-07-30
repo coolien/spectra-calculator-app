@@ -1,0 +1,70 @@
+{
+  "meta": {
+    "title": "Money Basics — the things school never taught",
+    "version": "2026.1.0",
+    "lastVerified": "2026-07-29",
+    "jurisdiction": "Malaysia",
+    "language": "en",
+    "disclaimer": "Educational only — not financial, legal, tax or Syariah advice. Verify current figures with the official source before acting."
+  },
+  "categories": [
+    {
+      "id": "credit-record",
+      "title": "Your credit record",
+      "icon": "▣",
+      "intro": "The history banks read before they decide what to offer you.",
+      "lessons": [
+        { "id": "ccris", "term": "CCRIS", "oneLiner": "Your 12-month loan report card, kept by Bank Negara.", "body": "CCRIS lists your loans, cards and financing and shows whether you paid on time using simple monthly codes. PTPTN loans can appear here too.", "whyItMatters": "Banks pull CCRIS before approving a loan or card. Arrears can lead to a conditional decline.", "quickTip": "Check your record through the official eCCRIS channel and fix errors early.", "keywords": ["credit report", "bank negara", "arrears", "loan history"] },
+        { "id": "ctos", "term": "CTOS score", "oneLiner": "A 300–850 signal of how risky your credit profile looks.", "body": "CTOS is a private credit agency. Payment history is the largest factor at about 45%, followed by amounts owed, credit mix, new credit and history length.", "whyItMatters": "A stronger score can make approvals easier and protect your rate spread.", "quickTip": "Pay on time, keep card balances below 30% of the limit and avoid many applications at once.", "keywords": ["credit score", "300 850", "rating"] },
+        { "id": "dsr", "term": "DSR (Debt Service Ratio)", "oneLiner": "How much of your income already goes to debt.", "body": "DSR is monthly debt commitments divided by income. This app shows a planning view on net income because statutory deductions change the headroom you really have.", "whyItMatters": "Every existing commitment, including PTPTN and assigned card limits, can reduce future borrowing capacity.", "quickTip": "Clear small debts before applying for a large home or car loan.", "keywords": ["debt service ratio", "affordability", "income"] }
+      ]
+    },
+    {
+      "id": "borrowing",
+      "title": "Borrowing smart",
+      "icon": "◈",
+      "intro": "Debt is a tool; expensive or unclear debt is the trap.",
+      "lessons": [
+        { "id": "credit-card", "term": "Credit cards", "oneLiner": "Zero interest only when you clear the full statement.", "body": "Pay the full statement by the due date and the grace period can keep retail purchases interest-free. Carrying a balance can trigger interest of up to 18% a year.", "whyItMatters": "Minimum payments can stretch a RM5,000 balance across years and add a large finance charge.", "quickTip": "Set autopay for the full statement, not only the minimum.", "keywords": ["interest", "minimum payment", "grace period", "18%"] },
+        { "id": "bnpl", "term": "BNPL (Buy Now, Pay Later)", "oneLiner": "0% interest — until a late fee changes the maths.", "body": "BNPL can be interest-free when paid on time. A flat late fee on a small purchase can become an extreme effective APR, and several plans fragment cashflow.", "whyItMatters": "A RM10 fee on a RM100 purchase paid two weeks late is about 260% effective APR.", "quickTip": "If you cannot pay the full price today, you cannot afford the purchase yet.", "keywords": ["installment", "late fee", "consumer credit act"] },
+        { "id": "flat-vs-reducing", "term": "Flat rate vs reducing balance", "oneLiner": "The same percentage can represent very different costs.", "body": "A reducing-balance rate charges interest on what remains. A flat rate charges against the original amount for the whole tenure, so the headline percentage looks smaller.", "whyItMatters": "Comparing flat and reducing rates directly can make the cheaper-looking loan cost more.", "quickTip": "Ask for the EIR and compare like with like.", "keywords": ["EIR", "car loan", "hire purchase", "effective rate"] },
+        { "id": "eir", "term": "EIR (Effective Interest Rate)", "oneLiner": "The truer yearly cost to compare across loan offers.", "body": "EIR expresses the payment stream on a reducing-balance basis. A 3% flat car quote can be around 5% EIR; a 6% flat personal loan can be around 11% EIR.", "whyItMatters": "Two providers can advertise similar flat rates but produce different true costs.", "quickTip": "Choose the offer with the clearest EIR, fees and product disclosure sheet.", "keywords": ["effective interest rate", "true cost", "flat rate", "reducing balance"] }
+      ]
+    },
+    {
+      "id": "tax",
+      "title": "Income tax, simply",
+      "icon": "⌁",
+      "intro": "A few plain-language rules make tax less mysterious.",
+      "lessons": [
+        { "id": "who-pays", "term": "Do I need to file?", "oneLiner": "The filing threshold and reliefs decide the answer.", "body": "Salaried taxpayers generally file through MyTax. A common planning threshold after EPF is around RM37,333 a year, but your exact position depends on reliefs and income sources.", "whyItMatters": "Filing can reconcile PCB and recover a refund when too much was deducted.", "quickTip": "Register early and keep receipts for relief claims.", "keywords": ["lhdn", "chargeable income", "threshold"] },
+        { "id": "pcb", "term": "PCB / MTD", "oneLiner": "An advance tax payment taken from salary each month.", "body": "PCB is paid to LHDN on your behalf. Your annual filing reconciles the amount: overpayment may be refunded and underpayment may need a top-up.", "whyItMatters": "Ignoring filing can leave a refund or a correction unresolved.", "quickTip": "Keep your EA form and relief receipts together throughout the year.", "keywords": ["potongan cukai bulanan", "salary deduction", "refund"] },
+        { "id": "reliefs", "term": "Tax reliefs", "oneLiner": "Legal deductions that reduce chargeable income.", "body": "Common reliefs include the individual relief, EPF and life insurance/takaful, lifestyle items and qualifying education or medical claims. First-home loan interest relief can reach RM7,000 or RM5,000 a year in the qualifying window.", "whyItMatters": "Reliefs reduce the income on which progressive tax is calculated.", "quickTip": "Claim only eligible items and keep the supporting records.", "keywords": ["deduction", "relief", "epf", "sspn"] },
+        { "id": "efiling", "term": "e-Filing", "oneLiner": "Submit salaried Form BE online, usually by 30 April.", "body": "MyTax is the online filing channel for individual income tax. Deadlines vary by form and year, so check the latest LHDN announcement.", "whyItMatters": "Late filing can create penalties and unnecessary stress.", "quickTip": "Set a reminder before the deadline and submit even when you expect a refund.", "keywords": ["mytax", "form be", "deadline", "april 30"] }
+      ]
+    },
+    {
+      "id": "retirement-protection",
+      "title": "Retirement & protection",
+      "icon": "◒",
+      "intro": "Protect the income and people your plans depend on.",
+      "lessons": [
+        { "id": "epf", "term": "EPF / KWSP", "oneLiner": "Your long-term retirement contribution and safety net.", "body": "Employee EPF contributions are commonly modelled at 11% in this app. EPF can also support certain housing withdrawals under the official rules.", "whyItMatters": "A down payment decision should not accidentally trade away every long-term buffer.", "quickTip": "Treat EPF withdrawals as an offset to cash needed, not as a discount to the loan contract.", "keywords": ["kwsp", "retirement", "contribution", "housing withdrawal"] },
+        { "id": "socso-eis", "term": "SOCSO & EIS", "oneLiner": "Statutory protection contributions that reduce take-home pay.", "body": "The calculator estimates employee SOCSO and EIS on a capped wage basis. Your payslip and current PERKESO schedule are the source of truth.", "whyItMatters": "Net income gives a more realistic DSR view than gross income alone.", "quickTip": "Use your actual PCB and payslip deductions when comparing affordability.", "keywords": ["perkeso", "socso", "eis", "net income"] },
+        { "id": "takaful-mrta-mlta", "term": "Insurance, takaful, MRTA & MLTA", "oneLiner": "Cover the household before stretching the household budget.", "body": "MRTA/MRTT usually reduces with the loan and can be paid cash or capitalised. MLTA/MLTT is typically level, portable and paid separately. Islamic products use takaful terminology.", "whyItMatters": "A rate comparison that ignores protection can understate the real monthly plan.", "quickTip": "Ask what is included, whether the premium is financed and whether the cover is portable.", "keywords": ["insurance", "takaful", "mrta", "mlta"] }
+      ]
+    },
+    {
+      "id": "money-habits",
+      "title": "Money habits that compound",
+      "icon": "◎",
+      "intro": "Small recurring choices become large numbers over time.",
+      "lessons": [
+        { "id": "budget", "term": "50 / 30 / 20 budget", "oneLiner": "A simple starting frame for needs, wants and goals.", "body": "Use 50/30/20 as a flexible prompt, not a law: needs first, wants second, savings or debt reduction third. Your household and income may need a different mix.", "whyItMatters": "A named plan makes room for savings before the month disappears.", "quickTip": "Automate the goal amount on salary day and review it after three months.", "keywords": ["budget", "needs", "wants", "savings"] },
+        { "id": "emergency-fund", "term": "Emergency fund", "oneLiner": "Cash that keeps one surprise from becoming expensive debt.", "body": "A common planning target is 3–6 months of essential expenses in accessible savings. Start with one month if that is what is realistic.", "whyItMatters": "A buffer reduces the need to use cards, BNPL or a personal loan during a shock.", "quickTip": "Name the account and automate a small weekly or monthly transfer.", "keywords": ["emergency", "cash buffer", "expenses"] },
+        { "id": "compound-interest", "term": "Compound interest", "oneLiner": "Returns can earn returns; debt can compound against you.", "body": "A recurring saving can grow through contributions plus growth. The same curve shows why unpaid high-interest debt balloons when interest is added repeatedly.", "whyItMatters": "Time can work for you when saving and against you when revolving debt remains unpaid.", "quickTip": "Use the visualizer: compare RM200 a month invested with RM5,000 carried at 18%.", "keywords": ["compound", "growth", "debt", "investing"] },
+        { "id": "inflation", "term": "Inflation", "oneLiner": "The same ringgit usually buys less over time.", "body": "Inflation is the broad rise in prices. A plan should leave room for rising essentials instead of assuming today's budget stays fixed for decades.", "whyItMatters": "A long loan and a long savings goal both need realistic future costs.", "quickTip": "Review subscriptions, insurance and emergency-fund targets once a year.", "keywords": ["prices", "cost of living", "purchasing power"] }
+      ]
+    }
+  ]
+}
