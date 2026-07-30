@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Manrope:wght@400;500;600;700;800&family=Bricolage+Grotesque:wght@500;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { margin: 0; background: #EDEAE0; font-family: 'Manrope', sans-serif; }
+    ::-webkit-scrollbar { width: 0px; height: 0px; }
+    input:focus { outline: none; }
+  </style>
+</helmet>
+
+<div style="min-height:100vh;width:100%;display:flex;flex-direction:column;align-items:center;gap:22px;padding:48px 20px 70px;background:radial-gradient(circle at 20% 0%, #F6F3E9 0%, #EDEAE0 55%, #E4E0D2 100%);box-sizing:border-box">
+
+  <div style="display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;max-width:520px">
+    <div style="font:800 13px/1 'Sora',sans-serif;letter-spacing:3px;color:{{ accent }};text-transform:uppercase;white-space:nowrap">Spectra Calculator PWA</div>
+    <div style="font:600 22px/1.3 'Sora',sans-serif;color:{{ theme.text }};margin-top:8px;white-space:nowrap">Redesign v2 — convenience-first rework</div>
+    <div style="font:500 13.5px/1.5 'Manrope',sans-serif;color:{{ theme.textSecondary }}">Calculators moved off the home feed into their own tab. Long forms are now collapsible steps with a sticky live result. Use the bottom tabs to explore.</div>
+  </div>
+
+  <!-- PHONE FRAME -->
+  <div style="position:relative;width:390px;height:844px;background:#0E1712;border-radius:52px;padding:14px;box-shadow:0 40px 80px -20px rgba(20,35,29,0.45), 0 0 0 1px rgba(20,35,29,0.06)">
+    <div style="width:100%;height:100%;background:{{ theme.pageBg }};border-radius:40px;overflow:hidden;position:relative;display:flex;flex-direction:column">
+
+      <div style="flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;padding:16px 26px 6px;font:600 15px 'Sora',sans-serif;color:{{ theme.text }}">
+        <span>9:41</span>
+        <div style="display:flex;align-items:center;gap:5px">
+          <svg width="18" height="12" viewBox="0 0 18 12" fill="none"><rect x="0" y="7" width="3" height="5" rx="1" fill="{{ theme.text }}"/><rect x="5" y="4" width="3" height="8" rx="1" fill="{{ theme.text }}"/><rect x="10" y="2" width="3" height="10" rx="1" fill="{{ theme.text }}"/><rect x="15" y="0" width="3" height="12" rx="1" fill="{{ theme.text }}"/></svg>
+          <svg width="22" height="12" viewBox="0 0 22 12" fill="none"><rect x="0.5" y="0.5" width="19" height="11" rx="3" stroke="{{ theme.text }}"/><rect x="2" y="2" width="14" height="8" rx="1.5" fill="{{ theme.text }}"/><rect x="20.5" y="4" width="1.5" height="4" rx="0.7" fill="{{ theme.text }}"/></svg>
+        </div>
+      </div>
+
+      <!-- TOP BAR (shared) -->
+      <div style="position:relative;flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;padding:10px 18px;border-bottom:1px solid {{ theme.border }}">
+        <sc-if value="{{ hasBack }}" hint-placeholder-val="{{ false }}">
+          <div style="width:34px;height:34px;border-radius:11px;background:{{ theme.chip }};display:flex;align-items:center;justify-content:center;cursor:pointer" onClick="{{ goBack }}">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M15 19L8 12L15 5" stroke="{{ theme.text }}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+        </sc-if>
+        <sc-if value="{{ noBack }}" hint-placeholder-val="{{ true }}">
+          <div style="width:34px"></div>
+        </sc-if>
+        <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:flex;align-items:center;gap:9px">
+          <svg width="26" height="26" viewBox="0 0 28 28" fill="none">
+            <defs><linearGradient id="prismGradTop" x1="0" y1="0" x2="28" y2="28" gradientUnits="userSpaceOnUse">
+              <sc-for list="{{ accentStops }}" as="s" hint-placeholder-count="5">
+                <stop offset="{{ s.offset }}" stop-color="{{ s.color }}"/>
+              </sc-for>
+            </linearGradient></defs>
+            <circle cx="14" cy="14" r="10.5" stroke="url(#prismGradTop)" stroke-width="7"/>
+          </svg>
+          <span style="font:700 17px 'Bricolage Grotesque','Sora',sans-serif;color:{{ theme.text }}">Spectra</span>
+        </div>
+        <div style="width:34px;height:34px;border-radius:11px;background:{{ theme.chip }};display:flex;align-items:center;justify-content:center;cursor:pointer" onClick="{{ goProfile }}">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="{{ theme.text }}" stroke-width="2"/><path d="M4 20C4 16 7.5 14 12 14C16.5 14 20 16 20 20" stroke="{{ theme.text }}" stroke-width="2" stroke-linecap="round"/></svg>
+        </div>
+      </div>
+
+      <!-- ===================== HOME TAB ===================== -->
+      <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+        <div style="flex:1 1 auto;overflow-y:auto;padding:16px 20px 24px;display:flex;flex-direction:column;gap:16px">
+          <div style="display:flex;flex-direction:column;gap:2px">
+            <div style="font:700 21px 'Sora',sans-serif;color:{{ theme.text }}">Good evening</div>
+            <div style="font:500 13px 'Manrope',sans-serif;color:{{ theme.textSecondary }}">Here's where your money stands today.</div>
+          </div>
+
+          <sc-if value="{{ needsProfile }}" hint-placeholder-val="{{ false }}">
+            <div style="background:{{ theme.card }};border:1px solid {{ theme.border }};border-radius:20px;padding:16px;display:flex;flex-direction:column;gap:10px">
+              <div style="display:flex;align-items:center;gap:10px">
+                <div style="width:38px;height:38px;border-radius:12px;background:#E4F0EC;display:flex;align-items:center;justify-content:center;flex:0 0 auto">
+                  <svg width="19" height="19" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="{{ accent }}" stroke-width="2"/><path d="M4 20C4 16 7.5 14 12 14C16.5 14 20 16 20 20" stroke="{{ accent }}" stroke-width="2" stroke-linecap="round"/></svg>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:1px">
+                  <div style="font:700 14.5px 'Sora',sans-serif;color:{{ theme.text }}">Set up your profile</div>
+                  <div style="font:500 12px 'Manrope',sans-serif;color:{{ theme.textMuted }}">2 minutes — unlocks take-home pay &amp; affordability checks everywhere.</div>
+                </div>
+              </div>
+              <div style="align-self:flex-start;padding:9px 16px;border-radius:12px;background:{{ accent }};font:700 13px 'Sora',sans-serif;color:white;cursor:pointer" onClick="{{ goProfile }}">Create profile</div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ hasProfile }}" hint-placeholder-val="{{ false }}">
+            <div style="background:{{ accentGradientDark }};border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:12px;position:relative;overflow:hidden">
+              <div style="position:absolute;right:-30px;top:-30px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,0.08)"></div>
+              <div style="font:600 11.5px 'Sora',sans-serif;letter-spacing:1px;color:#BFE3D6;text-transform:uppercase">Monthly snapshot</div>
+              <div style="display:flex;flex-direction:column;gap:10px">
+                <div style="display:flex;flex-direction:column;gap:2px">
+                  <span style="font:600 11px 'Manrope',sans-serif;color:#BFE3D6">Take-home pay</span>
+                  <span style="font:800 22px 'Sora',sans-serif;color:white;white-space:nowrap">RM 4,415</span>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:2px">
+                  <span style="font:600 11px 'Manrope',sans-serif;color:#BFE3D6">DSR used</span>
+                  <span style="font:800 22px 'Sora',sans-serif;color:white">30%</span>
+                </div>
+              </div>
+              <div style="height:6px;border-radius:4px;background:rgba(255,255,255,0.18);overflow:hidden"><div style="width:30%;height:100%;background:#7FD8B8"></div></div>
+              <div style="font:600 12px 'Manrope',sans-serif;color:#D7EEE6">Comfortable room for RM 915 more before your 40% DSR target.</div>
+            </div>
+          </sc-if>
+
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div style="font:700 15px 'Sora',sans-serif;color:{{ theme.text }}">Continue where you left off</div>
+            <div style="background:{{ theme.card }};border:1px solid {{ theme.border }};border-radius:18px;padding:14px 16px;display:flex;align-items:center;gap:12px;cursor:pointer" onClick="{{ goHomeLoan }}">
+              <div style="width:42px;height:42px;border-radius:13px;background:#E4F0EC;display:flex;align-items:center;justify-content:center;flex:0 0 auto">
+                <svg width="21" height="21" viewBox="0 0 24 24" fill="none"><path d="M3 11L12 4L21 11" stroke="{{ accent }}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 10V20H19V10" stroke="{{ accent }}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:1px;flex:1">
+                <span style="font:700 13.5px 'Sora',sans-serif;color:{{ theme.text }}">Home Loan</span>
+                <span style="font:500 11.5px 'Manrope',sans-serif;color:{{ theme.textMuted }}">RM 1,992/mo · last edited today</span>
+              </div>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 5L16 12L9 19" stroke="#B7B7A6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+          </div>
+
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <div style="font:700 15px 'Sora',sans-serif;color:{{ theme.text }}">Calculators</div>
+              <div style="font:700 12px 'Sora',sans-serif;color:{{ accent }};cursor:pointer" onClick="{{ goCalculators }}">See all</div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+              <div style="display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer" onClick="{{ goHomeLoan }}">
+                <div style="width:52px;height:52px;border-radius:16px;background:#E4F0EC;display:flex;align-items:center;justify-content:center">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M3 11L12 4L21 11" stroke="{{ accent }}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 10V20H19V10" stroke="{{ accent }}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
+                <span style="font:600 11px 'Manrope',sans-serif;color:{{ theme.text }};text-align:center">Home</span>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer" onClick="{{ goCarLoan }}">
+                <div style="width:52px;height:52px;border-radius:16px;background:#E4EBF7;display:flex;align-items:center;justify-content:center">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M3 16L4.5 10.5C4.8 9.6 5.6 9 6.5 9H17.5C18.4 9 19.2 9.6 19.5 10.5L21 16" stroke="#3157A8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><rect x="2.5" y="16" width="19" height="4" rx="1.5" stroke="#3157A8" stroke-width="2.2"/><circle cx="7" cy="20" r="1.6" fill="#3157A8"/><circle cx="17" cy="20" r="1.6" fill="#3157A8"/></svg>
+                </div>
+                <span style="font:600 11px 'Manrope',sans-serif;color:{{ theme.text }};text-align:center">Car</span>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer" onClick="{{ goCalculators }}">
+                <div style="width:52px;height:52px;border-radius:16px;background:#EEE7F7;display:flex;align-items:center;justify-content:center">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="2.5" y="6" width="19" height="12" rx="2.5" stroke="#6E3FA8" stroke-width="2.2"/><circle cx="12" cy="12" r="2.6" stroke="#6E3FA8" stroke-width="2.2"/></svg>
+                </div>
+                <span style="font:600 11px 'Manrope',sans-serif;color:{{ theme.text }};text-align:center">Personal</span>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer" onClick="{{ goCalculators }}">
+                <div style="width:52px;height:52px;border-radius:16px;background:#F9E4E4;display:flex;align-items:center;justify-content:center">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="2.5" y="5" width="19" height="14" rx="2.5" stroke="#B8402E" stroke-width="2.2"/><path d="M2.5 10H21.5" stroke="#B8402E" stroke-width="2.2"/></svg>
+                </div>
+                <span style="font:600 11px 'Manrope',sans-serif;color:{{ theme.text }};text-align:center">Card</span>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer" onClick="{{ goCalculators }}">
+                <div style="width:52px;height:52px;border-radius:16px;background:#F7EEDA;display:flex;align-items:center;justify-content:center">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M2 8L12 4L22 8L12 12L2 8Z" stroke="#B9781E" stroke-width="2.2" stroke-linejoin="round"/><path d="M6 10.5V16C6 16 8.5 18 12 18C15.5 18 18 16 18 16V10.5" stroke="#B9781E" stroke-width="2.2" stroke-linecap="round"/></svg>
+                </div>
+                <span style="font:600 11px 'Manrope',sans-serif;color:{{ theme.text }};text-align:center">PTPTN</span>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer" onClick="{{ goCalculators }}">
+                <div style="width:52px;height:52px;border-radius:16px;background:{{ theme.chip }};display:flex;align-items:center;justify-content:center">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 3V21" stroke="#5B6459" stroke-width="2.2" stroke-linecap="round"/><path d="M5 7H19" stroke="#5B6459" stroke-width="2.2" stroke-linecap="round"/><path d="M5 7L2.5 12.5C2.5 14 3.9 15 5 15C6.1 15 7.5 14 7.5 12.5L5 7Z" stroke="#5B6459" stroke-width="2" stroke-linejoin="round"/><path d="M19 7L16.5 12.5C16.5 14 17.9 15 19 15C20.1 15 21.5 14 21.5 12.5L19 7Z" stroke="#5B6459" stroke-width="2" stroke-linejoin="round"/></svg>
+                </div>
+                <span style="font:600 11px 'Manrope',sans-serif;color:{{ theme.text }};text-align:center">Faraid</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- ===================== CALCULATORS TAB ===================== -->
+      <sc-if value="{{ isCalculators }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1 1 auto;overflow-y:auto;padding:16px 20px 24px;display:flex;flex-direction:column;gap:14px">
+          <div style="display:flex;flex-direction:column;gap:2px">
+            <div style="font:700 20px 'Sora',sans-serif;color:{{ theme.text }}">Calculators</div>
+            <div style="font:500 13px 'Manrope',sans-serif;color:{{ theme.textSecondary }}">Pick one — every result is an estimate you can save.</div>
+          </div>
+
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div style="background:{{ theme.card }};border:1px solid {{ theme.border }};border-radius:18px;padding:14px 16px;display:flex;align-items:center;gap:12px;cursor:pointer" onClick="{{ goHomeLoan }}">
+              <div style="width:44px;height:44px;border-radius:14px;background:#E4F0EC;display:flex;align-items:center;justify-content:center;flex:0 0 auto">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M3 11L12 4L21 11" stroke="{{ accent }}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 10V20H19V10" stroke="{{ accent }}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:1px;flex:1">
+                <span style="font:700 14px 'Sora',sans-serif;color:{{ theme.text }}">Home Loan</span>
+                <span style="font:500 11.5px 'Manrope',sans-serif;color:{{ theme.textMuted }}">Installment, upfront cash &amp; full amortization</span>
+              </div>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 5L16 12L9 19" stroke="#B7B7A6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+
+            <div style="background:{{ theme.card }};border:1px solid {{ theme.border }};border-radius:18px;padding:14px 16px;display:flex;align-items:center;gap:12px;cursor:pointer" onClick="{{ goCarLoan }}">
+              <div style="width:44px;height:44px;border-radius:14px;background:#E4EBF7;display:flex;align-items:center;justify-content:center;flex:0 0 auto">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M3 16L4.5 10.5C4.8 9.6 5.6 9 6.5 9H17.5C18.4 9 19.2 9.6 19.5 10.5L21 16" stroke="#3157A8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><rect x="2.5" y="16" width="19" height="4" rx="1.5" stroke="#3157A8" stroke-width="2.2"/><circle cx="7" cy="20" r="1.6" fill="#3157A8"/><circle cx="17" cy="20" r="1.6" fill="#3157A8"/></svg>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:1px;flex:1">
+                <span style="font:700 14px 'Sora',sans-serif;color:{{ theme.text }}">Car Loan</span>
+                <span style="font:500 11.5px 'Manrope',sans-serif;color:{{ theme.textMuted }}">Hire purchase flat-rate installment</span>
+              </div>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 5L16 12L9 19" stroke="#B7B7A6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+
+            <div style="background:{{ theme.card }};border:1px solid {{ theme.border }};border-radius:18px;padding:14px 16px;display:flex;align-items:center;gap:12px;cursor:pointer">
+              <div style="width:44px;height:44px;border-radius:14px;background:#EEE7F7;display:flex;align-items:center;justify-content:center;flex:0 0 auto">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="2.5" y="6" width="19" height="12" rx="2.5" stroke="#6E3FA8" stroke-width="2.2"/><circle cx="12" cy="12" r="2.6" stroke="#6E3FA8" stroke-width="2.2"/></svg>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:1px;flex:1">
+                <span style="font:700 14px 'Sora',sans-serif;color:{{ theme.text }}">Personal Loan</span>
+                <span style="font:500 11.5px 'Manrope',sans-serif;color:{{ theme.textMuted }}">Reducing-balance or flat-rate repayment</span>
+              </div>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 5L16 12L9 19" stroke="#B7B7A6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+
+            <div style="background:{{ theme.card }};border:1px solid {{ theme.border }};border-radius:18px;padding:14px 16px;display:flex;align-items:center;gap:12px;cursor:pointer">
+              <div style="width:44px;height:44px;border-radius:14px;background:#F9E4E4;display:flex;align-items:center;justify-content:center;flex:0 0 auto">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="2.5" y="5" width="19" height="14" rx="2.5" stroke="#B8402E" stroke-width="2.2"/><path d="M2.5 10H21.5" stroke="#B8402E" stroke-width="2.2"/></svg>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:1px;flex:1">
+                <span style="font:700 14px 'Sora',sans-serif;color:{{ theme.text }}">Credit Card Payoff</span>
+                <span style="font:500 11.5px 'Manrope',sans-serif;color:{{ theme.textMuted }}">Payoff timeline &amp; minimum-payment cost</span>
+              </div>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 5L16 12L9 19" stroke="#B7B7A6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+
+            <div style="background:{{ theme.card }};border:1px solid {{ theme.border }};border-radius:18px;padding:14px 16px;display:flex;align-items:center;gap:12px;cursor:pointer">
+              <div style="width:44px;height:44px;border-radius:14px;background:#F7EEDA;display:flex;align-items:center;justify-content:center;flex:0 0 auto">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M2 8L12 4L22 8L12 12L2 8Z" stroke="#B9781E" stroke-width="2.2" stroke-linejoin="round"/><path d="M6 10.5V16C6 16 8.5 18 12 18C15.5 18 18 16 18 16V10.5" stroke="#B9781E" stroke-width="2.2" stroke-linecap="round"/></svg>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:1px;flex:1">
+                <span style="font:700 14px 'Sora',sans-serif;color:{{ theme.text }}">PTPTN Loan</span>
+                <span style="font:500 11.5px 'Manrope',sans-serif;color:{{ theme.textMuted }}">Education repayment, discount-aware</span>
+              </div>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 5L16 12L9 19" stroke="#B7B7A6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+
+            <div style="background:{{ theme.card }};border:1px solid #EADFC0;border-radius:18px;padding:14px 16px;display:flex;align-items:center;gap:12px;cursor:pointer">
+              <div style="width:44px;height:44px;border-radius:14px;background:{{ theme.chip }};display:flex;align-items:center;justify-content:center;flex:0 0 auto">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 3V21" stroke="#5B6459" stroke-width="2.2" stroke-linecap="round"/><path d="M5 7H19" stroke="#5B6459" stroke-width="2.2" stroke-linecap="round"/><path d="M5 7L2.5 12.5C2.5 14 3.9 15 5 15C6.1 15 7.5 14 7.5 12.5L5 7Z" stroke="#5B6459" stroke-width="2" stroke-linejoin="round"/><path d="M19 7L16.5 12.5C16.5 14 17.9 15 19 15C20.1 15 21.5 14 21.5 12.5L19 7Z" stroke="#5B6459" stroke-width="2" stroke-linejoin="round"/></svg>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:1px;flex:1">
+                <span style="font:700 14px 'Sora',sans-serif;color:{{ theme.text }}">Faraid Inheritance</span>
+                <span style="font:500 11.5px 'Manrope',sans-serif;color:{{ theme.textMuted }}">Islamic estate share estimate</span>
+              </div>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 5L16 12L9 19" stroke="#B7B7A6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- ===================== ADD SALARY PROFILE ===================== -->
+      <sc-if value="{{ isAddSalaryProfile }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1 1 auto;display:flex;flex-direction:column;min-height:0">
+          <div style="flex:1 1 auto;overflow-y:auto;padding:16px 20px 16px;display:flex;flex-direction:column;gap:14px">
+            <div style="display:flex;flex-direction:column;gap:2px">
+              <div style="font:700 20px 'Sora',sans-serif;color:{{ theme.text }}">New salary profile</div>
+              <div style="font:500 13px 'Manrope',sans-serif;color:{{ theme.textSecondary }}">4 of 15 slots used — name it anything: a family member or a client.</div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <label style="font:600 12px 'Manrope',sans-serif;color:{{ theme.textSecondary }}">Profile name</label>
+              <div style="display:flex;align-items:center;gap:8px;background:{{ theme.card }};border:1px solid {{ theme.border }};border-radius:13px;padding:12px 14px">
+                <input placeholder="e.g. Wife, Mum, Client — Aiman" style="border:none;background:transparent;font:700 14px 'Sora',sans-serif;color:{{ theme.text }};width:100%"/>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <label style="font:600 12px 'Manrope',sans-serif;color:{{ theme.textSecondary }}">Quick label (optional)</label>
+              <div style="display:flex;gap:8px;flex-wrap:wrap">
+                <div style="padding:8px 14px;border-radius:100px;background:{{ theme.chip }};font:600 12px 'Sora',sans-serif;color:{{ theme.textSecondary }};cursor:pointer">Spouse</div>
+                <div style="padding:8px 14px;border-radius:100px;background:{{ theme.chip }};font:600 12px 'Sora',sans-serif;color:{{ theme.textSecondary }};cursor:pointer">Child</div>
+                <div style="padding:8px 14px;border-radius:100px;background:{{ theme.chip }};font:600 12px 'Sora',sans-serif;color:{{ theme.textSecondary }};cursor:pointer">Parent</div>
+                <div style="padding:8px 14px;border-radius:100px;background:{{ theme.chip }};font:600 12px 'Sora',sans-serif;color:{{ theme.textSecondary }};cursor:pointer">Client</div>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <label style="font:600 12px 'Manrope',sans-serif;color:{{ theme.textSecondary }}">Gross monthly salary</label>
+              <div style="display:flex;align-items:center;gap:8px;background:{{ theme.card }};border:1px solid {{ theme.border }};border-radius:13px;padding:12px 14px">
+                <span style="font:700 13px 'Sora',sans-serif;color:{{ theme.textSecondary }}">RM</span>
+                <input placeholder="0" style="border:none;background:transparent;font:700 15px 'Sora',sans-serif;color:{{ theme.text }};width:100%"/>
+              </div>
+            </div>
+            <div style="display:flex;gap:10px">
+              <div style="flex:1;display:flex;flex-direction:column;gap:6px">
+                <label style="font:600 12px 'Manrope',sans-serif;color:{{ theme.textSecondary }}">Existing commitments</label>
+                <div style="display:flex;align-items:center;gap:8px;background:{{ theme.card }};border:1px solid {{ theme.border }};border-radius:13px;padding:12px 14px">
+                  <span style="font:700 13px 'Sora',sans-serif;color:{{ theme.textSecondary }}">RM</span>
+                  <input placeholder="0" style="border:none;background:transparent;font:700 14px 'Sora',sans-serif;color:{{ theme.text }};width:100%"/>
+                </div>
+              </div>
+              <div style="flex:1;display:flex;flex-direction:column;gap:6px">
+                <label style="font:600 12px 'Manrope',sans-serif;color:{{ theme.textSecondary }}">Target DSR</label>
+                <div style="display:flex;align-items:center;gap:6px;background:{{ theme.card }};border:1px solid {{ theme.border }};border-radius:13px;padding:12px 14px">
+                  <input defaultValue="40" style="border:none;background:transparent;font:700 14px 'Sora',sans-serif;color:{{ theme.text }};width:100%"/>
+                  <span style="font:700 13px 'Sora',sans-serif;color:{{ theme.textSecondary }}">%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div style="flex:0 0 auto;background:{{ theme.card }};border-top:1px solid {{ theme.border }};padding:14px 18px 18px">
+            <div style="height:46px;border-radius:14px;background:{{ accent }};display:flex;align-items:center;justify-content:center;font:700 14.5px 'Sora',sans-serif;color:white;cursor:pointer" onClick="{{ goSaved }}">Save profile</div>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- ===================== SAVED TAB ===================== -->
+      <sc-if value="{{ isSaved }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1 1 auto;overflow-y:auto;padding:16px 20px 24px;display:flex;flex-direction:column;gap:14px">
+          <div style="display:flex;flex-direction:column;gap:2px">
+            <div style="font:700 20px 'Sora',sans-serif;color:{{ theme.text }}">Saved</div>
+            <div style="font:500 13px 'Manrope',sans-serif;color:{{ theme.textSecondary }}">Compare scenarios side by side before you decide.</div>
+          </div>
+
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <div style="font:700 14.5px 'Sora',sans-serif;color:{{ theme.text }}">Salary profiles</div>
+              <div style="font:700 11px 'Sora',sans-serif;color:{{ accent }};cursor:pointer" onClick="{{ goAddSalaryProfile }}">+ Add (3/15)</div>
+            </div>
+            <div style="font:500 11.5px/1.5 'Manrope',sans-serif;color:{{ theme.textMuted }};margin-top:-6px">Name and save up to 15 income scenarios — for family members, or clients if you're an agent. Separate from your real Personal Profile.</div>
+            <div style="display:flex;gap:10px;overflow-x:auto">
+              <div style="flex:0 0 auto;width:150px;background:{{ theme.card }};border:1px solid {{ theme.border }};border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:8px">
+                <div style="font:700 13px 'Sora',sans-serif;color:{{ theme.text }}">Just me</div>
+                <div style="display:flex;flex-direction:column;gap:1px">
+                  <span style="font:600 10.5px 'Manrope',sans-serif;color:{{ theme.textMuted }}">Take-home</span>
+                  <span style="font:800 15px 'Sora',sans-serif;color:{{ accent }}">RM 4,415</span>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:1px">
+                  <span style="font:600 10.5px 'Manrope',sans-serif;color:{{ theme.textMuted }}">Max loan installment</span>
+                  <span style="font:700 13px 'Sora',sans-serif;color:{{ theme.text }}">RM 1,973/mo</span>
+                </div>
+              </div>
+              <div style="flex:0 0 auto;width:150px;background:{{ theme.card }};border:1px solid {{ theme.border }};border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:8px">
+                <div style="font:700 13px 'Sora',sans-serif;color:{{ theme.text }}">With spouse</div>
+                <div style="display:flex;flex-direction:column;gap:1px">
+                  <span style="font:600 10.5px 'Manrope',sans-serif;color:{{ theme.textMuted }}">Take-home</span>
+                  <span style="font:800 15px 'Sora',sans-serif;color:{{ accent }}">RM 8,120</span>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:1px">
+                  <span style="font:600 10.5px 'Manrope',sans-serif;color:{{ theme.textMuted }}">Max loan installment</span>
+                  <span style="font:700 13px 'Sora',sans-serif;color:{{ theme.text }}">RM 3,648/mo</span>
+                </div>
+              </div>
+              <div style="flex:0 0 auto;width:150px;background:{{ theme.card }};border:1px solid {{ theme.border }};border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:8px">
+                <div style="font:700 13px 'Sora',sans-serif;color:{{ theme.text }}">Client — Aiman</div>
+                <div style="display:flex;flex-direction:column;gap:1px">
+                  <span style="font:600 10.5px 'Manrope',sans-serif;color:{{ theme.textMuted }}">Take-home</span>
+                  <span style="font:800 15px 'Sora',sans-serif;color:{{ accent }}">RM 6,300</span>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:1px">
+                  <span style="font:600 10.5px 'Manrope',sans-serif;color:{{ theme.textMuted }}">Max loan installment</span>
+                  <span style="font:700 13px 'Sora',sans-serif;color:{{ theme.text }}">RM 2,835/mo</span>
+                </div>
+              </div>
+              <div style="flex:0 0 auto;width:110px;background:{{ theme.chip }};border:1px dashed {{ theme.border }};border-radius:16px;padding:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:pointer" onClick="{{ goAddSalaryProfile }}">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="{{ accent }}" stroke-width="2.2" stroke-linecap="round"/></svg>
+                <span style="font:700 11.5px 'Sora',sans-serif;color:{{ accent }};text-align:center">New profile</span>
+              </div>
+            </div>
+          </div>
+
+          <div style="font:700 14.5px 'Sora',sans-serif;color:{{ theme.text }};margin-top:4px">Loan scenarios</div>
+          <div style="background:{{ theme.card }};border:1px solid {{ theme.border }};border-radius:18px;padding:14px 16px;display:flex;align-items:center;gap:12px">
+            <div style="width:42px;height:42px;border-radius:13px;background:#E4F0EC;display:flex;align-items:center;justify-content:center;flex:0 0 auto">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 11L12 4L21 11" stroke="{{ accent }}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 10V20H19V10" stroke="{{ accent }}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:1px;flex:1">
+              <span style="font:700 13.5px 'Sora',sans-serif;color:{{ theme.text }}">Home Loan — 20% down, 30y</span>
+              <span style="font:500 11.5px 'Manrope',sans-serif;color:{{ theme.textMuted }}">RM 1,992/mo · saved 2h ago</span>
+            </div>
+            <div style="width:30px;height:30px;border-radius:9px;background:{{ theme.chip }};display:flex;align-items:center;justify-content:center">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M6 6L18 18M18 6L6 18" stroke="#8A8A7A" stroke-width="2" stroke-linecap="round"/></svg>
+            </div>
+          </div>
+          <div style="background:{{ theme.card }};border:1px solid {{ theme.border }};border-radius:18px;padding:14px 16px;display:flex;align-items:center;gap:12px">
+            <div style="width:42px;height:42px;border-radius:13px;background:#E4EBF7;display:flex;align-items:center;justify-content:center;flex:0 0 auto">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 16L4.5 10.5C4.8 9.6 5.6 9 6.5 9H17.5C18.4 9 19.2 9.6 19.5 10.5L21 16" stroke="#3157A8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><rect x="2.5" y="16" width="19" height="4" rx="1.5" stroke="#3157A8" stroke-width="2.2"/><circle cx="7" cy="20" r="1.6" fill="#3157A8"/><circle cx="17" cy="20" r="1.6" fill="#3157A8"/></svg>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:1px;flex:1">
+              <span style="font:700 13.5px 'Sora',sans-serif;color:{{ theme.text }}">Car Loan — 7yr, 3% flat</span>
+              <span style="font:500 11.5px 'Manrope',sans-serif;color:{{ theme.textMuted }}">RM 1,167/mo · saved yesterday</span>
+            </div>
+            <div style="width:30px;height:30px;border-radius:9px;background:{{ theme.chip }};display:flex;align-items:center;justify-content:center">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M6 6L18 18M18 6L6 18" stroke="#8A8A7A" stroke-width="2" stroke-linecap="round"/></svg>
+            </div>
+          </div>
+          <div style="align-self:center;padding:10px 18px;border-radius:12px;background:{{ theme.chip }};font:700 12.5px 'Sora',sans-serif;color:{{ accent }};cursor:pointer">+ Compare selected</div>
+        </div>
+      </sc-if>
+
+      <!-- ===================== SETTINGS ===================== -->
+      <sc-if value="{{ isSettings }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1 1 auto;overflow-y:auto;padding:16px 20px 24px;display:flex;flex-direction:column;gap:14px">
+          <div style="display:flex;flex-direction:column;gap:2px">
+            <div style="font:700 20px 'Sora',sans-serif;color:{{ theme.text }}">Settings</div>
+            <div style="font:500 13px 'Manrope',sans-serif;color:{{ theme.textSecondary }}">Just the essentials — one screen, no rabbit holes.</div>
+          </div>
+
+          <div style="background:{{ theme.card }};border:1px solid {{ theme.border }};border-radius:18px;padding:14px 16px;display:flex;flex-direction:column;gap:12px">
+            <div style="font:700 13.5px 'Sora',sans-serif;color:{{ theme.text }}">Appearance</div>
+            <div style="display:flex;gap:8px">
+              <div style="flex:1;text-align:center;padding:9px 0;border-radius:11px;background:{{ lightBg }};font:700 12.5px 'Sora',sans-serif;color:{{ lightColor }};cursor:pointer" onClick="{{ setLight }}">☀ Light</div>
+              <div style="flex:1;text-align:center;padding:9px 0;border-radius:11px;background:{{ darkBg }};font:700 12.5px 'Sora',sans-serif;color:{{ darkColor }};cursor:pointer" onClick="{{ setDark }}">☾ Dark</div>
+            </div>
+          </div>
+
+          <div style="background:{{ theme.card }};border:1px solid {{ theme.border }};border-radius:18px;overflow:hidden">
+            <div style="display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid {{ theme.border }};cursor:pointer" onClick="{{ goAppIcon }}">
+              <div style="width:26px;height:26px;border-radius:8px;background:{{ accentGradient }}"></div>
+              <span style="font:600 13.5px 'Manrope',sans-serif;color:{{ theme.text }};flex:1">App icon</span>
+              <span style="font:600 11px 'Sora',sans-serif;color:{{ theme.textMuted }}">{{ accentLabel }}</span>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M9 5L16 12L9 19" stroke="#B7B7A6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div style="padding:12px 16px;border-bottom:1px solid {{ theme.border }};display:flex;flex-direction:column;gap:6px">
+              <div style="display:flex;align-items:center;justify-content:space-between">
+                <span style="font:600 12px 'Manrope',sans-serif;color:{{ theme.textSecondary }}">Card background darkness</span>
+                <span style="font:700 11.5px 'Sora',sans-serif;color:{{ theme.text }}">{{ scrimPercent }}%</span>
+              </div>
+              <input type="range" min="0" max="70" value="{{ scrimPercent }}" onChange="{{ setScrim }}" style="width:100%;accent-color:{{ accent }}"/>
+            </div>
+            <div style="padding:14px 16px;display:flex;flex-direction:column;gap:10px">
+              <div style="display:flex;align-items:center;justify-content:space-between">
+                <span style="font:700 13.5px 'Sora',sans-serif;color:{{ theme.text }}">Theme colour</span>
+                <span style="font:600 11px 'Manrope',sans-serif;color:{{ theme.textMuted }}">{{ accentLabel }}</span>
+              </div>
+              <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
+                <sc-for list="{{ accentOptions }}" as="opt" hint-placeholder-count="7">
+                  <div style="display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer" onClick="{{ opt.select }}">
+                    <div style="width:100%;aspect-ratio:1;border-radius:13px;background:{{ opt.swatch }};border:2px solid {{ opt.ring }};display:flex;align-items:center;justify-content:center">
+                      <sc-if value="{{ opt.isActive }}" hint-placeholder-val="{{ false }}">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 12.5L10 17L18 7" stroke="white" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                      </sc-if>
+                    </div>
+                    <span style="font:600 9.5px 'Manrope',sans-serif;color:{{ theme.textMuted }};text-align:center">{{ opt.label }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+
+          <div style="background:{{ theme.card }};border:1px solid {{ theme.border }};border-radius:18px;overflow:hidden">
+            <div style="display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid {{ theme.border }};cursor:pointer" onClick="{{ goProfile }}">
+              <svg width="19" height="19" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="{{ theme.text }}" stroke-width="2"/><path d="M4 20C4 16 7.5 14 12 14C16.5 14 20 16 20 20" stroke="{{ theme.text }}" stroke-width="2" stroke-linecap="round"/></svg>
+              <span style="font:600 13.5px 'Manrope',sans-serif;color:{{ theme.text }};flex:1">Personal profile</span>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M9 5L16 12L9 19" stroke="#B7B7A6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid #F0EEE4;cursor:pointer" onClick="{{ goAccount }}">
+              <svg width="19" height="19" viewBox="0 0 24 24" fill="none"><path d="M20 12A8 8 0 1 1 17.66 6.34" stroke="{{ theme.text }}" stroke-width="2" stroke-linecap="round"/><path d="M20 4V9H15" stroke="{{ theme.text }}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span style="font:600 13.5px 'Manrope',sans-serif;color:{{ theme.text }};flex:1">Account &amp; cloud sync</span>
+              <span style="font:600 11px 'Sora',sans-serif;color:{{ theme.textMuted }}">Not signed in</span>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M9 5L16 12L9 19" stroke="#B7B7A6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer" onClick="{{ goLanguage }}">
+              <svg width="19" height="19" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="{{ theme.text }}" stroke-width="2"/><path d="M3 12H21M12 3C14.5 5.7 15.8 9 15.8 12C15.8 15 14.5 18.3 12 21C9.5 18.3 8.2 15 8.2 12C8.2 9 9.5 5.7 12 3Z" stroke="{{ theme.text }}" stroke-width="1.6"/></svg>
+              <span style="font:600 13.5px 'Manrope',sans-serif;color:{{ theme.text }};flex:1">Language</span>
+              <span style="font:600 11px 'Sora',sans-serif;color:{{ theme.textMuted }}">{{ currentLangLabel }}</span>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M9 5L16 12L9 19" stroke="#B7B7A6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+          </div>
+
+          <div style="background:{{ theme.card }};border:1px solid {{ theme.border }};border-radius:18px;overflow:hidden">
+            <div style="display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid #F0EEE4;cursor:pointer">
+              <svg width="19" height="19" viewBox="0 0 24 24" fill="none"><path d="M12 2L22 20H2L12 2Z" stroke="{{ theme.text }}" stroke-width="2" stroke-linejoin="round"/><path d="M12 9V13.5" stroke="{{ theme.text }}" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="16.5" r="1" fill="{{ theme.text }}"/></svg>
+              <span style="font:600 13.5px 'Manrope',sans-serif;color:{{ theme.text }};flex:1">Legal &amp; privacy</span>
+              <span style="font:500 11px 'Manrope',sans-serif;color:{{ theme.textMuted }}">Disclaimer, terms, data</span>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M9 5L16 12L9 19" stroke="#B7B7A6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid {{ theme.border }};cursor:pointer" onClick="{{ goRemoveAds }}">
+              <svg width="19" height="19" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="{{ theme.text }}" stroke-width="2"/><path d="M8 8L16 16" stroke="{{ theme.text }}" stroke-width="2" stroke-linecap="round"/></svg>
+              <span style="font:600 13.5px 'Manrope',sans-serif;color:{{ theme.text }};flex:1">Remove ads</span>
+              <span style="font:700 11px 'Sora',sans-serif;color:{{ accent }}">Go ad-free</span>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M9 5L16 12L9 19" stroke="#B7B7A6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer">
+              <svg width="19" height="19" viewBox="0 0 24 24" fill="none"><path d="M12 2V6M12 18V22M4.9 4.9L7.8 7.8M16.2 16.2L19.1 19.1M2 12H6M18 12H22M4.9 19.1L7.8 16.2M16.2 7.8L19.1 4.9" stroke="{{ theme.text }}" stroke-width="2" stroke-linecap="round"/></svg>
+              <span style="font:600 13.5px 'Manrope',sans-serif;color:{{ theme.text }};flex:1">About Spectra</span>
+              <span style="font:500 11px 'Manrope',sans-serif;color:{{ theme.textMuted }}">v1.0.1</span>
+            </div>
+          </div>
+
+          <div style="font:600 11px 'Manrope',sans-serif;color:#B7B7A6;text-align:center;padding-top:6px">Developed by Spectrality Enterprise</div>
+        </div>
+      </sc-if>
+
+      <!-- ===================== REMOVE ADS PAGE ===================== -->
+      <sc-if value="{{ isRemoveAds }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1 1 auto;overflow-y:auto;padding:16px 20px 24px;display:flex;flex-direction:column;gap:14px">
+          <div style="display:flex;flex-direction:column;gap:2px">
+            <div style="font:700 20px 'Sora',sans-serif;color:{{ theme.text }}">Remove ads</div>
+            <div style="font:500 13px 'Manrope',sans-serif;color:{{ theme.textSecondary }}">Spectra stays free thanks to ads — go ad-free anytime.</div>
+          </div>
+          <div style="background:{{ accentGradientDark }};border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:10px">
+            <div style="font:600 11.5px 'Sora',sans-serif;letter-spacing:1px;color:#BFE3D6;text-transform:uppercase">One-time purchase</div>
+            <div style="font:800 26px 'Sora',sans-serif;color:white">RM 9.90</div>
+            <div style="font:500 12.5px/1.5 'Manrope',sans-serif;color:#D7EEE6">No banners, no interstitials, forever. Calculators and results stay exactly the same.</div>
+            <div style="align-self:flex-start;padding:11px 20px;border-radius:13px;background:white;font:700 13.5px 'Sora',sans-serif;color:{{ accent }};cursor:pointer;margin-top:4px">Remove ads</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;padding:12px 4px;cursor:pointer">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M20 12A8 8 0 1 1 17.66 6.34" stroke="{{ theme.textMuted }}" stroke-width="2" stroke-linecap="round"/><path d="M20 4V9H15" stroke="{{ theme.textMuted }}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span style="font:600 13px 'Manrope',sans-serif;color:{{ theme.textMuted }}">Restore purchase</span>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- ===================== APP ICON PAGE ===================== -->
+      <sc-if value="{{ isAppIcon }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1 1 auto;overflow-y:auto;padding:16px 20px 24px;display:flex;flex-direction:column;gap:14px">
+          <div style="display:flex;flex-direction:column;gap:2px">
+            <div style="font:700 20px 'Sora',sans-serif;color:{{ theme.text }}">App icon</div>
+            <div style="font:500 13px 'Manrope',sans-serif;color:{{ theme.textSecondary }}">Same ring mark, in your chosen theme colour.</div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px">
+            <sc-for list="{{ appIconOptions }}" as="ic" hint-placeholder-count="7">
+              <div style="display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer" onClick="{{ ic.select }}">
+                <div style="width:100%;aspect-ratio:1;border-radius:22px;background:{{ theme.pageBg }};display:flex;align-items:center;justify-content:center;border:2px solid {{ ic.ring }};position:relative">
+                  <svg width="60%" height="60%" viewBox="0 0 28 28" fill="none">
+                    <defs><linearGradient id="prismGrad-{{ ic.key }}" x1="0" y1="0" x2="28" y2="28" gradientUnits="userSpaceOnUse">
+                      <sc-for list="{{ ic.stops }}" as="s" hint-placeholder-count="2">
+                        <stop offset="{{ s.offset }}" stop-color="{{ s.color }}"/>
+                      </sc-for>
+                    </linearGradient></defs>
+                    <circle cx="14" cy="14" r="10.5" stroke="url(#prismGrad-{{ ic.key }})" stroke-width="7"/>
+                  </svg>
+                  <sc-if value="{{ ic.isActive }}" hint-placeholder-val="{{ false }}">
+                    <div style="position:absolute;bottom:-8px;right:-8px;width:22px;height:22px;border-radius:50%;background:{{ accent }};border:2px solid {{ theme.pageBg }};display:flex;align-items:center;justify-content:center">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M6 12.5L10 17L18 7" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </div>
+                  </sc-if>
+                </div>
+                <span style="font:600 11.5px 'Manrope',sans-serif;color:{{ theme.text }};text-align:center">{{ ic.label }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- ===================== LANGUAGE PAGE ===================== -->
+      <sc-if value="{{ isLanguage }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1 1 auto;overflow-y:auto;padding:16px 20px 24px;display:flex;flex-direction:column;gap:14px">
+          <div style="display:flex;flex-direction:column;gap:2px">
+            <div style="font:700 20px 'Sora',sans-serif;color:{{ theme.text }}">Language</div>
+            <div style="font:500 13px 'Manrope',sans-serif;color:{{ theme.textSecondary }}">Applies everywhere in the app, right away.</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <sc-for list="{{ languages }}" as="l" hint-placeholder-count="4">
+              <div style="display:flex;align-items:center;gap:12px;background:{{ l.bg }};border:1px solid {{ l.border }};border-radius:16px;padding:14px 16px;cursor:pointer" onClick="{{ l.select }}">
+                <div style="width:36px;height:36px;border-radius:11px;background:{{ l.iconBg }};display:flex;align-items:center;justify-content:center;font:700 14px 'Sora',sans-serif;color:{{ l.iconColor }}">{{ l.glyph }}</div>
+                <div style="display:flex;flex-direction:column;gap:0px;flex:1">
+                  <span style="font:700 14px 'Sora',sans-serif;color:{{ theme.text }}">{{ l.label }}</span>
+                  <span style="font:500 11.5px 'Manrope',sans-serif;color:{{ theme.textMuted }}">{{ l.native }}</span>
+                </div>
+                <sc-if value="{{ l.isActive }}" hint-placeholder-val="{{ false }}">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="{{ accent }}"/><path d="M7 12.5L10.5 16L17 8" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </sc-if>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- ===================== ACCOUNT PAGE ===================== -->
+      <sc-if value="{{ isAccount }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1 1 auto;overflow-y:auto;padding:16px 20px 24px;display:flex;flex-direction:column;gap:14px">
+          <div style="display:flex;flex-direction:column;gap:2px">
+            <div style="font:700 20px 'Sora',sans-serif;color:{{ theme.text }}">Account &amp; cloud sync</div>
+            <div style="font:500 13px 'Manrope',sans-serif;color:{{ theme.textSecondary }}">One free account keeps your profile and scenarios backed up and synced everywhere.</div>
+          </div>
+          <div style="background:{{ theme.card }};border:1px solid {{ theme.border }};border-radius:20px;padding:16px;display:flex;flex-direction:column;gap:12px">
+            <div style="display:flex;align-items:center;gap:10px">
+              <div style="width:38px;height:38px;border-radius:12px;background:#E4F0EC;display:flex;align-items:center;justify-content:center">
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="none"><path d="M20 12A8 8 0 1 1 17.66 6.34" stroke="{{ accent }}" stroke-width="2" stroke-linecap="round"/><path d="M20 4V9H15" stroke="{{ accent }}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              <div style="font:700 14.5px 'Sora',sans-serif;color:{{ theme.text }}">Sign in to Spectra</div>
+            </div>
+            <div style="display:flex;gap:8px">
+              <div style="flex:1;text-align:center;padding:9px 0;border-radius:11px;background:{{ accent }};font:700 12.5px 'Sora',sans-serif;color:white">Sign in</div>
+              <div style="flex:1;text-align:center;padding:9px 0;border-radius:11px;background:{{ theme.chip }};font:600 12.5px 'Sora',sans-serif;color:{{ theme.textSecondary }}">Create account</div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:8px;padding-top:2px">
+              <div style="display:flex;align-items:center;gap:8px;background:{{ theme.pageBg }};border:1px solid {{ theme.border }};border-radius:13px;padding:11px 13px">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="2" stroke="{{ theme.textMuted }}" stroke-width="1.8"/><path d="M3 6L12 13L21 6" stroke="{{ theme.textMuted }}" stroke-width="1.8"/></svg>
+                <input placeholder="Email" style="border:none;background:transparent;font:600 13px 'Manrope',sans-serif;color:{{ theme.text }};width:100%"/>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;background:{{ theme.pageBg }};border:1px solid {{ theme.border }};border-radius:13px;padding:11px 13px">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="5" y="10" width="14" height="10" rx="2" stroke="{{ theme.textMuted }}" stroke-width="1.8"/><path d="M8 10V7C8 4.8 9.8 3 12 3C14.2 3 16 4.8 16 7V10" stroke="{{ theme.textMuted }}" stroke-width="1.8"/></svg>
+                <input placeholder="Password" style="border:none;background:transparent;font:600 13px 'Manrope',sans-serif;color:{{ theme.text }};width:100%"/>
+              </div>
+            </div>
+            <div style="align-self:flex-start;height:44px;width:100%;border-radius:14px;background:{{ accent }};display:flex;align-items:center;justify-content:center;font:700 14px 'Sora',sans-serif;color:white;cursor:pointer;margin-top:2px">Continue</div>
+          </div>
+          <div style="background:{{ theme.card }};border:1px solid {{ theme.border }};border-radius:20px;padding:16px;display:flex;flex-direction:column;gap:8px">
+            <div style="font:700 13px 'Sora',sans-serif;color:{{ theme.text }}">Why an account?</div>
+            <div style="font:500 12.5px/1.6 'Manrope',sans-serif;color:{{ theme.textSecondary }}">Spectra is free to use. Cloud sync keeps your profile safe if you change phones, and lets calculators improve over time. Never enter your NRIC, card numbers, OTPs, or official loan documents.</div>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- ===================== PROFILE PAGE (accordion) ===================== -->
+      <sc-if value="{{ isProfile }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1 1 auto;display:flex;flex-direction:column;min-height:0">
+          <div style="flex:1 1 auto;overflow-y:auto;padding:16px 20px 16px;display:flex;flex-direction:column;gap:12px">
+            <div style="display:flex;flex-direction:column;gap:2px">
+              <div style="font:700 20px 'Sora',sans-serif;color:{{ theme.text }}">Personal profile</div>
+              <div style="font:500 13px 'Manrope',sans-serif;color:{{ theme.textSecondary }}">Set once — every calculator uses this to check affordability.</div>
+            </div>
+
+            <div style="background:{{ theme.card }};border:1px solid {{ theme.border }};border-radius:18px;overflow:hidden">
+              <div style="display:flex;align-items:center;gap:10px;padding:14px 16px;cursor:pointer" onClick="{{ toggleSection('income') }}">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="2.5" y="6" width="19" height="12" rx="2.5" stroke="{{ accent }}" stroke-width="2"/><circle cx="12" cy="12" r="2.6" stroke="{{ accent }}" stroke-width="2"/></svg>
+                <span style="font:700 13.5px 'Sora',sans-serif;color:{{ theme.text }};flex:1">Income &amp; deductions</span>
+                <span style="font:600 12px 'Manrope',sans-serif;color:{{ theme.textMuted }}">RM 5,000</span>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" style="transform:{{ incomeChevron }}"><path d="M6 9L12 15L18 9" stroke="#8A8A7A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              <sc-if value="{{ incomeOpen }}" hint-placeholder-val="{{ true }}">
+                <div style="padding:0 16px 16px;display:flex;flex-direction:column;gap:12px;border-top:1px solid #F0EEE4;padding-top:14px">
+                  <div style="display:flex;flex-direction:column;gap:6px">
+                    <label style="font:600 12px 'Manrope',sans-serif;color:{{ theme.textSecondary }}">Gross monthly salary</label>
+                    <div style="display:flex;align-items:center;gap:8px;background:{{ theme.pageBg }};border:1px solid {{ theme.border }};border-radius:13px;padding:11px 13px">
+                      <span style="font:700 13px 'Sora',sans-serif;color:{{ theme.textSecondary }}">RM</span>
+                      <input defaultValue="5,000" style="border:none;background:transparent;font:700 14px 'Sora',sans-serif;color:{{ theme.text }};width:100%"/>
+                    </div>
+                  </div>
+                  <div style="display:flex;gap:10px">
+                    <div style="flex:1;display:flex;flex-direction:column;gap:6px">
+                      <label style="font:600 12px 'Manrope',sans-serif;color:{{ theme.textSecondary }}">EPF rate</label>
+                      <div style="display:flex;align-items:center;gap:6px;background:{{ theme.pageBg }};border:1px solid {{ theme.border }};border-radius:13px;padding:11px 13px">
+                        <input defaultValue="11" style="border:none;background:transparent;font:700 14px 'Sora',sans-serif;color:{{ theme.text }};width:100%"/>
+                        <span style="font:700 13px 'Sora',sans-serif;color:{{ theme.textSecondary }}">%</span>
+                      </div>
+                    </div>
+                    <div style="flex:1;display:flex;flex-direction:column;gap:6px">
+                      <label style="font:600 12px 'Manrope',sans-serif;color:{{ theme.textSecondary }}">PCB / tax</label>
+                      <div style="display:flex;align-items:center;gap:6px;background:{{ theme.pageBg }};border:1px solid {{ theme.border }};border-radius:13px;padding:11px 13px">
+                        <span style="font:700 13px 'Sora',sans-serif;color:{{ theme.textSecondary }}">RM</span>
+                        <input defaultValue="0" style="border:none;background:transparent;font:700 14px 'Sora',sans-serif;color:{{ theme.text }};width:100%"/>
+                      </div>
+                    </div>
+                  </div>
+                  <div style="font:500 11px 'Manrope',sans-serif;color:{{ theme.textMuted }}">SOCSO/EIS estimated automatically from salary — tap to override.</div>
+                </div>
+              </sc-if>
+            </div>
+
+            <div style="background:{{ theme.card }};border:1px solid {{ theme.border }};border-radius:18px;overflow:hidden">
+              <div style="display:flex;align-items:center;gap:10px;padding:14px 16px;cursor:pointer" onClick="{{ toggleSection('cashflow') }}">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="{{ accent }}" stroke-width="2.1"/><path d="M12 2V5M12 19V22M22 12H19M5 12H2M19.07 4.93L16.95 7.05M7.05 16.95L4.93 19.07M19.07 19.07L16.95 16.95M7.05 7.05L4.93 4.93" stroke="{{ accent }}" stroke-width="2.1" stroke-linecap="round"/></svg>
+                <span style="font:700 13.5px 'Sora',sans-serif;color:{{ theme.text }};flex:1">Cashflow plan</span>
+                <span style="font:600 12px 'Manrope',sans-serif;color:{{ theme.textMuted }}">40% DSR</span>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" style="transform:{{ cashflowChevron }}"><path d="M6 9L12 15L18 9" stroke="#8A8A7A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              <sc-if value="{{ cashflowOpen }}" hint-placeholder-val="{{ false }}">
+                <div style="padding:0 16px 16px;display:flex;flex-direction:column;gap:12px;border-top:1px solid #F0EEE4;padding-top:14px">
+                  <div style="display:flex;gap:10px">
+                    <div style="flex:1;display:flex;flex-direction:column;gap:6px">
+                      <label style="font:600 12px 'Manrope',sans-serif;color:{{ theme.textSecondary }}">Living expenses</label>
+                      <div style="display:flex;align-items:center;gap:8px;background:{{ theme.pageBg }};border:1px solid {{ theme.border }};border-radius:13px;padding:11px 13px">
+                        <span style="font:700 13px 'Sora',sans-serif;color:{{ theme.textSecondary }}">RM</span>
+                        <input defaultValue="2,000" style="border:none;background:transparent;font:700 14px 'Sora',sans-serif;color:{{ theme.text }};width:100%"/>
+                      </div>
+                    </div>
+                    <div style="flex:1;display:flex;flex-direction:column;gap:6px">
+                      <label style="font:600 12px 'Manrope',sans-serif;color:{{ theme.textSecondary }}">Target DSR</label>
+                      <div style="display:flex;align-items:center;gap:6px;background:{{ theme.pageBg }};border:1px solid {{ theme.border }};border-radius:13px;padding:11px 13px">
+                        <input defaultValue="40" style="border:none;background:transparent;font:700 14px 'Sora',sans-serif;color:{{ theme.text }};width:100%"/>
+                        <span style="font:700 13px 'Sora',sans-serif;color:{{ theme.textSecondary }}">%</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </sc-if>
+            </div>
+
+            <div style="background:{{ theme.card }};border:1px solid {{ theme.border }};border-radius:18px;overflow:hidden">
+              <div style="display:flex;align-items:center;gap:10px;padding:14px 16px;cursor:pointer" onClick="{{ toggleSection('invest') }}">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 17L9 11L13 15L21 7" stroke="{{ accent }}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <span style="font:700 13.5px 'Sora',sans-serif;color:{{ theme.text }};flex:1">Investment view (optional)</span>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" style="transform:{{ investChevron }}"><path d="M6 9L12 15L18 9" stroke="#8A8A7A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              <sc-if value="{{ investOpen }}" hint-placeholder-val="{{ false }}">
+                <div style="padding:0 16px 16px;display:flex;flex-direction:column;gap:12px;border-top:1px solid #F0EEE4;padding-top:14px">
+                  <div style="font:500 12px/1.5 'Manrope',sans-serif;color:{{ theme.textMuted }}">For rental or income-producing assets. Cashflow estimate only, not investment advice.</div>
+                </div>
+              </sc-if>
+            </div>
+          </div>
+
+          <div style="flex:0 0 auto;background:{{ theme.card }};border-top:1px solid {{ theme.border }};padding:14px 18px 18px;display:flex;flex-direction:column;gap:12px">
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <div style="display:flex;flex-direction:column;gap:1px">
+                <span style="font:600 11px 'Manrope',sans-serif;color:{{ theme.textMuted }}">Take-home pay</span>
+                <span style="font:800 20px 'Sora',sans-serif;color:{{ theme.text }}">RM 4,415</span>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:flex-end;gap:1px">
+                <span style="font:600 11px 'Manrope',sans-serif;color:{{ theme.textMuted }}">Room left</span>
+                <span style="font:700 13.5px 'Sora',sans-serif;color:{{ accent }}">RM 915</span>
+              </div>
+            </div>
+            <div style="height:44px;border-radius:14px;background:{{ accent }};display:flex;align-items:center;justify-content:center;font:700 14px 'Sora',sans-serif;color:white;cursor:pointer">Save profile</div>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- ===================== HOME LOAN DETAIL (flagship redesign) ===================== -->
+      <sc-if value="{{ isHomeLoan }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1 1 auto;display:flex;flex-direction:column;min-height:0">
+          <div style="flex:1 1 auto;overflow-y:auto;padding:16px 20px 16px;display:flex;flex-direction:column;gap:12px">
+            <div style="display:flex;flex-direction:column;gap:2px">
+              <div style="font:700 20px 'Sora',sans-serif;color:{{ theme.text }}">Property financing</div>
+              <div style="font:500 12.5px 'Manrope',sans-serif;color:{{ theme.textSecondary }}">Estimates in MYR · rules reviewed 30 Jun 2026</div>
+            </div>
+
+            <!-- STEP 1: open -->
+            <div style="background:{{ theme.card }};border:1px solid {{ theme.border }};border-radius:18px;overflow:hidden">
+              <div style="display:flex;align-items:center;gap:10px;padding:14px 16px">
+                <div style="width:24px;height:24px;border-radius:8px;background:{{ accent }};color:white;display:flex;align-items:center;justify-content:center;font:700 12px 'Sora',sans-serif;flex:0 0 auto">1</div>
+                <span style="font:700 14px 'Sora',sans-serif;color:{{ theme.text }}">Loan basics</span>
+              </div>
+              <div style="padding:0 16px 16px;display:flex;flex-direction:column;gap:12px">
+                <div style="display:flex;flex-direction:column;gap:6px">
+                  <label style="font:600 12px 'Manrope',sans-serif;color:{{ theme.textSecondary }}">Property price</label>
+                  <div style="display:flex;align-items:center;gap:8px;background:{{ theme.pageBg }};border:1px solid {{ theme.border }};border-radius:13px;padding:12px 14px">
+                    <span style="font:700 13px 'Sora',sans-serif;color:{{ theme.textSecondary }}">RM</span>
+                    <input defaultValue="500,000" style="border:none;background:transparent;font:700 15px 'Sora',sans-serif;color:{{ theme.text }};width:100%"/>
+                  </div>
+                </div>
+                <div style="display:flex;gap:10px">
+                  <div style="flex:1;display:flex;flex-direction:column;gap:6px">
+                    <label style="font:600 12px 'Manrope',sans-serif;color:{{ theme.textSecondary }}">Down payment</label>
+                    <div style="display:flex;align-items:center;gap:6px;background:{{ theme.pageBg }};border:1px solid {{ theme.border }};border-radius:13px;padding:12px 14px">
+                      <input defaultValue="10" style="border:none;background:transparent;font:700 14px 'Sora',sans-serif;color:{{ theme.text }};width:100%"/>
+                      <span style="font:700 13px 'Sora',sans-serif;color:{{ theme.textSecondary }}">%</span>
+                    </div>
+                  </div>
+                  <div style="flex:1;display:flex;flex-direction:column;gap:6px">
+                    <label style="font:600 12px 'Manrope',sans-serif;color:{{ theme.textSecondary }}">Interest rate</label>
+                    <div style="display:flex;align-items:center;gap:6px;background:{{ theme.pageBg }};border:1px solid {{ theme.border }};border-radius:13px;padding:12px 14px">
+                      <input defaultValue="4.00" style="border:none;background:transparent;font:700 14px 'Sora',sans-serif;color:{{ theme.text }};width:100%"/>
+                      <span style="font:700 13px 'Sora',sans-serif;color:{{ theme.textSecondary }}">%</span>
+                    </div>
+                  </div>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:8px">
+                  <label style="font:600 12px 'Manrope',sans-serif;color:{{ theme.textSecondary }}">Tenure</label>
+                  <div style="display:flex;gap:6px">
+                    <div style="flex:1;text-align:center;padding:9px 0;border-radius:11px;background:{{ theme.segment }};font:600 12px 'Sora',sans-serif;color:{{ theme.textMuted }}">20y</div>
+                    <div style="flex:1;text-align:center;padding:9px 0;border-radius:11px;background:{{ theme.segment }};font:600 12px 'Sora',sans-serif;color:{{ theme.textMuted }}">25y</div>
+                    <div style="flex:1;text-align:center;padding:9px 0;border-radius:11px;background:{{ theme.segment }};font:600 12px 'Sora',sans-serif;color:{{ theme.textMuted }}">30y</div>
+                    <div style="flex:1;text-align:center;padding:9px 0;border-radius:11px;background:{{ accent }};font:700 12px 'Sora',sans-serif;color:white">35y</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- STEP 2: collapsed by default -->
+            <div style="background:{{ theme.card }};border:1px solid {{ theme.border }};border-radius:18px;overflow:hidden">
+              <div style="display:flex;align-items:center;gap:10px;padding:14px 16px;cursor:pointer" onClick="{{ toggleSection('buyer') }}">
+                <div style="width:24px;height:24px;border-radius:8px;background:{{ theme.segment }};color:{{ theme.textMuted }};display:flex;align-items:center;justify-content:center;font:700 12px 'Sora',sans-serif;flex:0 0 auto">2</div>
+                <span style="font:700 14px 'Sora',sans-serif;color:{{ theme.text }};flex:1">Buyer &amp; property status</span>
+                <span style="font:600 11.5px 'Manrope',sans-serif;color:{{ theme.textMuted }}">Citizen · Subsale</span>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" style="transform:{{ buyerChevron }}"><path d="M6 9L12 15L18 9" stroke="#8A8A7A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              <sc-if value="{{ buyerOpen }}" hint-placeholder-val="{{ false }}">
+                <div style="padding:0 16px 16px;display:flex;flex-direction:column;gap:10px;border-top:1px solid #F0EEE4;padding-top:14px">
+                  <div style="display:flex;gap:8px">
+                    <div style="flex:1;text-align:center;padding:9px 0;border-radius:11px;background:{{ accent }};font:700 12px 'Sora',sans-serif;color:white">Citizen</div>
+                    <div style="flex:1;text-align:center;padding:9px 0;border-radius:11px;background:{{ theme.segment }};font:600 12px 'Sora',sans-serif;color:{{ theme.textMuted }}">PR</div>
+                    <div style="flex:1;text-align:center;padding:9px 0;border-radius:11px;background:{{ theme.segment }};font:600 12px 'Sora',sans-serif;color:{{ theme.textMuted }}">Foreign</div>
+                  </div>
+                  <div style="display:flex;gap:8px">
+                    <div style="flex:1;text-align:center;padding:9px 0;border-radius:11px;background:{{ accent }};font:700 12px 'Sora',sans-serif;color:white">Subsale</div>
+                    <div style="flex:1;text-align:center;padding:9px 0;border-radius:11px;background:{{ theme.segment }};font:600 12px 'Sora',sans-serif;color:{{ theme.textMuted }}">New project</div>
+                  </div>
+                  <div style="display:flex;align-items:center;justify-content:space-between;padding:11px 14px;background:{{ theme.pageBg }};border:1px solid {{ theme.border }};border-radius:13px">
+                    <span style="font:600 13px 'Manrope',sans-serif;color:{{ theme.text }}">First residential home</span>
+                    <div style="width:40px;height:24px;border-radius:100px;background:{{ accent }};position:relative"><div style="position:absolute;right:2px;top:2px;width:20px;height:20px;border-radius:50%;background:{{ theme.card }}"></div></div>
+                  </div>
+                </div>
+              </sc-if>
+            </div>
+
+            <!-- STEP 3: collapsed -->
+            <div style="background:{{ theme.card }};border:1px solid {{ theme.border }};border-radius:18px;overflow:hidden">
+              <div style="display:flex;align-items:center;gap:10px;padding:14px 16px;cursor:pointer" onClick="{{ toggleSection('afford') }}">
+                <div style="width:24px;height:24px;border-radius:8px;background:{{ theme.segment }};color:{{ theme.textMuted }};display:flex;align-items:center;justify-content:center;font:700 12px 'Sora',sans-serif;flex:0 0 auto">3</div>
+                <span style="font:700 14px 'Sora',sans-serif;color:{{ theme.text }};flex:1">Affordability check</span>
+                <span style="font:600 11px 'Sora',sans-serif;color:{{ theme.textMuted }};padding:2px 8px;border-radius:100px;background:{{ theme.chip }}">Optional</span>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" style="transform:{{ affordChevron }}"><path d="M6 9L12 15L18 9" stroke="#8A8A7A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              <sc-if value="{{ affordOpen }}" hint-placeholder-val="{{ false }}">
+                <div style="padding:0 16px 16px;display:flex;flex-direction:column;gap:10px;border-top:1px solid #F0EEE4;padding-top:14px">
+                  <div style="font:500 12px/1.5 'Manrope',sans-serif;color:{{ theme.textMuted }}">Already set your profile? It's used automatically. Otherwise, enter your income here just for this estimate.</div>
+                  <div style="display:flex;align-items:center;gap:8px;background:{{ theme.pageBg }};border:1px solid {{ theme.border }};border-radius:13px;padding:12px 14px">
+                    <span style="font:700 13px 'Sora',sans-serif;color:{{ theme.textSecondary }}">RM</span>
+                    <input placeholder="Monthly gross income" style="border:none;background:transparent;font:700 14px 'Sora',sans-serif;color:{{ theme.text }};width:100%"/>
+                  </div>
+                </div>
+              </sc-if>
+            </div>
+
+            <div style="align-self:center;padding:10px 4px;font:600 12px 'Manrope',sans-serif;color:{{ theme.textMuted }}">Scroll for full amortization after calculating</div>
+          </div>
+
+          <!-- STICKY RESULT BAR -->
+          <div style="flex:0 0 auto;background:{{ theme.card }};border-top:1px solid {{ theme.border }};padding:14px 18px 18px;display:flex;flex-direction:column;gap:12px">
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <div style="display:flex;flex-direction:column;gap:1px">
+                <span style="font:600 11px 'Manrope',sans-serif;color:{{ theme.textMuted }}">Monthly installment</span>
+                <span style="font:800 22px 'Sora',sans-serif;color:{{ theme.text }}">RM 1,992</span>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:flex-end;gap:1px">
+                <span style="font:600 11px 'Manrope',sans-serif;color:{{ theme.textMuted }}">Upfront cash</span>
+                <span style="font:700 13.5px 'Sora',sans-serif;color:{{ theme.textSecondary }}">RM 76,709</span>
+              </div>
+            </div>
+            <div style="display:flex;gap:10px">
+              <div style="flex:0 0 auto;width:46px;height:46px;border-radius:14px;background:{{ theme.chip }};display:flex;align-items:center;justify-content:center;cursor:pointer">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 4V20L12 16L20 20V4H4Z" stroke="{{ theme.text }}" stroke-width="2" stroke-linejoin="round"/></svg>
+              </div>
+              <div style="flex:0 0 auto;width:46px;height:46px;border-radius:14px;background:{{ theme.chip }};display:flex;align-items:center;justify-content:center;cursor:pointer">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M20 12A8 8 0 1 1 17.66 6.34" stroke="{{ theme.text }}" stroke-width="2" stroke-linecap="round"/><path d="M20 4V9H15" stroke="{{ theme.text }}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              <div style="flex:1;height:46px;border-radius:14px;background:{{ accent }};display:flex;align-items:center;justify-content:center;font:700 14.5px 'Sora',sans-serif;color:white;cursor:pointer">Recalculate</div>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- CAR LOAN DETAIL (light variant reusing same pattern) -->
+      <sc-if value="{{ isCarLoan }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1 1 auto;display:flex;flex-direction:column;min-height:0">
+          <div style="flex:1 1 auto;overflow-y:auto;padding:16px 20px 16px;display:flex;flex-direction:column;gap:12px">
+            <div style="display:flex;flex-direction:column;gap:2px">
+              <div style="font:700 20px 'Sora',sans-serif;color:{{ theme.text }}">Hire purchase estimate</div>
+              <div style="font:500 12.5px 'Manrope',sans-serif;color:{{ theme.textSecondary }}">Same layout as Home Loan — one open step, rest collapsible.</div>
+            </div>
+            <div style="background:{{ theme.card }};border:1px solid {{ theme.border }};border-radius:18px;overflow:hidden">
+              <div style="display:flex;align-items:center;gap:10px;padding:14px 16px">
+                <div style="width:24px;height:24px;border-radius:8px;background:#3157A8;color:white;display:flex;align-items:center;justify-content:center;font:700 12px 'Sora',sans-serif;flex:0 0 auto">1</div>
+                <span style="font:700 14px 'Sora',sans-serif;color:{{ theme.text }}">Vehicle &amp; financing</span>
+              </div>
+              <div style="padding:0 16px 16px;display:flex;flex-direction:column;gap:12px">
+                <div style="display:flex;flex-direction:column;gap:6px">
+                  <label style="font:600 12px 'Manrope',sans-serif;color:{{ theme.textSecondary }}">Vehicle price</label>
+                  <div style="display:flex;align-items:center;gap:8px;background:{{ theme.pageBg }};border:1px solid {{ theme.border }};border-radius:13px;padding:12px 14px">
+                    <span style="font:700 13px 'Sora',sans-serif;color:{{ theme.textSecondary }}">RM</span>
+                    <input defaultValue="90,000" style="border:none;background:transparent;font:700 15px 'Sora',sans-serif;color:{{ theme.text }};width:100%"/>
+                  </div>
+                </div>
+                <div style="display:flex;gap:10px">
+                  <div style="flex:1;display:flex;flex-direction:column;gap:6px">
+                    <label style="font:600 12px 'Manrope',sans-serif;color:{{ theme.textSecondary }}">Down payment</label>
+                    <div style="display:flex;align-items:center;gap:6px;background:{{ theme.pageBg }};border:1px solid {{ theme.border }};border-radius:13px;padding:12px 14px">
+                      <input defaultValue="10" style="border:none;background:transparent;font:700 14px 'Sora',sans-serif;color:{{ theme.text }};width:100%"/>
+                      <span style="font:700 13px 'Sora',sans-serif;color:{{ theme.textSecondary }}">%</span>
+                    </div>
+                  </div>
+                  <div style="flex:1;display:flex;flex-direction:column;gap:6px">
+                    <label style="font:600 12px 'Manrope',sans-serif;color:{{ theme.textSecondary }}">Flat rate</label>
+                    <div style="display:flex;align-items:center;gap:6px;background:{{ theme.pageBg }};border:1px solid {{ theme.border }};border-radius:13px;padding:12px 14px">
+                      <input defaultValue="3.00" style="border:none;background:transparent;font:700 14px 'Sora',sans-serif;color:{{ theme.text }};width:100%"/>
+                      <span style="font:700 13px 'Sora',sans-serif;color:{{ theme.textSecondary }}">%</span>
+                    </div>
+                  </div>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:8px">
+                  <label style="font:600 12px 'Manrope',sans-serif;color:{{ theme.textSecondary }}">Tenure</label>
+                  <div style="display:flex;gap:6px">
+                    <div style="flex:1;text-align:center;padding:9px 0;border-radius:11px;background:{{ theme.segment }};font:600 12px 'Sora',sans-serif;color:{{ theme.textMuted }}">5y</div>
+                    <div style="flex:1;text-align:center;padding:9px 0;border-radius:11px;background:#3157A8;font:700 12px 'Sora',sans-serif;color:white">7y</div>
+                    <div style="flex:1;text-align:center;padding:9px 0;border-radius:11px;background:{{ theme.segment }};font:600 12px 'Sora',sans-serif;color:{{ theme.textMuted }}">9y</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div style="flex:0 0 auto;background:{{ theme.card }};border-top:1px solid {{ theme.border }};padding:14px 18px 18px;display:flex;flex-direction:column;gap:12px">
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <div style="display:flex;flex-direction:column;gap:1px">
+                <span style="font:600 11px 'Manrope',sans-serif;color:{{ theme.textMuted }}">Monthly installment</span>
+                <span style="font:800 22px 'Sora',sans-serif;color:{{ theme.text }}">RM 1,167</span>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:flex-end;gap:1px">
+                <span style="font:600 11px 'Manrope',sans-serif;color:{{ theme.textMuted }}">Total interest</span>
+                <span style="font:700 13.5px 'Sora',sans-serif;color:{{ theme.textSecondary }}">RM 17,010</span>
+              </div>
+            </div>
+            <div style="display:flex;gap:10px">
+              <div style="flex:0 0 auto;width:46px;height:46px;border-radius:14px;background:{{ theme.chip }};display:flex;align-items:center;justify-content:center;cursor:pointer">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 4V20L12 16L20 20V4H4Z" stroke="{{ theme.text }}" stroke-width="2" stroke-linejoin="round"/></svg>
+              </div>
+              <div style="flex:1;height:46px;border-radius:14px;background:#3157A8;display:flex;align-items:center;justify-content:center;font:700 14.5px 'Sora',sans-serif;color:white;cursor:pointer">Recalculate</div>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- BOTTOM TAB BAR -->
+      <sc-if value="{{ showTabs }}" hint-placeholder-val="{{ true }}">
+        <div style="flex:0 0 auto;display:flex;flex-direction:column">
+          <div style="display:flex;align-items:center;justify-content:space-around;padding:10px 10px 4px;border-top:1px solid {{ theme.border }};background:{{ theme.pageBg }}">
+            <div style="display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer" onClick="{{ goHome }}">
+              <svg width="21" height="21" viewBox="0 0 24 24" fill="none"><path d="M3 11L12 4L21 11" stroke="{{ tabColors.home }}" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 10V20H19V10" stroke="{{ tabColors.home }}" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span style="font:700 10.5px 'Sora',sans-serif;color:{{ tabColors.home }}">Home</span>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer" onClick="{{ goCalculators }}">
+              <svg width="21" height="21" viewBox="0 0 24 24" fill="none"><rect x="4" y="3" width="16" height="18" rx="2.5" stroke="{{ tabColors.calc }}" stroke-width="2.1"/><path d="M8 8H16M8 12H16M8 16H12" stroke="{{ tabColors.calc }}" stroke-width="2.1" stroke-linecap="round"/></svg>
+              <span style="font:700 10.5px 'Sora',sans-serif;color:{{ tabColors.calc }}">Calculators</span>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer" onClick="{{ goSaved }}">
+              <svg width="21" height="21" viewBox="0 0 24 24" fill="none"><path d="M5 3H19V21L12 17L5 21V3Z" stroke="{{ tabColors.saved }}" stroke-width="2.1" stroke-linejoin="round"/></svg>
+              <span style="font:700 10.5px 'Sora',sans-serif;color:{{ tabColors.saved }}">Saved</span>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer" onClick="{{ goSettings }}">
+              <svg width="21" height="21" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="{{ tabColors.settings }}" stroke-width="2.1"/><path d="M12 2V5M12 19V22M22 12H19M5 12H2M19.07 4.93L16.95 7.05M7.05 16.95L4.93 19.07M19.07 19.07L16.95 16.95M7.05 7.05L4.93 4.93" stroke="{{ tabColors.settings }}" stroke-width="2.1" stroke-linecap="round"/></svg>
+              <span style="font:700 10.5px 'Sora',sans-serif;color:{{ tabColors.settings }}">Settings</span>
+            </div>
+          </div>
+          <div style="display:flex;justify-content:center;padding:8px 0 6px"><div style="width:120px;height:5px;border-radius:3px;background:#14231D"></div></div>
+        </div>
+      </sc-if>
+
+    </div>
+  </div>
+
+  <div style="font:600 12px 'Manrope',sans-serif;color:{{ theme.textMuted }};letter-spacing:0.3px">Developed by Spectrality Enterprise</div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = {
+    tab: 'home',
+    detail: null,
+    hasProfile: true,
+    lang: 'en',
+    theme: 'light',
+    accentKey: 'default',
+    scrimOpacity: 0.38,
+    open: { income: true, cashflow: false, invest: false, buyer: false, afford: false },
+  };
+
+  lightTheme = { pageBg: '#FAF9F5', card: 'white', border: '#E7E3D8', text: '#14231D', textSecondary: '#6B7566', textMuted: '#8A8A7A', chip: '#F0EEE4', segment: '#EFEBDD' };
+  darkTheme = { pageBg: '#12181A', card: '#1B2420', border: '#2B3730', text: '#F3F1E8', textSecondary: '#A9B3AC', textMuted: '#7C877E', chip: '#233029', segment: '#233029' };
+
+  accentPresets = {
+    default: { label: 'Spectrum', accent: '#146356', stop1: '#FF5D6C', stop2: '#A667F5', gradient: 'linear-gradient(135deg,#FF5D6C 0%,#FFB443 25%,#35C79A 50%,#4C82F7 75%,#A667F5 100%)', swatch: 'linear-gradient(135deg,#FF5D6C,#FFB443,#35C79A,#4C82F7,#A667F5)', stops: [{offset:'0%',color:'#FF5D6C'},{offset:'25%',color:'#FFB443'},{offset:'50%',color:'#35C79A'},{offset:'75%',color:'#4C82F7'},{offset:'100%',color:'#A667F5'}] },
+    modern: { label: 'Modern', accent: '#15141A', stop1: '#3A3A42', stop2: '#15141A', gradient: 'linear-gradient(135deg,#3A3A42 0%,#15141A 100%)', swatch: '#15141A' },
+    coral: { label: 'Coral', accent: '#FF5D6C', stop1: '#FF8A96', stop2: '#FF5D6C', gradient: 'linear-gradient(135deg,#FF8A96 0%,#FF5D6C 100%)', swatch: '#FF5D6C' },
+    amber: { label: 'Amber', accent: '#E09A2E', stop1: '#FFD08A', stop2: '#FFB443', gradient: 'linear-gradient(135deg,#FFD08A 0%,#FFB443 100%)', swatch: '#FFB443' },
+    jade: { label: 'Jade', accent: '#1C9E76', stop1: '#7EE2C3', stop2: '#35C79A', gradient: 'linear-gradient(135deg,#7EE2C3 0%,#35C79A 100%)', swatch: '#35C79A' },
+    azure: { label: 'Azure', accent: '#3D6FE0', stop1: '#8FB0FA', stop2: '#4C82F7', gradient: 'linear-gradient(135deg,#8FB0FA 0%,#4C82F7 100%)', swatch: '#4C82F7' },
+    violet: { label: 'Violet', accent: '#8E4EDB', stop1: '#C79EF9', stop2: '#A667F5', gradient: 'linear-gradient(135deg,#C79EF9 0%,#A667F5 100%)', swatch: '#A667F5' },
+  };
+
+
+
+  languages = [
+    { code: 'en', label: 'English', native: 'v1 active language', glyph: 'EN' },
+    { code: 'bm', label: 'Bahasa Malaysia', native: 'Labels planned after v1', glyph: 'BM' },
+    { code: 'zh', label: 'Chinese', native: '简体中文 — planned after v1', glyph: '中' },
+    { code: 'ta', label: 'Tamil', native: 'தமிழ் — planned after v1', glyph: 'த' },
+  ];
+
+  go(tab) { return () => this.setState({ tab, detail: null }); }
+  goDetail(detail) { return () => this.setState({ detail }); }
+  setTheme(theme) { return () => this.setState({ theme }); }
+  setAccent(key) { return () => this.setState({ accentKey: key }); }
+  setScrim(e) { this.setState({ scrimOpacity: Number(e.target.value) / 100 }); }
+
+  toggleSection(key) {
+    return () => this.setState(s => ({ open: { ...s.open, [key]: !s.open[key] } }));
+  }
+
+  renderVals() {
+    const tab = this.state.tab;
+    const detail = this.state.detail;
+    const isDetail = !!detail;
+    const lang = this.languages.find(l => l.code === this.state.lang);
+
+    const titles = { profile: 'Personal Profile', account: 'Account & Sync', language: 'Language', homeLoan: 'Home Loan', carLoan: 'Car Loan', removeAds: 'Remove Ads', appIcon: 'App Icon', addSalaryProfile: 'New Salary Profile' };
+    const isDark = this.state.theme === 'dark';
+    const theme = isDark ? this.darkTheme : this.lightTheme;
+    const preset = this.accentPresets[this.state.accentKey];
+
+    const tabColors = {
+      home: tab === 'home' && !isDetail ? '#146356' : '#B7B7A6',
+      calc: tab === 'calculators' && !isDetail ? '#146356' : '#B7B7A6',
+      saved: tab === 'saved' && !isDetail ? '#146356' : '#B7B7A6',
+      settings: (tab === 'settings' || isDetail) ? '#146356' : '#B7B7A6',
+    };
+
+    return {
+      isHome: tab === 'home' && !isDetail,
+      isCalculators: tab === 'calculators' && !isDetail,
+      isSaved: tab === 'saved' && !isDetail,
+      isSettings: tab === 'settings' && !isDetail,
+      isProfile: detail === 'profile',
+      isAccount: detail === 'account',
+      isLanguage: detail === 'language',
+      isHomeLoan: detail === 'homeLoan',
+      isCarLoan: detail === 'carLoan',
+      isRemoveAds: detail === 'removeAds',
+      isAppIcon: detail === 'appIcon',
+      isAddSalaryProfile: detail === 'addSalaryProfile',
+      hasBack: isDetail,
+      noBack: !isDetail,
+      theme: theme,
+      isDark: isDark,
+      accent: preset.accent,
+      accentGradient: preset.gradient,
+      accentGradientDark: 'linear-gradient(rgba(0,0,0,' + this.state.scrimOpacity + '),rgba(0,0,0,' + this.state.scrimOpacity + ')), ' + preset.gradient,
+      accentStop1: preset.stop1,
+      accentStop2: preset.stop2,
+      accentStops: preset.stops || [{offset:'0%',color:preset.stop1},{offset:'100%',color:preset.stop2}],
+      accentLabel: preset.label,
+      scrimPercent: Math.round(this.state.scrimOpacity * 100),
+      setScrim: (e) => this.setScrim(e),
+      lightBg: !isDark ? '#146356' : theme.chip,
+      lightColor: !isDark ? 'white' : theme.textSecondary,
+      darkBg: isDark ? '#146356' : theme.chip,
+      darkColor: isDark ? 'white' : theme.textSecondary,
+      setLight: this.setTheme('light'),
+      setDark: this.setTheme('dark'),
+      topTitle: titles[detail] || '',
+      hasProfile: this.state.hasProfile,
+      needsProfile: !this.state.hasProfile,
+      showTabs: true,
+      tabColors: tabColors,
+      currentLangLabel: lang.glyph,
+
+      incomeOpen: this.state.open.income,
+      cashflowOpen: this.state.open.cashflow,
+      investOpen: this.state.open.invest,
+      buyerOpen: this.state.open.buyer,
+      affordOpen: this.state.open.afford,
+      incomeChevron: this.state.open.income ? 'rotate(180deg)' : 'rotate(0deg)',
+      cashflowChevron: this.state.open.cashflow ? 'rotate(180deg)' : 'rotate(0deg)',
+      investChevron: this.state.open.invest ? 'rotate(180deg)' : 'rotate(0deg)',
+      buyerChevron: this.state.open.buyer ? 'rotate(180deg)' : 'rotate(0deg)',
+      affordChevron: this.state.open.afford ? 'rotate(180deg)' : 'rotate(0deg)',
+      toggleSection: (key) => this.toggleSection(key),
+
+      goHome: this.go('home'),
+      goCalculators: this.go('calculators'),
+      goSaved: this.go('saved'),
+      goSettings: this.go('settings'),
+      goProfile: this.goDetail('profile'),
+      goAccount: this.goDetail('account'),
+      goLanguage: this.goDetail('language'),
+      goHomeLoan: this.goDetail('homeLoan'),
+      goCarLoan: this.goDetail('carLoan'),
+      goRemoveAds: this.goDetail('removeAds'),
+      goAppIcon: this.goDetail('appIcon'),
+      goAddSalaryProfile: this.goDetail('addSalaryProfile'),
+      goBack: () => this.setState({ detail: null }),
+
+      accentOptions: Object.keys(this.accentPresets).map(key => {
+        const p = this.accentPresets[key];
+        const active = key === this.state.accentKey;
+        return { key, label: p.label, swatch: p.swatch, isActive: active, ring: active ? theme.text : 'transparent', select: this.setAccent(key) };
+      }),
+      appIconOptions: Object.keys(this.accentPresets).map(key => {
+        const p = this.accentPresets[key];
+        const active = key === this.state.accentKey;
+        return { key, label: p.label, isActive: active, ring: active ? p.accent : theme.border, stops: p.stops || [{offset:'0%',color:p.stop1},{offset:'100%',color:p.stop2}], select: this.setAccent(key) };
+      }),
+
+      languages: this.languages.map(l => ({
+        code: l.code,
+        label: l.label,
+        native: l.native,
+        glyph: l.glyph,
+        isActive: l.code === this.state.lang,
+        bg: l.code === this.state.lang ? '#E4F0EC' : 'white',
+        border: l.code === this.state.lang ? '#146356' : '#E7E3D8',
+        iconBg: l.code === this.state.lang ? '#146356' : '#F0EEE4',
+        iconColor: l.code === this.state.lang ? 'white' : '#6B7566',
+        select: () => this.setState({ lang: l.code }),
+      })),
+    };
+  }
+}
+</script>
+</body>
+</html>
