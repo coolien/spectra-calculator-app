@@ -13,7 +13,7 @@ export interface MalaysiaConfig {
   firstHomeExemption: { tiers: { priceUpTo: number; motExemptionRate: number; loanAgreementExemptionRate: number }[] };
   valuationFeeScale: { minimumFee: number; serviceTaxApplies: boolean; bands: FeeBand[] };
   financing: { tenure: { maxYears: number; maxAgeAtEnd: number }; loanToValueCap: { firstAndSecondProperty: number; thirdAndSubsequent: number } };
-  affordability: { dsr: { benchmarkBands: { maxRatio: number | null; verdict: string; label: string }[] }; statutoryDeductions: { epfEmployeeRate: number; socso: { employeeRate: number; wageCeiling: number }; eis: { employeeRate: number; wageCeiling: number } } };
+  affordability: { dsr: { benchmarkBands: { maxRatio: number | null; verdict: string; label: string }[] }; statutoryDeductions: { epfEmployeeRate: number; epfEmployeeRateFromAge60: number; epfReducedRateFromAge: number; socso: { employeeRate: number; wageCeiling: number }; eis: { employeeRate: number; wageCeiling: number } } };
   taxRelief: { housingLoanInterest: { consecutiveYearsOfAssessment: number; bands: { priceUpTo: number | null; annualReliefCap: number }[] }; marginalTaxRateBandsYA2026: { chargeableUpTo: number | null; rate: number }[] };
   financingProducts?: unknown;
 }
@@ -163,26 +163,42 @@ export function calculateLoanStampDuty(input: { loanAmount: number; propertyPric
   return { grossDuty: round2(grossDuty), exemption: round2(exemption), netDuty: round2(grossDuty - exemption), basis: 'Loan agreement duty at 0.5%' };
 }
 
-export interface NetIncomeInput { grossMonthlyIncome: number; epfRatePercent?: number; monthlyTax?: number }
+export interface NetIncomeInput { grossMonthlyIncome: number; epfRatePercent?: number; monthlyTax?: number; age?: number }
 export interface NetIncomeResult { gross: number; epf: number; socso: number; eis: number; pcb: number; net: number }
+
+/**
+ * Statutory EPF employee rate for an age. The rate halves at 60 — using the
+ * under-60 rate for an older worker understates their net income and makes
+ * every downstream affordability verdict wrong for them.
+ */
+export function epfEmployeeRateForAge(age: number | undefined, cfg: MalaysiaConfig = CONFIG): number {
+  const deductions = cfg.affordability.statutoryDeductions;
+  if (age != null && age >= deductions.epfReducedRateFromAge) return deductions.epfEmployeeRateFromAge60;
+  return deductions.epfEmployeeRate;
+}
+
 export function netMonthlyIncome(input: NetIncomeInput, cfg: MalaysiaConfig = CONFIG): NetIncomeResult {
   const gross = Math.max(0, input.grossMonthlyIncome);
   const deductions = cfg.affordability.statutoryDeductions;
-  const epf = gross * (input.epfRatePercent ?? deductions.epfEmployeeRate * 100) / 100;
+  const epf = gross * (input.epfRatePercent ?? epfEmployeeRateForAge(input.age, cfg) * 100) / 100;
   const socso = Math.min(gross, deductions.socso.wageCeiling) * deductions.socso.employeeRate;
   const eis = Math.min(gross, deductions.eis.wageCeiling) * deductions.eis.employeeRate;
   const pcb = Math.max(0, input.monthlyTax ?? 0);
   return { gross: round2(gross), epf: round2(epf), socso: round2(socso), eis: round2(eis), pcb: round2(pcb), net: round2(Math.max(0, gross - epf - socso - eis - pcb)) };
 }
 
-export interface DSRResult { dsrNet: number; dsrGross: number; netIncome: number; grossIncome: number; verdict: string; label: string; target: number }
+export interface DSRResult { dsrNet: number; dsrGross: number; netIncome: number; grossIncome: number; verdict: string; label: string; target: number; verdictBasis: 'gross' }
 export function calculateDSR(input: { income: NetIncomeInput; existingCommitments: number; newInstalment: number; targetDsrPercent?: number }, cfg: MalaysiaConfig = CONFIG): DSRResult {
   const income = netMonthlyIncome(input.income, cfg);
   const commitments = Math.max(0, input.existingCommitments) + Math.max(0, input.newInstalment);
   const dsrNet = income.net > 0 ? commitments / income.net : 0;
   const dsrGross = income.gross > 0 ? commitments / income.gross : 0;
-  const band = cfg.affordability.dsr.benchmarkBands.find((item) => item.maxRatio == null || dsrNet <= item.maxRatio) ?? cfg.affordability.dsr.benchmarkBands.at(-1)!;
-  return { dsrNet: round2(dsrNet * 100), dsrGross: round2(dsrGross * 100), netIncome: income.net, grossIncome: income.gross, verdict: band.verdict, label: band.label, target: input.targetDsrPercent ?? 60 };
+  // Malaysian banks assess DSR on GROSS income, so the verdict must band on gross —
+  // banding on net made the app stricter than any bank and told people they could not
+  // afford something they would in fact be approved for. `dsrNet` stays exposed because
+  // it is the honest cash-flow picture, but it is not what a bank decides on.
+  const band = cfg.affordability.dsr.benchmarkBands.find((item) => item.maxRatio == null || dsrGross <= item.maxRatio) ?? cfg.affordability.dsr.benchmarkBands.at(-1)!;
+  return { dsrNet: round2(dsrNet * 100), dsrGross: round2(dsrGross * 100), netIncome: income.net, grossIncome: income.gross, verdict: band.verdict, label: band.label, target: input.targetDsrPercent ?? 60, verdictBasis: 'gross' };
 }
 
 export interface TaxReliefResult { annualCap: number; marginalRate: number; savingByYear: number[]; totalSaving: number; note: string }

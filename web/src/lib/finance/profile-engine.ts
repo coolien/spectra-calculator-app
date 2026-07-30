@@ -86,15 +86,18 @@ export function deriveCalculatorDefaults(profile: UserProfile): CalculatorDefaul
 }
 
 export interface PillarScore { key: string; score: number; weight: number; measures: string }
-export interface HealthScore { overall: number; band: string; pillars: PillarScore[]; netIncome: number; dsrNet: number }
+export interface HealthScore { overall: number; band: string; pillars: PillarScore[]; netIncome: number; dsrNet: number; dsrGross: number }
 const clamp = (value: number, min = 0, max = 100) => Math.max(min, Math.min(max, value));
 
 export function financialHealthScore(profile: UserProfile): HealthScore {
   const gross = grossMonthlyIncome(profile);
-  const net = netMonthlyIncome({ grossMonthlyIncome: gross, monthlyTax: profile.monthlyTax }, CFG).net;
+  const net = netMonthlyIncome({ grossMonthlyIncome: gross, monthlyTax: profile.monthlyTax, age: profile.age }, CFG).net;
   const commitments = Math.max(0, profile.existingMonthlyCommitments ?? 0);
   const dsrNet = net > 0 ? commitments / net * 100 : 0;
-  const affordability = net > 0 ? clamp((70 - dsrNet) / 35 * 100) : 50;
+  // Scored on gross, matching how a bank assesses DSR. dsrNet is still reported as the
+  // cash-flow reality, but it must not drive the verdict. See docs/RATE_AUDIT_2026-07-30.md.
+  const dsrGross = gross > 0 ? commitments / gross * 100 : 0;
+  const affordability = gross > 0 ? clamp((70 - dsrGross) / 35 * 100) : 50;
   const savings = clamp((profile.emergencyFundMonths ?? 0) / 6 * 100);
   const bandScore = { excellent: 100, good: 80, fair: 55, 'needs-work': 30 } as const;
   let debtHealth: number = profile.ctosBand ? bandScore[profile.ctosBand] : (profile.recentLatePayments12m ?? 0) === 0 ? 80 : (profile.recentLatePayments12m ?? 0) === 1 ? 55 : 30;
@@ -113,7 +116,7 @@ export function financialHealthScore(profile: UserProfile): HealthScore {
   const pillars = PROFILE.healthScore.pillars.map((pillar) => ({ ...pillar, score: round2(raw[pillar.key] ?? 50) }));
   const overall = round2(pillars.reduce((sum, pillar) => sum + pillar.score * pillar.weight, 0));
   const band = PROFILE.healthScore.bands.find((item) => overall >= item.min)?.label ?? 'At risk';
-  return { overall, band, pillars, netIncome: round2(net), dsrNet: round2(dsrNet) };
+  return { overall, band, pillars, netIncome: round2(net), dsrNet: round2(dsrNet), dsrGross: round2(dsrGross) };
 }
 
 export interface UpgradeSuggestion { pillar: string; priority: number; action: string }

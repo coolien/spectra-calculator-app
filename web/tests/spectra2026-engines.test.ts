@@ -4,6 +4,9 @@ import {
   calculateHousingPurchase,
   calculateLoanStampDuty,
   calculateMOTStampDuty,
+  calculateDSR,
+  netMonthlyIncome,
+  epfEmployeeRateForAge,
 } from '../src/lib/finance/housing-finance-engine.ts';
 import {
   effectiveInterestRate,
@@ -114,4 +117,41 @@ test('profile context resolves Islamic products and calculator defaults', () => 
   assert.equal(defaults.personal.financingType, 'islamic');
   assert.ok(health.overall > 0);
   assert.ok(health.dsrNet > 0);
+});
+
+test('EPF employee rate halves at 60 and lifts net income', () => {
+  const under60 = netMonthlyIncome({ grossMonthlyIncome: 6_000, age: 45 });
+  const at60 = netMonthlyIncome({ grossMonthlyIncome: 6_000, age: 60 });
+  const unknownAge = netMonthlyIncome({ grossMonthlyIncome: 6_000 });
+
+  assert.equal(under60.epf, 660);           // 11%
+  assert.equal(at60.epf, 330);              // 5.5% from age 60
+  assert.equal(unknownAge.epf, 660);        // unknown age keeps the under-60 default
+  assert.ok(at60.net > under60.net, 'a 60-year-old keeps more of the same salary');
+  assert.equal(epfEmployeeRateForAge(59), 0.11);
+  assert.equal(epfEmployeeRateForAge(60), 0.055);
+});
+
+test('DSR verdict bands on gross income, the basis banks assess', () => {
+  // RM5,000 gross, RM2,400 total commitments: 48% of gross, but ~55% of net.
+  // Both land in "stretched" only because gross is used; net alone would over-penalise.
+  const dsr = calculateDSR({
+    income: { grossMonthlyIncome: 5_000, age: 35 },
+    existingCommitments: 2_400,
+    newInstalment: 0,
+  });
+
+  assert.equal(dsr.verdictBasis, 'gross');
+  assert.equal(dsr.dsrGross, 48);
+  assert.ok(dsr.dsrNet > dsr.dsrGross, 'net DSR is always the harsher number');
+  assert.equal(dsr.verdict, 'stretched');
+
+  // A borrower at 39% of gross must read as comfortable, matching a bank's view.
+  const comfortable = calculateDSR({
+    income: { grossMonthlyIncome: 10_000, age: 35 },
+    existingCommitments: 3_900,
+    newInstalment: 0,
+  });
+  assert.equal(comfortable.dsrGross, 39);
+  assert.equal(comfortable.verdict, 'comfortable');
 });
