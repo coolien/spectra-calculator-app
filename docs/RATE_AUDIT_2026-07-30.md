@@ -34,10 +34,22 @@ verified, but see UNVERIFIED-1 — I could not confirm the caps from BNM's own p
 
 ## UNVERIFIED — needs a source or a visible "estimate" label
 
-**UNVERIFIED-1 — HP EIR caps not confirmed at primary source.**
-Verified via secondary reporting only. `HP Consumer Guide_EN_2026.pdf` is on disk and is
-the primary source, but could not be read in this environment (no PDF renderer installed).
-Confirm the 17/16 figures against it directly.
+~~**UNVERIFIED-1 — HP EIR caps not confirmed at primary source.**~~
+**RESOLVED — VERIFIED 30 Jul 2026** against `HP Consumer Guide_EN_2026.pdf` p.6 (text
+extracted with `pdftotext -layout`):
+
+> "The EIR is capped at 17% p.a. for loans with tenures of up to 5 years and 16% p.a. for
+> loans with tenures of more than 5 years" (fixed rate) · "The EIR is capped at 17% p.a.
+> for all loan tenures as per the existing Hire-Purchase (Term Charges) Regulations 2005"
+> (variable rate)
+
+Config matches exactly: `fixed: [{maxTenureMonths: 60, capPercent: 17}, {maxTenureMonths:
+null, capPercent: 16}]`, `variable: [{maxTenureMonths: null, capPercent: 17}]`.
+
+The guide also confirms `legislationEffectiveDate: '1 June 2026'` and
+`providerGracePeriodEnd: '31 March 2027'`, and states the previous maximum flat rate was
+10% p.a. — the caps are its EIR conversion, tenure-dependent. Note the guide says the 17%
+threshold "is subject to periodic review by the authorities", so this needs re-checking.
 
 **UNVERIFIED-2 — `personalLoan.flatToEirApprox = 1.88`.**
 A multiplier converting flat rate to EIR. This is a rule of thumb, not a statutory or

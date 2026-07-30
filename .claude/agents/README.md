@@ -10,6 +10,11 @@ Six specialist agents scoped to this repo. They live in `.claude/agents/` and ar
 | `pwa-quality-engineer` | Build, service worker, offline, speed, deploy | Stale installed PWA; slow on Android; before Cloudflare Pages deploy |
 | `spectra-design-reviewer` | Brand fidelity, mobile UX, accessibility | New or restyled screen; unreadable results; input flow drop-off |
 | `privacy-compliance-reviewer` | PDPA, Supabase RLS, ads/analytics, legal copy | Anything that stores, syncs, logs, or transmits user data |
+| `search-demand-researcher` | Picking what to write | Before any article — finds the real question and proves a calculator answers it |
+| `article-writer` | Drafting one article, engine-grounded | After a topic is approved `WRITE`. Drafts only, never publishes |
+| `article-publish-gate` | The last check before live | After **you** have read and approved a draft |
+
+The last three are the Stage 2 content pipeline — see [docs/CONTENT_PIPELINE.md](../../docs/CONTENT_PIPELINE.md).
 
 ## How to use them
 
