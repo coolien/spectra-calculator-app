@@ -691,3 +691,12 @@ button:disabled { opacity: .45; cursor: not-allowed; }
    and reads as blank. Restore a legible muted label on those. */
 .home-health-card .snapshot-label,
 .health-card-heading .snapshot-label { color: var(--text-muted); }
+
+/* Both screen containers are flex columns with a bounded height. Their children keep
+   the default flex-shrink:1, so when content exceeds the container the cards are
+   COMPRESSED instead of overflowing into the scroll area. The monthly snapshot card
+   was rendering 36px tall against 195px of content, clipping the take-home pay, DSR
+   and progress bar behind overflow:hidden — the section read as blank.
+   Children must keep their natural height and let the container scroll. */
+.standard-screen > *,
+.screen-scroll > * { flex-shrink: 0; }
