@@ -98,11 +98,25 @@ test('credit-card literacy surfaces minimum-payment and BNPL costs', () => {
   closeTo(bnpl.effectiveAPRPercent, 39);
 });
 
-test('PTPTN exposes the 2026 settlement discount and minimum payment warning', () => {
+test('PTPTN settlement quotes no discount, because none is currently offered', () => {
+  // PTPTN's last discount period ran 14 Oct 2023 - 31 Mar 2024 and expired.
+  // Config previously claimed a live 15% full-settlement discount: wrong twice
+  // over, since the 15% belonged to salary deduction, not full settlement.
+  // Quoting a saving that does not exist at the counter is the worst failure
+  // this app can have, so it is pinned here. See RATE_AUDIT DISPUTED-1.
   const settlement = settlementWithDiscount(10_000, 'full-settlement');
+
+  assert.equal(settlement.discountActive, false);
+  assert.equal(settlement.discountRate, 0);
+  assert.equal(settlement.saving, 0);
+  assert.equal(settlement.amountToPay, 10_000, 'the borrower pays the full balance');
+  assert.match(settlement.label, /No PTPTN repayment discount/i);
+  assert.ok(settlement.note.length > 0, 'the user must be told why there is no discount');
+  assert.equal(settlement.expiredScheme?.periodTo, '2024-03-31');
+});
+
+test('PTPTN minimum instalment warning still fires', () => {
   const repayment = ptptnRepayment({ outstandingBalance: 10_000, ujrahRatePercent: 1, tenureYears: 10 });
-  assert.equal(settlement.amountToPay, 8_500);
-  assert.equal(settlement.saving, 1_500);
   assert.equal(repayment.minInstalment, 150);
   assert.equal(repayment.belowMinimum, true);
 });

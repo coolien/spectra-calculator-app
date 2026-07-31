@@ -147,11 +147,20 @@
   "ptptn": {
     "ujrahRatePerAnnum": 0.01,
     "minMonthlyInstalment": 150,
-    "discounts2026": [
-      { "type": "full-settlement", "rate": 0.15, "label": "15% off full lump-sum settlement" },
-      { "type": "partial-or-salary-deduction", "rate": 0.1, "label": "10% off partial lump-sum or salary deduction" },
-      { "type": "consistent-scheduled", "rate": 0.1, "label": "10% off consistent scheduled payments" }
-    ],
+    "discountsActive": false,
+    "discountsVerifiedOn": "2026-07-31",
+    "discountsNote": "PTPTN offers no repayment discount at present. Its last discount period ran 14 October 2023 to 31 March 2024 and has expired; PTPTN has stated publicly that Budget 2026 introduced none. Verified against ptptn.gov.my/DiskaunPTPTN/. Re-check that page before any discount is shown to a user.",
+    "discounts2026": [],
+    "expiredDiscountScheme": {
+      "periodFrom": "2023-10-14",
+      "periodTo": "2024-03-31",
+      "note": "Historical reference only — never apply to a settlement quote. Retained so the app can explain what borrowers are remembering when they ask about 'the PTPTN discount'.",
+      "tiers": [
+        { "type": "full-settlement", "rate": 0.1, "label": "10% off full settlement of the outstanding balance" },
+        { "type": "partial-50-percent", "rate": 0.1, "label": "10% off paying at least 50% of the outstanding balance" },
+        { "type": "salary-deduction-or-direct-debit", "rate": 0.15, "label": "15% off scheduled salary deduction or direct debit" }
+      ]
+    },
     "creditReporting": { "reportedToCCRIS": true, "dsrCounts": true }
   },
   "carLoan": {

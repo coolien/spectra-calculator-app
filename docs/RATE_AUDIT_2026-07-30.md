@@ -34,6 +34,21 @@ verified, but see UNVERIFIED-1 — I could not confirm the caps from BNM's own p
 
 ## DISPUTED — highest priority
 
+> **RESOLVED 31 Jul 2026 — confirmed a defect, and fixed.** The owner supplied a capture of
+> `ptptn.gov.my/DiskaunPTPTN/`. It states **"Tempoh Diskaun : 14 Oktober 2023 – 31 Mac
+> 2024"** — the scheme expired over two years ago. The tiers were also mapped wrongly in
+> config: the real scheme was **10%** full settlement, **10%** for paying ≥50% of the
+> balance, and **15%** for salary deduction / direct debit. Config had the 15% on full
+> settlement, overstating it by half against a scheme that no longer existed.
+>
+> Fixed: `discountsActive: false`, `discounts2026: []`, the expired scheme retained under
+> `expiredDiscountScheme` for explanation only, and `settlementWithDiscount()` now returns a
+> zero discount with a note. The PTPTN calculator reads "None currently offered" and warns
+> that settling costs the full balance. Pinned by
+> `PTPTN settlement quotes no discount, because none is currently offered`.
+>
+> The original finding is kept below, unedited, as the record of how it was caught.
+
 **DISPUTED-1 — `ptptn.discounts2026` contradicted by PTPTN itself. BLOCKING.**
 
 *Added 30 Jul 2026, correcting this document's own first pass.*

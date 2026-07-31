@@ -20,11 +20,44 @@ export function ptptnRepayment(input: PtptnRepaymentInput): PtptnRepaymentResult
   return { method, scheduledInstalment: round2(scheduled), plannedInstalment: round2(scheduled + extra), belowMinimum: scheduled + extra < P.minMonthlyInstalment, minInstalment: P.minMonthlyInstalment, totalUjrah: amortization.totalInterest, payoffMonths: amortization.actualMonths, totalRepayment: amortization.totalRepayment };
 }
 
-export interface SettlementResult { discountType: string; discountRate: number; grossBalance: number; amountToPay: number; saving: number; label: string }
+export interface SettlementResult { discountType: string; discountRate: number; grossBalance: number; amountToPay: number; saving: number; label: string; discountActive: boolean; note: string; expiredScheme?: { periodFrom: string; periodTo: string } }
+
+/**
+ * Settlement quote for a PTPTN balance.
+ *
+ * PTPTN offers NO repayment discount at present. Its last scheme ran
+ * 14 Oct 2023 – 31 Mar 2024 and expired; PTPTN has stated publicly that Budget
+ * 2026 introduced none. This function therefore returns a zero discount, and
+ * says so, rather than quoting a saving that will not materialise at the counter.
+ *
+ * Config previously carried a 15% full-settlement discount. It was wrong twice
+ * over — the scheme had expired, and the 15% belonged to salary deduction, not
+ * full settlement. See docs/RATE_AUDIT_2026-07-30.md, DISPUTED-1.
+ *
+ * If PTPTN announces a new scheme, set `ptptn.discountsActive` and repopulate
+ * `ptptn.discounts2026`; this function needs no change beyond that.
+ */
 export function settlementWithDiscount(outstandingBalance: number, discountType: 'full-settlement' | 'partial-or-salary-deduction' | 'consistent-scheduled' = 'full-settlement'): SettlementResult {
-  const discount = P.discounts2026.find((item) => item.type === discountType) ?? P.discounts2026[0];
-  const saving = outstandingBalance * discount.rate;
-  return { discountType: discount.type, discountRate: discount.rate, grossBalance: round2(outstandingBalance), amountToPay: round2(outstandingBalance - saving), saving: round2(saving), label: discount.label };
+  const balance = Math.max(0, outstandingBalance);
+  // Typed explicitly: with no active scheme the JSON array is empty, which TypeScript
+  // would otherwise infer as never[].
+  const tiers = P.discounts2026 as { type: string; rate: number; label: string }[];
+  const active = P.discountsActive === true && tiers.length > 0;
+  const discount = active ? (tiers.find((item) => item.type === discountType) ?? tiers[0]) : null;
+  const rate = discount?.rate ?? 0;
+  const saving = balance * rate;
+
+  return {
+    discountType: discount?.type ?? discountType,
+    discountRate: rate,
+    grossBalance: round2(balance),
+    amountToPay: round2(balance - saving),
+    saving: round2(saving),
+    label: discount?.label ?? 'No PTPTN repayment discount is currently offered',
+    discountActive: active,
+    note: active ? '' : P.discountsNote,
+    ...(active ? {} : { expiredScheme: { periodFrom: P.expiredDiscountScheme.periodFrom, periodTo: P.expiredDiscountScheme.periodTo } }),
+  };
 }
 
 export interface PtptnDsrImpactResult { monthlyCommitment: number; netIncome: number; dsrContributionPercent: number; homeLoanCapacityLost: number; reportedToCCRIS: boolean; reminder: string }
