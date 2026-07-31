@@ -23,15 +23,27 @@ export default function LearnIndex() {
         {total} lessons · last reviewed {learnMeta.lastVerified}
       </p>
 
-      {learnCategories.map((category) => (
-        <section key={category.id} className="content-section">
-          <h2>{category.title}</h2>
-          <p>{category.intro}</p>
-          <ul className="content-list">
+      {learnCategories.map((category, index) => (
+        <section key={category.id} className="learn-cat" data-accent={index % 4}>
+          <div className="learn-cat-head">
+            <span className="learn-cat-icon" aria-hidden="true">{category.icon}</span>
+            <div>
+              <h2>{category.title}</h2>
+              <p>{category.intro}</p>
+            </div>
+          </div>
+
+          <ul className="learn-cards">
             {category.lessons.map((lesson) => (
               <li key={lesson.id}>
-                <Link href={`/learn/${lesson.id}`}>{lesson.term}</Link>
-                <span>{lesson.oneLiner}</span>
+                <Link href={`/learn/${lesson.id}`}>
+                  <span className="learn-card-mark" aria-hidden="true">{lesson.term.slice(0, 1)}</span>
+                  <span className="learn-card-text">
+                    <strong>{lesson.term}</strong>
+                    <small>{lesson.oneLiner}</small>
+                  </span>
+                  <span className="learn-card-go" aria-hidden="true">→</span>
+                </Link>
               </li>
             ))}
           </ul>

@@ -170,7 +170,7 @@ function calculateCreditFromForm(form: FormState): CalculatorResult {
 
 function calculatePtptnFromForm(form: FormState): CalculatorResult {
   const repayment = ptptnRepayment({ outstandingBalance: number(form.outstandingBalance), ujrahRatePercent: number(form.annualUjrahRatePercent), tenureYears: number(form.tenureYears), method: form.method === 'flat' ? 'flat' : 'reducing', extraMonthlyPayment: number(form.extraMonthlyPayment) });
-  const settlement = settlementWithDiscount(number(form.outstandingBalance), form.settlementDiscount === 'partial-or-salary-deduction' || form.settlementDiscount === 'consistent-scheduled' ? form.settlementDiscount : 'full-settlement');
+  const settlement = settlementWithDiscount(number(form.outstandingBalance), number(form.settlementDiscountPercent));
   const impact = number(form.grossMonthlyIncome) > 0 ? ptptnDsrImpact({ monthlyInstalment: repayment.plannedInstalment, grossMonthlyIncome: number(form.grossMonthlyIncome), monthlyTax: number(form.monthlyTax) }) : null;
   return {
     title: 'Planned monthly instalment', primaryValue: formatMyr(repayment.plannedInstalment), subtitle: `${repayment.method === 'reducing' ? 'Reducing-balance Ujrah' : 'Flat statement-matching'} estimate over ${number(form.tenureYears)} years.`,

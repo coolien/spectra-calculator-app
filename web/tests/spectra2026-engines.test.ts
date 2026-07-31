@@ -104,15 +104,30 @@ test('PTPTN settlement quotes no discount, because none is currently offered', (
   // over, since the 15% belonged to salary deduction, not full settlement.
   // Quoting a saving that does not exist at the counter is the worst failure
   // this app can have, so it is pinned here. See RATE_AUDIT DISPUTED-1.
-  const settlement = settlementWithDiscount(10_000, 'full-settlement');
+  const settlement = settlementWithDiscount(10_000);
 
   assert.equal(settlement.discountActive, false);
   assert.equal(settlement.discountRate, 0);
   assert.equal(settlement.saving, 0);
   assert.equal(settlement.amountToPay, 10_000, 'the borrower pays the full balance');
-  assert.match(settlement.label, /No PTPTN repayment discount/i);
+  assert.match(settlement.label, /No discount entered/i);
   assert.ok(settlement.note.length > 0, 'the user must be told why there is no discount');
   assert.equal(settlement.expiredScheme?.periodTo, '2024-03-31');
+});
+
+test('PTPTN settlement applies the discount the borrower was actually quoted', () => {
+  // Discounts are quoted per borrower, so the figure is keyed in rather than
+  // looked up. Spectra must never invent one.
+  const quoted = settlementWithDiscount(10_000, 12.5);
+  assert.equal(quoted.source, 'user');
+  assert.equal(quoted.saving, 1_250);
+  assert.equal(quoted.amountToPay, 8_750);
+  assert.match(quoted.note, /figure you entered/i);
+
+  // A mistyped percentage must never produce a negative amount to pay.
+  const absurd = settlementWithDiscount(10_000, 150);
+  assert.equal(absurd.discountRate, 1);
+  assert.equal(absurd.amountToPay, 0);
 });
 
 test('PTPTN minimum instalment warning still fires', () => {

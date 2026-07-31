@@ -21,6 +21,8 @@ export interface UserProfile {
   grossMonthlySalary?: number;
   otherMonthlyIncome?: number;
   epfEmployeeRate?: number;
+  socsoMonthly?: number;
+  eisMonthly?: number;
   monthlyTax?: number;
   existingMonthlyCommitments?: number;
   creditCardTotalLimit?: number;
@@ -91,7 +93,7 @@ const clamp = (value: number, min = 0, max = 100) => Math.max(min, Math.min(max,
 
 export function financialHealthScore(profile: UserProfile): HealthScore {
   const gross = grossMonthlyIncome(profile);
-  const net = netMonthlyIncome({ grossMonthlyIncome: gross, monthlyTax: profile.monthlyTax, age: profile.age }, CFG).net;
+  const net = netMonthlyIncome({ grossMonthlyIncome: gross, monthlyTax: profile.monthlyTax, age: profile.age, socsoOverride: profile.socsoMonthly, eisOverride: profile.eisMonthly }, CFG).net;
   const commitments = Math.max(0, profile.existingMonthlyCommitments ?? 0);
   const dsrNet = net > 0 ? commitments / net * 100 : 0;
   // Scored on gross, matching how a bank assesses DSR. dsrNet is still reported as the

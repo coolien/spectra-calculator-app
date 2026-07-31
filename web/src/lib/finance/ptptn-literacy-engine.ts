@@ -20,7 +20,7 @@ export function ptptnRepayment(input: PtptnRepaymentInput): PtptnRepaymentResult
   return { method, scheduledInstalment: round2(scheduled), plannedInstalment: round2(scheduled + extra), belowMinimum: scheduled + extra < P.minMonthlyInstalment, minInstalment: P.minMonthlyInstalment, totalUjrah: amortization.totalInterest, payoffMonths: amortization.actualMonths, totalRepayment: amortization.totalRepayment };
 }
 
-export interface SettlementResult { discountType: string; discountRate: number; grossBalance: number; amountToPay: number; saving: number; label: string; discountActive: boolean; note: string; expiredScheme?: { periodFrom: string; periodTo: string } }
+export interface SettlementResult { discountType: string; discountRate: number; grossBalance: number; amountToPay: number; saving: number; label: string; discountActive: boolean; source: 'user' | 'none'; note: string; expiredScheme?: { periodFrom: string; periodTo: string } }
 
 /**
  * Settlement quote for a PTPTN balance.
@@ -37,26 +37,29 @@ export interface SettlementResult { discountType: string; discountRate: number; 
  * If PTPTN announces a new scheme, set `ptptn.discountsActive` and repopulate
  * `ptptn.discounts2026`; this function needs no change beyond that.
  */
-export function settlementWithDiscount(outstandingBalance: number, discountType: 'full-settlement' | 'partial-or-salary-deduction' | 'consistent-scheduled' = 'full-settlement'): SettlementResult {
+export function settlementWithDiscount(outstandingBalance: number, discountPercent = 0): SettlementResult {
   const balance = Math.max(0, outstandingBalance);
-  // Typed explicitly: with no active scheme the JSON array is empty, which TypeScript
-  // would otherwise infer as never[].
-  const tiers = P.discounts2026 as { type: string; rate: number; label: string }[];
-  const active = P.discountsActive === true && tiers.length > 0;
-  const discount = active ? (tiers.find((item) => item.type === discountType) ?? tiers[0]) : null;
-  const rate = discount?.rate ?? 0;
+  // Capped at 100%: a discount cannot exceed the balance, and a mistyped 150
+  // must not produce a negative amount to pay.
+  const rate = Math.min(Math.max(0, discountPercent), 100) / 100;
   const saving = balance * rate;
+  const hasDiscount = rate > 0;
 
   return {
-    discountType: discount?.type ?? discountType,
+    discountType: hasDiscount ? 'user-entered' : 'none',
     discountRate: rate,
     grossBalance: round2(balance),
     amountToPay: round2(balance - saving),
     saving: round2(saving),
-    label: discount?.label ?? 'No PTPTN repayment discount is currently offered',
-    discountActive: active,
-    note: active ? '' : P.discountsNote,
-    ...(active ? {} : { expiredScheme: { periodFrom: P.expiredDiscountScheme.periodFrom, periodTo: P.expiredDiscountScheme.periodTo } }),
+    label: hasDiscount
+      ? `${round2(rate * 100)}% discount, as quoted to you`
+      : 'No discount entered — settling costs the full balance',
+    discountActive: hasDiscount,
+    source: hasDiscount ? 'user' : 'none',
+    note: hasDiscount
+      ? 'This is the figure you entered, not a rate Spectra looked up. Confirm it against your PTPTN settlement quote before paying.'
+      : P.discountsNote,
+    expiredScheme: { periodFrom: P.expiredDiscountScheme.periodFrom, periodTo: P.expiredDiscountScheme.periodTo },
   };
 }
 

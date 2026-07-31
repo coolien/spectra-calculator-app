@@ -11,7 +11,7 @@ export const ptptnSchema: CalculatorSchema = {
   secondaryLabel: 'Total Ujrah',
   defaults: {
     outstandingBalance: '30000', annualUjrahRatePercent: '1.00', tenureYears: '10',
-    extraMonthlyPayment: '0', method: 'reducing', grossMonthlyIncome: '0', monthlyTax: '0', settlementDiscount: 'full-settlement',
+    extraMonthlyPayment: '0', method: 'reducing', grossMonthlyIncome: '0', monthlyTax: '0', settlementDiscountPercent: '0',
   },
   steps: [
     {
@@ -38,9 +38,11 @@ export const ptptnSchema: CalculatorSchema = {
     },
     {
       id: 'reality', title: 'Discount & credit impact', optional: true,
-      summary: (form) => form.grossMonthlyIncome === '0' ? 'Add income' : `RM ${form.grossMonthlyIncome} income`,
+      summary: (form) => Number(form.settlementDiscountPercent || 0) > 0 ? `${form.settlementDiscountPercent}% discount quoted` : 'No discount quoted',
       fields: [
-        { key: 'settlementDiscount', label: 'Settlement option', type: 'segmented', fullWidth: true, options: [{ value: 'full-settlement', label: '15% full settlement' }, { value: 'partial-or-salary-deduction', label: '10% partial / salary' }, { value: 'consistent-scheduled', label: '10% scheduled' }] },
+        // Discounts are quoted per borrower and PTPTN runs no standing scheme, so this is
+        // keyed in from the borrower's own settlement quote rather than looked up.
+        { key: 'settlementDiscountPercent', label: 'Discount quoted to you', type: 'number', suffix: '%', fullWidth: true, help: 'Leave at 0 if PTPTN has not offered you one. Enter the exact percentage from your settlement quote.' },
         { key: 'grossMonthlyIncome', label: 'Gross monthly income', type: 'number', prefix: 'RM' },
         { key: 'monthlyTax', label: 'Monthly PCB / tax', type: 'number', prefix: 'RM' },
       ],

@@ -53,22 +53,37 @@ export default async function LessonPage({ params }: { params: Promise<{ slug: s
     >
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
-      <p>{lesson.body}</p>
+      <p className="lesson-body">{lesson.body}</p>
 
-      <section className="content-callout">
-        <h2>Why it matters</h2>
-        <p>{lesson.whyItMatters}</p>
-      </section>
+      <div className="lesson-callouts">
+        <section className="lesson-callout tone-why">
+          <span className="lesson-callout-icon" aria-hidden="true">◈</span>
+          <div>
+            <h2>Why it matters</h2>
+            <p>{lesson.whyItMatters}</p>
+          </div>
+        </section>
 
-      <section className="content-callout">
-        <h2>Quick tip</h2>
-        <p>{lesson.quickTip}</p>
-      </section>
+        <section className="lesson-callout tone-tip">
+          <span className="lesson-callout-icon" aria-hidden="true">◎</span>
+          <div>
+            <h2>Quick tip</h2>
+            <p>{lesson.quickTip}</p>
+          </div>
+        </section>
+      </div>
+
+      {lesson.keywords.length > 0 && (
+        <ul className="lesson-tags" aria-label="Related terms">
+          {lesson.keywords.map((keyword) => <li key={keyword}>{keyword}</li>)}
+        </ul>
+      )}
 
       {calculator && (
-        <p className="content-action">
-          <Link href="/">Work this out with your own numbers →</Link>
-        </p>
+        <Link href="/" className="lesson-cta">
+          <span>Work this out with your own numbers</span>
+          <span aria-hidden="true">→</span>
+        </Link>
       )}
 
       <p className="content-meta">Last reviewed {learnMeta.lastVerified} · {learnMeta.jurisdiction}</p>

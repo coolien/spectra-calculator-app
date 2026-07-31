@@ -70,6 +70,7 @@ function CalculatorFieldControl({
       <div className={field.fullWidth ? 'field-wrap is-full' : 'field-wrap'}>
         <label className="field-label">{t(field.label)}</label>
         <SegmentedControl value={value} options={field.options ?? []} onChange={onChange} ariaLabel={t(field.label)} />
+        {field.help && <span className="field-help">{t(field.help)}</span>}
       </div>
     );
   }
@@ -87,6 +88,7 @@ function CalculatorFieldControl({
         />
         {field.suffix && <span>{field.suffix}</span>}
       </span>
+      {field.help && <span className="field-help">{t(field.help)}</span>}
     </label>
   );
 }

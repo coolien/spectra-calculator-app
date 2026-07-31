@@ -20,6 +20,8 @@ export type CalculatorOutcome = CalculatorResult | FaraidResult;
 export type PersonalProfile = {
   grossSalary: string;
   epfRate: string;
+  socsoMonthly: string;
+  eisMonthly: string;
   tax: string;
   livingExpenses: string;
   commitments: string;
@@ -94,6 +96,8 @@ export type CalculatorField = {
   placeholder?: string;
   options?: FieldOption[];
   fullWidth?: boolean;
+  /** Short note under the field. Use where the value is the user's own figure, not one Spectra looked up. */
+  help?: string;
 };
 
 export type CalculatorStepSchema = {

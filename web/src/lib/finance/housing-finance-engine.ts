@@ -163,7 +163,20 @@ export function calculateLoanStampDuty(input: { loanAmount: number; propertyPric
   return { grossDuty: round2(grossDuty), exemption: round2(exemption), netDuty: round2(grossDuty - exemption), basis: 'Loan agreement duty at 0.5%' };
 }
 
-export interface NetIncomeInput { grossMonthlyIncome: number; epfRatePercent?: number; monthlyTax?: number; age?: number }
+export interface NetIncomeInput {
+  grossMonthlyIncome: number;
+  epfRatePercent?: number;
+  monthlyTax?: number;
+  age?: number;
+  /**
+   * Actual monthly SOCSO / EIS deducted, in RM. Contribution is no longer uniform —
+   * it varies by category and can be opted out of — so the user's own payslip figure
+   * beats a computed default. Omit to fall back to the statutory calculation;
+   * pass 0 to model no contribution.
+   */
+  socsoOverride?: number;
+  eisOverride?: number;
+}
 export interface NetIncomeResult { gross: number; epf: number; socso: number; eis: number; pcb: number; net: number }
 
 /**
@@ -181,8 +194,12 @@ export function netMonthlyIncome(input: NetIncomeInput, cfg: MalaysiaConfig = CO
   const gross = Math.max(0, input.grossMonthlyIncome);
   const deductions = cfg.affordability.statutoryDeductions;
   const epf = gross * (input.epfRatePercent ?? epfEmployeeRateForAge(input.age, cfg) * 100) / 100;
-  const socso = Math.min(gross, deductions.socso.wageCeiling) * deductions.socso.employeeRate;
-  const eis = Math.min(gross, deductions.eis.wageCeiling) * deductions.eis.employeeRate;
+  const socso = input.socsoOverride != null
+    ? Math.max(0, input.socsoOverride)
+    : Math.min(gross, deductions.socso.wageCeiling) * deductions.socso.employeeRate;
+  const eis = input.eisOverride != null
+    ? Math.max(0, input.eisOverride)
+    : Math.min(gross, deductions.eis.wageCeiling) * deductions.eis.employeeRate;
   const pcb = Math.max(0, input.monthlyTax ?? 0);
   return { gross: round2(gross), epf: round2(epf), socso: round2(socso), eis: round2(eis), pcb: round2(pcb), net: round2(Math.max(0, gross - epf - socso - eis - pcb)) };
 }
