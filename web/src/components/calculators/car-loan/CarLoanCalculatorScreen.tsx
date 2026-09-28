@@ -577,7 +577,7 @@ function calculateCarLoanForm(form: FormState): CarLoanCalculation {
   const downPaymentPercentInput = numberValue(form.downPaymentPercent);
   const downPaymentSen = form.downPaymentMode === 'amount'
     ? toSen(numberValue(form.downPaymentAmount))
-    : toSen(vehiclePriceSen * downPaymentPercentInput / 100);
+    : roundMoney(vehiclePriceSen * downPaymentPercentInput / 100);
   const downPaymentPercent = vehiclePriceSen > 0 ? downPaymentSen / vehiclePriceSen * 100 : 0;
   const principalSen = vehiclePriceSen - downPaymentSen;
   const tenureYears = selectedTenureYears(form);
