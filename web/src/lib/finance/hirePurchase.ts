@@ -144,7 +144,14 @@ export function buildAmortisationSchedule(
     const openingBalanceSen = outstandingBalanceSen;
     const interestSen = roundSen(openingBalanceSen * monthlyRate);
     const scheduledPrincipalSen = Math.max(0, instalmentSen - interestSen);
-    const principalSenForPeriod = Math.min(openingBalanceSen, scheduledPrincipalSen);
+    // Rounding the instalment to whole sen can leave at most ~1 sen per period
+    // unpaid. Absorb that residue in the final instalment; anything larger means
+    // the instalment genuinely cannot amortise the loan and is rejected below.
+    const finalResidueSen = openingBalanceSen - scheduledPrincipalSen;
+    const absorbResidue = period === tenureMonths && finalResidueSen > 0 && finalResidueSen <= tenureMonths;
+    const principalSenForPeriod = absorbResidue
+      ? openingBalanceSen
+      : Math.min(openingBalanceSen, scheduledPrincipalSen);
     const actualInstalmentSen = roundSen(interestSen + principalSenForPeriod);
     outstandingBalanceSen = Math.max(0, roundSen(openingBalanceSen - principalSenForPeriod));
 

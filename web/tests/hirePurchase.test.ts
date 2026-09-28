@@ -54,6 +54,24 @@ test('every reducing-balance schedule closes at exactly zero sen', () => {
   }
 });
 
+test('schedules whose instalment rounds down absorb the residue in the final payment', () => {
+  // The car calculator default: RM90,000 less 10% down, 5% EIR, 5 years.
+  const carDefaultSen = 81_000 * 100;
+  for (const tenureMonths of [60, 84, 108]) {
+    const schedule = buildAmortisationSchedule(carDefaultSen, 5, tenureMonths);
+    assert.equal(schedule.length, tenureMonths);
+    assert.equal(schedule.at(-1)?.outstandingBalanceSen, 0);
+    assert.equal(schedule.reduce((sum, row) => sum + row.principalSen, 0), carDefaultSen);
+  }
+});
+
+test('an instalment too small to amortise is still rejected', () => {
+  assert.throws(
+    () => buildAmortisationSchedule(principalSen, 5, 108, 50_000),
+    /does not amortise/,
+  );
+});
+
 test('outstanding balance is principal before payment and zero after final payment', () => {
   assert.equal(outstandingBalanceReducing(principalSen, 5, 108, 0), principalSen);
   assert.equal(outstandingBalanceReducing(principalSen, 5, 108, 108), 0);
