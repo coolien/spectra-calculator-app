@@ -96,6 +96,11 @@ export async function deleteCloudData(client: SupabaseClient, userId: string) {
   if (profile.error) throw profile.error;
 }
 
+export async function deleteAccount(client: SupabaseClient) {
+  const { error } = await client.rpc('delete_my_account');
+  if (error) throw error;
+}
+
 export function mergeCloudPayload(local: CloudPayload, cloud: CloudPayload): CloudPayload {
   const salaryProfiles = mergeById(cloud.salaryProfiles, local.salaryProfiles);
   const savedScenarios = mergeById(cloud.savedScenarios, local.savedScenarios, (left, right) => {

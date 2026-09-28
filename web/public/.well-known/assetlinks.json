@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "com.spectramsia.calculator",
+        "sha256_cert_fingerprints": ["CD:38:98:EB:06:A2:BB:FE:CB:01:08:02:64:9C:6D:51:F1:6D:29:94:C6:15:FF:1F:E6:CB:A8:A2:D3:31:E9:F6"]
+      }
+    }]

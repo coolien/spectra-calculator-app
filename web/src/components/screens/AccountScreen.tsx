@@ -49,6 +49,9 @@ export function AccountScreen({ cloud }: { cloud: CloudController }) {
           <button className="danger-action" type="button" disabled={busy} onClick={() => {
             if (window.confirm(t('Delete the cloud backup? Data on this device will stay here.'))) void run(cloud.removeCloudData);
           }}><Trash2 size={16} />{t('Delete cloud backup')}</button>
+          <button className="danger-action" type="button" disabled={busy} onClick={() => {
+            if (window.confirm(t('Permanently delete your Spectra account and all cloud data? This cannot be undone. Data on this device will stay here.'))) void run(cloud.removeAccount);
+          }}><Trash2 size={16} />{t('Delete account')}</button>
           {message && <p className={cloud.syncState === 'error' || localMessage ? 'form-message is-error' : 'form-message'} role="status">{t(message)}</p>}
         </section>
       ) : (

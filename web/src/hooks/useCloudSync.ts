@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { Session } from '@supabase/supabase-js';
 import {
-  deleteCloudData, mergeCloudPayload, parseSpectraExport, readCloudSnapshot, type CloudPayload, writeCloudSnapshot,
+  deleteAccount, deleteCloudData, mergeCloudPayload, parseSpectraExport, readCloudSnapshot, type CloudPayload, writeCloudSnapshot,
 } from '@/lib/cloud-sync';
 import { getSupabaseClient } from '@/lib/supabase-client';
 
@@ -110,6 +110,17 @@ export function useCloudSync({ enabled, payload, onCloudState }: {
     setMessage('Cloud backup deleted and account signed out. Local data remains on this device.');
   }
 
+  async function removeAccount() {
+    if (!client || !session) return;
+    await deleteAccount(client);
+    // The auth user no longer exists, so only clear the local session.
+    await client.auth.signOut({ scope: 'local' });
+    initialisedUserRef.current = null;
+    setSyncState('local');
+    setLastSyncedAt(null);
+    setMessage('Your Spectra account and cloud data have been deleted. Local data remains on this device.');
+  }
+
   function exportData() {
     const blob = new Blob([JSON.stringify({
       app: 'Spectra Calculator',
@@ -148,6 +159,7 @@ export function useCloudSync({ enabled, payload, onCloudState }: {
     syncNow,
     signOut,
     removeCloudData,
+    removeAccount,
     exportData,
     importData,
   };

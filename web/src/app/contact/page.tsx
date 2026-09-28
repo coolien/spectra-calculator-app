@@ -41,6 +41,9 @@ export default function ContactPage() {
           profile.
         </p>
         <p>
+          <Link href="/delete-account">How to delete your account →</Link>
+        </p>
+        <p>
           <Link href="/legal">Privacy notice and terms →</Link>
         </p>
       </section>
